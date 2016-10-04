@@ -1,0 +1,181 @@
+<resources>
+    <string name="app_name">DCS DEALER</string>
+    <string name="action_settings">Cerrar Sesión</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_act_login_user">Ingresar MovilBox DCS</string>
+
+    <!-- URL BASE DESARROLLO -->
+    <!-- <string name="url_base">http://192.168.2.24:91/app/servicios/services.php?solicitud=</string> -->
+    <!-- <string name="url_base_correo">http://192.168.2.24:91/distribuidorbt/modulos/login/controlador.php</string> -->
+    <!-- -->
+
+    <!-- URL BASE PRUEBAS -->
+    <string name="url_base">http://prueba.movilbox.net:88/movistar_peru/app_1107/servicios/services.php?solicitud=</string>
+    <string name="url_base_correo">http://prueba.movilbox.net:88/movistar_peru/distribuidor/modulos/login/controlador.php</string>
+    <!-- -->
+
+    <!-- URL BASE PRODUCCION -->
+    <!-- <string name="url_base">https://peru.movilbox.net/app/servicios/services.php?solicitud=</string> -->
+    <!-- <string name="url_base_correo">https://peru.movilbox.net/distribuidor/modulos/login/controlador.php</string> -->
+    <!-- -->
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="detalle"><u>Detalle</u></string>
+    <string name="title_activity_act_no_venta">No Venta</string>
+    <string name="title_activity_act_buscar_punto">Buscar Pdvs</string>
+
+    <string-array name="tabs">
+        <item>Dashboard</item>
+        <item>Rutero</item>
+    </string-array>
+
+    <string name="title_activity_act_marcar_visita">Marcar Visita</string>
+    <string name="title_activity_act_detalle_buscar_punto">Busqueda PDVS</string>
+    <string name="title_activity_act_reporte_mis_bajas">Mis Bajas</string>
+    <string name="title_activity_act_reporte_bajas">Reporte Bajas</string>
+    <string name="title_activity_act_reporte_mis_pedidos">Reporte Pedidos</string>
+    <string name="title_activity_act_carrito_pedido">Carrito Pedido</string>
+    <string name="title_activity_act_detalle_combo_pedir">Tomar Pedido</string>
+    <string name="title_activity_act_detalle_apro_punto">Aprobación de PDV</string>
+    <string name="title_activity_act_reporte_aprobacion_pdv">Reporte Aprobación PDVS</string>
+    <string name="title_activity_act_crear_pdvuno">Crear Punto</string>
+    <string name="title_activity_act_crear_pdvdos">Crear Punto</string>
+    <string name="title_activity_act_planificar_ordenar">Planificar Visitas</string>
+    <string name="title_activity_act_entregar_pedido">Entregar Pedido</string>
+    <string name="title_activity_act_inventariar">Inventariar Productos</string>
+    <string name="title_activity_act_entregar_por_o">Entrega de pedido</string>
+    <string name="olvido_pass"><u>¿ Haz olvidado tu contraseña ?</u></string>
+    <string name="txtEstimadaEntrega"><u>Detalle Pedido</u></string>
+    <string name="title_activity_act_reporte_inventario_rep">Reporte de Inventario</string>
+    <string name="estado_comercial">Estado Comercial</string>
+    <string name="departamento">Departamento:</string>
+    <string name="ruta">Ruta</string>
+
+    <string name="provincia">Provincia</string>
+    <string name="distrito">Distrito</string>
+    <string name="circuito">Circuito</string>
+    <string name="id_pos">Id PDV</string>
+    <string name="c_dula">Cédula</string>
+    <string name="nombre">Nombre</string>
+    <string name="hota">hota</string>
+    <string name="fecha">Fecha</string>
+    <string name="estado">Estado</string>
+    <string name="nombre_punto">Nombre PDV</string>
+    <string name="buscar">Buscar</string>
+    <string name="tipo">Tipo</string>
+    <string name="planificaci_n">Planificación</string>
+    <string name="planificaci_n_visitas">Planificación Visitas</string>
+    <string name="nro_pedido">Nro Pedido:</string>
+    <string name="cantidad">Cantidad</string>
+    <string name="total">Total</string>
+    <string name="cantidad_picking">Cantidad Picking:</string>
+    <string name="total_picking">Total Picking:</string>
+    <string name="hora">Hora:</string>
+    <string name="tipo_solicitud">Tipo Solicitud:</string>
+    <string name="nro_solicitud">Nro Solicitud:</string>
+    <string name="vendedor">Vendedor</string>
+    <string name="fecha_solicitud">Fecha Solicitud:</string>
+    <string name="fecha_acci_n">Fecha Acción</string>
+    <string name="hora_acci_n">Hora Acción:</string>
+    <string name="visitado">Visitado</string>
+    <string name="direcci_n">Dirección:</string>
+    <string name="ciudad">Ciudad</string>
+    <string name="hora_de_visita">Hora de Visita</string>
+    <string name="d_as">Días Visita:</string>
+    <string name="tel_fono">Teléfono</string>
+    <string name="n_a">N/A</string>
+    <string name="id_pos_sin_punto">Id PDV</string>
+    <string name="pn">PN</string>
+    <string name="referencia">Referencia</string>
+    <string name="title_activity_act_maps_punto">Mapa PDV</string>
+    <string name="speech">Speech</string>
+    <string name="precio">Precio</string>
+    <string name="pantalla">Pantalla</string>
+    <string name="camara">Camara</string>
+    <string name="cam_frontal">Cam Frontal</string>
+    <string name="memoria">Memoria</string>
+    <string name="bluetooh">Bluetooh</string>
+    <string name="parametros_de_busqueda">Parámetros de Búsqueda</string>
+    <string name="id_pdv">Id PDV</string>
+    <string name="dni_ruc">DNI/RUC</string>
+    <string name="estado_visita">Estado Visita</string>
+    <string name="tipo_de_frecuencia">Tipo de Frecuencia</string>
+    <string name="dia">Día</string>
+    <string name="informaci_n_del_punto">Información del Punto</string>
+    <string name="raz_n_social">Razón Social</string>
+    <string name="pedidos_pendientes">Pedidos pendientes</string>
+    <string name="tomar_pedido">Tomar pedido</string>
+    <string name="no_venta">No venta</string>
+    <string name="inventariar_productos">Inventariar Productos</string>
+    <string name="fecha_inicial">Fecha Inicial</string>
+    <string name="fecha_final">Fecha Final</string>
+    <string name="stock">Stock</string>
+    <string name="inven">inven</string>
+    <string name="cantidad_0">Cantidad 0</string>
+    <string name="pedir_simcard">Pedir Simcard</string>
+    <string name="pedir_combo">Pedir Combo</string>
+    <string name="tipo_de_v_a">Tipo de vía</string>
+    <string name="nombre_v_a">Nombre vía</string>
+    <string name="n_mero_puerta">Número puerta</string>
+    <string name="nombre_manzana">Nombre manzana</string>
+    <string name="lote">Lote</string>
+    <string name="tipo_vivienda">Tipo Vivienda</string>
+    <string name="descripci_n_de_vivienda">Descripción de vivienda</string>
+    <string name="tipo_de_interior">Tipo de interior</string>
+    <string name="n_mero_de_interior">Número de interior</string>
+    <string name="tipo_de_urbanizaci_n">Tipo de urbanización</string>
+    <string name="n_mero_de_urbanizaci_n">Número de urbanización</string>
+    <string name="tipo_de_ciudad_centro_poblado">Tipo de ciudad/Centro poblado</string>
+    <string name="descripci_n">Descripción</string>
+    <string name="regresar">Regresar</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="referencias">Referencias</string>
+    <string name="categoria">Categoria</string>
+    <string name="sub_categoria">Sub categoria</string>
+    <string name="c_digo_cum">Código CUM</string>
+    <string name="guardar">Guardar</string>
+    <string name="nombre_del_pdv">Nombre del PDV</string>
+    <string name="ruc_dni_del_pdv">RUC / DNI del pdv</string>
+    <string name="nombre_del_cliente">Nombre del cliente</string>
+    <string name="marcaci_n_de_visita">Marcación de visita</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="fechan_de_entrega">Fechan de Entrega</string>
+    <string name="fecha_de_solicitud">Fecha de Solicitud</string>
+    <string name="cantidad_art_solicitados">Cantidad Art Solicitados</string>
+    <string name="cantidad_art_despachada">Cantidad Art Despachada</string>
+    <string name="impuesto_igv">Impuesto IGV</string>
+    <string name="sub_total">Sub Total</string>
+    <string name="total_impuesto_igv">Total Impuesto IGV</string>
+    <string name="total_del_pedido">Total del Pedido</string>
+    <string name="devolver">Devolver</string>
+    <string name="entregar">Entregar</string>
+    <string name="n_mero_de_comprobante">Número de Comprobante</string>
+    <string name="cantidad_del_pedido">Cantidad del Pedido</string>
+    <string name="total_pedido">Total Pedido</string>
+    <string name="fecha_estimada_de_entrega">Fecha estimada de entrega</string>
+    <string name="solicitud">Solicitud</string>
+    <string name="stock_23">Stock: 23</string>
+    <string name="d_inve_12">D. Inve: 12</string>
+    <string name="dcsdealer">DCSDEALER</string>
+    <string name="movilbox">movilbox</string>
+    <string name="consulta_punto">Consulta Punto</string>
+    <string name="datos_personales">Datos personales</string>
+    <string name="tipo_documento">Tipo Documento</string>
+    <string name="wwwwwwww">wwwwwwww</string>
+    <string name="actualizar">Actualizar</string>
+    <string name="tipo_de_conexi_n">Tipo de conexión</string>
+    <string name="simcard">Simcard</string>
+    <string name="combo">Combo</string>
+    <string name="d_as_inventario">Días Inventario</string>
+    <string name="ultima_visita">Ultima Visita</string>
+    <string name="title">Title</string>
+    <string name="celular">Celular</string>
+    <string name="vende_recargas">Vende Recargas</string>
+    <string name="nro_m_vil">Nro Móvil</string>
+
+</resources>

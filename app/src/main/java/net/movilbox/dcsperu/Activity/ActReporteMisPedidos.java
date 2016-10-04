@@ -1,0 +1,380 @@
+package net.movilbox.dcsperu.Activity;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.google.gson.Gson;
+
+import net.movilbox.dcsperu.Adapter.AdapterMisPedidos;
+import net.movilbox.dcsperu.Adapter.ExpandableListAdapter;
+import net.movilbox.dcsperu.Adapter.ExpandableListDataPump;
+import net.movilbox.dcsperu.DataBase.DBHelper;
+import net.movilbox.dcsperu.Entry.Detalle;
+import net.movilbox.dcsperu.Entry.MisPedidos;
+import net.movilbox.dcsperu.Entry.ResponseMarcarPedido;
+import net.movilbox.dcsperu.R;
+
+import java.nio.charset.Charset;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import dmax.dialog.SpotsDialog;
+
+public class ActReporteMisPedidos extends AppCompatActivity {
+
+    private MisPedidos mDescribable;
+    private DecimalFormat format;
+    private String comentario;
+    private SpotsDialog alertDialog;
+    private  int tipo_reporte = 0;
+
+    private SwipeMenuListView mListView;
+    private DBHelper mydb;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_reporte_mis_pedidos);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        mydb = new DBHelper(this);
+        format = new DecimalFormat("#,###.##");
+
+        Intent intent = this.getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            mDescribable = (MisPedidos) bundle.getSerializable("value");
+            tipo_reporte = bundle.getInt("tipo");
+        }
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        alertDialog = new SpotsDialog(this, R.style.Custom);
+
+        mListView = (SwipeMenuListView) findViewById(R.id.listView);
+        //mListView = (SwipeMenuListView) findViewById(R.drawable.i);
+        AdapterMisPedidos adapterMisPedidos = new AdapterMisPedidos(this, mDescribable.getResponseMisPedidosList());
+        mListView.setAdapter(adapterMisPedidos);
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+            @Override
+            public void create(SwipeMenu menu) {
+                // create "open" item
+                SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
+                // set item background
+                openItem.setBackground(new ColorDrawable(Color.rgb(16, 98,138)));
+                // set item width
+                openItem.setWidth(dp2px(90));
+                // set item title
+                openItem.setTitle("Detalle");
+                // set item title fontsize
+                openItem.setTitleSize(18);
+                // set item title font color
+                openItem.setTitleColor(Color.WHITE);
+                // add to menu
+                menu.addMenuItem(openItem);
+
+                if(tipo_reporte != 3) {
+                    // create "open" item
+                    SwipeMenuItem openItem2 = new SwipeMenuItem(getApplicationContext());
+                    // set item background
+                    openItem2.setBackground(new ColorDrawable(Color.rgb(219, 68, 55)));
+                    // set item width
+                    openItem2.setWidth(dp2px(90));
+                    // set item title
+                    openItem2.setTitle("Cancelar");
+                    // set item title fontsize
+                    openItem2.setTitleSize(18);
+                    // set item title font color
+                    openItem2.setTitleColor(Color.WHITE);
+                    // add to menu
+                    menu.addMenuItem(openItem2);
+                }
+            }
+        };
+
+        // set creator
+        mListView.setMenuCreator(creator);
+
+        // step 2. listener item click event
+        mListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(final int position, SwipeMenu menu, int index) {
+                //AddProductCar item = mAppList.get(position);
+                switch (index) {
+                    case 0:
+                        cargarDetalle(position);
+                        break;
+                    case 1:
+                        //Cancelar Pedido
+                        if(mDescribable.getResponseMisPedidosList().get(position).getEstado().equals("Solicitado")) {
+                            LayoutInflater inflater = getLayoutInflater();
+                            View dialoglayout = inflater.inflate(R.layout.dialog_comentario_aproba, null);
+
+                            final EditText editTextComent = (EditText) dialoglayout.findViewById(R.id.EditComment);
+
+                            android.support.v7.app.AlertDialog.Builder builder2 = new android.support.v7.app.AlertDialog.Builder(ActReporteMisPedidos.this);
+                            builder2.setCancelable(false);
+                            builder2.setTitle("Motivo de Cancelación");
+                            builder2.setView(dialoglayout).setPositiveButton("Cancelar Pedido", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                    if (isValidNumber(editTextComent.getText().toString().trim())) {
+                                        Toast.makeText(ActReporteMisPedidos.this, "El comentario es un campo requerido", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(ActReporteMisPedidos.this);
+                                        builder.setCancelable(false);
+                                        builder.setTitle("Alerta");
+                                        builder.setMessage("¿ Estas seguro de cancelar el pedido ?");
+                                        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                comentario = editTextComent.getText().toString();
+                                                cancelarPedido(position);
+                                            }
+
+                                        }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                        builder.show();
+
+                                    }
+
+                                }
+                            }).setNegativeButton("Salir", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            builder2.show();
+                        }else{
+                            Toast.makeText(ActReporteMisPedidos.this,"Este pedido no se puede cancelar",Toast.LENGTH_LONG).show();
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
+
+// set SwipeListener
+        mListView.setOnSwipeListener(new SwipeMenuListView.OnSwipeListener() {
+            @Override
+            public void onSwipeStart(int position) {
+                // swipe start
+            }
+
+            @Override
+            public void onSwipeEnd(int position) {
+                // swipe end
+            }
+        });
+
+// test item long click
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //deletePrduct(position);
+                return false;
+            }
+        });
+    }
+
+    private boolean isValidNumber(String number){return number == null || number.length() == 0;}
+
+    private void cancelarPedido(int position) {
+        alertDialog.show();
+        final int idpos =  mDescribable.getResponseMisPedidosList().get(position).getIdpos();
+        final int idpedido =  mDescribable.getResponseMisPedidosList().get(position).getNpedido();
+
+        String url = String.format("%1$s%2$s", getString(R.string.url_base),"cancelar_toma_pedido");
+        RequestQueue rq = Volley.newRequestQueue(this);
+        StringRequest jsonRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        respuestaCancelarPedido(response);
+
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(ActReporteMisPedidos.this, "Error de tiempo de espera", Toast.LENGTH_LONG).show();
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(ActReporteMisPedidos.this, "Error Servidor", Toast.LENGTH_LONG).show();
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(ActReporteMisPedidos.this, "Server Error", Toast.LENGTH_LONG).show();
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(ActReporteMisPedidos.this, "Error de red", Toast.LENGTH_LONG).show();
+                        } else if (error instanceof ParseError) {
+                            Toast.makeText(ActReporteMisPedidos.this, "Error al serializar los datos", Toast.LENGTH_LONG).show();
+                        }
+
+                        alertDialog.dismiss();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+
+                params.put("iduser", String.valueOf(mydb.getUserLogin().getId()));
+                params.put("iddis", mydb.getUserLogin().getId_distri());
+                params.put("db", mydb.getUserLogin().getBd());
+                params.put("idpos", String.valueOf(idpos));
+                params.put("idpedido", String.valueOf(idpedido));
+                params.put("motivo", comentario);
+
+                return params;
+            }
+        };
+        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        rq.add(jsonRequest);
+    }
+
+    private void respuestaCancelarPedido(String response) {
+        Gson gson = new Gson();
+        if (!response.equals("[]")) {
+            try {
+
+                Charset.forName("UTF-8").encode(response);
+
+                byte ptext[] = response.getBytes(Charset.forName("ISO-8859-1"));
+
+                String value = new String(ptext, Charset.forName("UTF-8"));
+
+                ResponseMarcarPedido responseMarcarPedido = gson.fromJson(value, ResponseMarcarPedido.class);
+
+                if (responseMarcarPedido.getEstado() == 0) {
+                    //Se guardó bien.!
+                    Toast.makeText(this, responseMarcarPedido.getMsg(), Toast.LENGTH_LONG).show();
+                    this.finish();
+                } else if (responseMarcarPedido.getEstado() == -2) {
+                    //Error al intentar guardar la cancelacion del pedido
+                    Toast.makeText(this, responseMarcarPedido.getMsg(), Toast.LENGTH_LONG).show();
+                }
+
+            } catch (IllegalStateException ex) {
+                ex.printStackTrace();
+                alertDialog.dismiss();
+            } finally {
+                alertDialog.dismiss();
+            }
+        } else {
+            alertDialog.dismiss();
+        }
+    }
+
+    private void cargarDetalle(int position) {
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.dialog_detalle_mis_pedidos, null);
+
+        TextView txt_npedido = (TextView) dialoglayout.findViewById(R.id.txt_npedido);
+        txt_npedido.setText(String.format("%1$s", mDescribable.getResponseMisPedidosList().get(position).getNpedido()));
+
+        TextView txt_cantidad = (TextView) dialoglayout.findViewById(R.id.txt_cantidad);
+        txt_cantidad.setText(String.format("%1$s", mDescribable.getResponseMisPedidosList().get(position).getCantidad()));
+
+        TextView txt_total = (TextView) dialoglayout.findViewById(R.id.txt_total);
+        txt_total.setText(String.format("S/. %1$s", format.format(mDescribable.getResponseMisPedidosList().get(position).getTotal())));
+
+        TextView txt_cant_picking = (TextView) dialoglayout.findViewById(R.id.txt_cant_picking);
+        txt_cant_picking.setText(String.format("%1$s", mDescribable.getResponseMisPedidosList().get(position).getCantidad_picking()));
+
+        TextView txt_total_picking = (TextView) dialoglayout.findViewById(R.id.txt_total_picking);
+        txt_total_picking.setText(String.format("S/. %1$s", format.format(mDescribable.getResponseMisPedidosList().get(position).getTotal_picking())));
+
+        TextView text_vendedor = (TextView) dialoglayout.findViewById(R.id.txt_vendedor);
+        text_vendedor.setText(String.format("%1$s", mDescribable.getResponseMisPedidosList().get(position).getVendedor()));
+
+        TextView txt_fecha = (TextView) dialoglayout.findViewById(R.id.txt_fecha);
+        txt_fecha.setText(String.format("%1$s", mDescribable.getResponseMisPedidosList().get(position).getFecha() + " - "+ mDescribable.getResponseMisPedidosList().get(position).getHora()));
+
+        TextView txt_estado = (TextView) dialoglayout.findViewById(R.id.txt_estado);
+        txt_estado.setText(String.format("%1$s", mDescribable.getResponseMisPedidosList().get(position).getEstado()));
+
+        TextView txt_observa = (TextView) dialoglayout.findViewById(R.id.txt_observa);
+        if(mDescribable.getResponseMisPedidosList().get(position).getObservacion().equals("")) {
+            RelativeLayout obser = (RelativeLayout) dialoglayout.findViewById(R.id.rela_observa);
+            obser.setVisibility(View.GONE);
+        }else{
+            txt_observa.setText(String.format("%1$s", mDescribable.getResponseMisPedidosList().get(position).getObservacion()));
+        }
+
+        TextView txtComprobante = (TextView) dialoglayout.findViewById(R.id.txtComprobante);
+        txtComprobante.setText(mDescribable.getResponseMisPedidosList().get(position).getComprobante());
+        TextView txtTipoenvio = (TextView) dialoglayout.findViewById(R.id.txtTipoenvio);
+        txtTipoenvio.setText(mDescribable.getResponseMisPedidosList().get(position).getTipo_conexion());
+
+        ExpandableListView expandableListView = (ExpandableListView) dialoglayout.findViewById(R.id.expandableListView);
+
+        HashMap<String, List<Detalle>> expandableListDetail = ExpandableListDataPump.getData(mDescribable.getResponseMisPedidosList().get(position).getDetalle_refes());
+        ArrayList<String> expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
+
+        ExpandableListAdapter expandableListAdapter = new ExpandableListAdapter(this, expandableListTitle, expandableListDetail);
+        expandableListView.setAdapter(expandableListAdapter);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setTitle("Detalle Pedido");
+        builder.setView(dialoglayout).setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    private int dp2px(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
+    }
+}

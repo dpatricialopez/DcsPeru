@@ -1,0 +1,70 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtNombrePunto"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:textSize="@dimen/dimen_letra_app_estandar"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtIdPunto"
+            android:textSize="@dimen/dimen_letra_app_estandar"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtFecha"
+            android:textSize="@dimen/dimen_letra_app_estandar"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtEstado"
+            android:textSize="@dimen/dimen_letra_app_estandar"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtDireccion"
+            android:textSize="@dimen/dimen_letra_app_estandar"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="5"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/image_departamento"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tint="@color/colorPrimary"
+            android:src="@drawable/ic_reply_black_24dp"
+            android:contentDescription="@string/title_activity_act_reporte_inventario_rep" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
