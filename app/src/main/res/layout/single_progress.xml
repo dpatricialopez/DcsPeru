@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de Grupo"
+            android:id="@+id/txtname"
+            android:textStyle="bold"
+            android:layout_marginBottom="2dp"
+            android:textSize="@dimen/dimen_letra_app_estandar"
+            android:textColor="@color/colorPrimary"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:layout_weight="1"
+                android:textSize="@dimen/dimen_letra_app_estandar"
+                android:textStyle="bold"
+                android:id="@+id/txtInicio"
+                android:layout_gravity="right"
+                android:gravity="left" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="0"
+                android:textSize="@dimen/dimen_letra_app_estandar"
+                android:textStyle="bold"
+                android:id="@+id/txtcant"
+                android:gravity="center_horizontal" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="0"
+                android:textStyle="bold"
+                android:textSize="@dimen/dimen_letra_app_estandar"
+                android:id="@+id/txtmeta"
+                android:gravity="right" />
+
+
+        </LinearLayout>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:id="@+id/progressBar"
+            android:progressDrawable="@drawable/progress"
+            android:layout_gravity="center_horizontal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="% CUMP."
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:textSize="@dimen/dimen_letra_app_estandar"
+                android:textColor="@color/colorPrimary" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=""
+                android:textSize="@dimen/dimen_letra_app_estandar"
+                android:textStyle="bold"
+                android:id="@+id/txtpercent"
+                android:gravity="center_horizontal" />
+
+
+        </LinearLayout>
+
+
+</LinearLayout>

@@ -35,5 +35,11 @@
         <item name="android:textColor">#fff</item>
     </style>
 
+    <style name="MyTabs">
+        <item name="android:textColor">@drawable/selector_tab</item>
+        <item name="android:textStyle">bold</item>
+
+    </style>
+
 
 </resources>

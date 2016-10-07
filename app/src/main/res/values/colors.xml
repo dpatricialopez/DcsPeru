@@ -22,6 +22,7 @@
     </array>
 
     <color name="colorPrimary">#10628a</color>
+    <color name="colorPrimarytransp">#CE10628a</color>
     <color name="colorPrimaryDark">#1C90C0</color>
     <color name="colorAccent">#1C90C0</color>
 

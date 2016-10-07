@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,9 @@ import com.google.gson.Gson;
 import net.movilbox.dcsperu.Adapter.TabsAdapter;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntIndicadores;
+import net.movilbox.dcsperu.Entry.ListaGrupoCombos;
+import net.movilbox.dcsperu.Entry.ListaGrupoSims;
+import net.movilbox.dcsperu.Entry.ListaGrupos;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
 
@@ -95,6 +99,7 @@ public class FragmentHomeSuper extends BaseVolleyFragment {
                     @Override
                     public void onResponse(final String response) {
                         parseJSONVendedor(response);
+                        Log.d("response_inidcadores", response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -144,6 +149,18 @@ public class FragmentHomeSuper extends BaseVolleyFragment {
         Gson gson = new Gson();
 
         final EntIndicadores entIndicadores = gson.fromJson(response, EntIndicadores.class);
+
+        /*//Nuevo dashboard perù por grupos
+        final ListaGrupos listaGrupos=gson.fromJson(response, ListaGrupos.class);
+        final ListaGrupoCombos listaGrupoCombos=listaGrupos.getGrupoCombos();
+        final ListaGrupoSims listaGrupoSims=listaGrupos.getGrupoSims();
+
+        mydb.deleteObject("grupos_combos");
+        mydb.deleteObject("grupos_sims");
+        mydb.insert_grupo_combos();
+        mydb.insert_grupo_sim(listaGrupoSims);
+*/
+        mydb.insertDetalleIndicadores(entIndicadores);
 
         mydb.deleteObject("indicadoresdas");
         mydb.deleteObject("indicadoresdas_detalle");

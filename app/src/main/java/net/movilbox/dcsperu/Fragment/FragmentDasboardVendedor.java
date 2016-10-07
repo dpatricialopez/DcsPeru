@@ -1,13 +1,17 @@
 package net.movilbox.dcsperu.Fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TabHost;
 import android.widget.TextView;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntIndicadores;
@@ -16,6 +20,8 @@ import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
 
 import java.util.List;
+
+import static net.movilbox.dcsperu.Entry.EntLoginR.getIndicador_refres;
 
 @SuppressLint("ValidFragment")
 public class FragmentDasboardVendedor extends BaseVolleyFragment {
@@ -36,14 +42,19 @@ public class FragmentDasboardVendedor extends BaseVolleyFragment {
     private TextView txtPromediopedidoCumpli;
     private TextView txtPorCumCumpli;
     private TextView txtPorCombos;
+    private TextView txtcant, txtpercent, txtname, txtmeta;
+    private ProgressBar pgr;
+    private TabHost TbH;
     private int mProgressStatus = 0;
     private int visitasTotal = 0;
     private int totalConPedido = 0;
     private int vendedor;
+    LinearLayout linearcombos, linearsims;
     private EntIndicadores entIndicadoresLocal;
     private ConnectionDetector connectionDetector;
     private DBHelper mydb;
     private Handler mHandler = new Handler();
+    View grupocombos, gruposims;
     List<EntRuteroList> entRuteroLists;
 
     public FragmentDasboardVendedor(int vende) {
@@ -76,6 +87,26 @@ public class FragmentDasboardVendedor extends BaseVolleyFragment {
         txtPromediopedidoCumpli = (TextView) rootView.findViewById(R.id.txtPromediopedidoCumpli);
         txtPorCumCumpli = (TextView) rootView.findViewById(R.id.txtPorCumCumpli);
         txtPorCombos = (TextView) rootView.findViewById(R.id.txtPorCombos);
+        linearsims=(LinearLayout) rootView.findViewById(R.id.ProgressSim);
+        linearcombos=(LinearLayout) rootView.findViewById(R.id.ProgressCombo);
+        TbH= (TabHost)rootView.findViewById(R.id.tabhost);
+        TbH.setup();
+
+
+        //Construcciòn de pestañas
+        TabHost.TabSpec tab1 = TbH.newTabSpec("tab1");
+        TabHost.TabSpec tab2 = TbH.newTabSpec("tab2");
+        tab1.setContent(R.id.tab1);
+        tab2.setIndicator("Combos", null);
+        tab1.setIndicator("Simcards",null);
+        tab2.setContent(R.id.tab2);
+        TbH.addTab(tab1);
+        TbH.addTab(tab2);
+        for(int i=0;i<TbH.getTabWidget().getChildCount();i++)
+        {
+            TextView tv = (TextView) TbH.getTabWidget().getChildAt(i).findViewById(android.R.id.title);
+            tv.setTextColor(getResources().getColor(R.color.colorAccent));
+        }
 
         connectionDetector = new ConnectionDetector(getActivity());
 
@@ -91,6 +122,7 @@ public class FragmentDasboardVendedor extends BaseVolleyFragment {
         super.onActivityCreated(savedInstanceState);
 
         indicadorVendedor();
+
 
     }
 
@@ -122,6 +154,9 @@ public class FragmentDasboardVendedor extends BaseVolleyFragment {
 
                     if (entRuteroLists.get(mProgressStatus).getTipo_visita() == 1)
                         totalConPedido++;
+                    mProgressStatus++;
+
+                }
 
                     // Update the progress bar
                     mHandler.post(new Runnable() {
@@ -160,15 +195,57 @@ public class FragmentDasboardVendedor extends BaseVolleyFragment {
                             progressBar2Cumpli.setProgress((int) progress4);
                             txtPorCombos.setText((int) progress4 +"%");
 
+                            loadprogress();
+
+
                         }
                     });
+                    //
 
-                    mProgressStatus++;
 
-                }
             }
         }).start();
 
+    }
+
+    private void loadprogress(){
+        linearsims.removeView(gruposims);
+        linearcombos.removeView(grupocombos);
+
+
+        for (int i=0; i<2; i++){
+
+
+            LayoutInflater inflater =(LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            gruposims = inflater.inflate(R.layout.single_progress, null);
+            txtcant = (TextView ) gruposims.findViewById(R.id.txtcant);
+            txtname = (TextView ) gruposims.findViewById(R.id.txtname);
+            txtmeta = (TextView ) gruposims.findViewById(R.id.txtmeta);
+            txtpercent = (TextView ) gruposims.findViewById(R.id.txtpercent);
+            pgr= (ProgressBar) gruposims.findViewById(R.id.progressBar);
+            linearsims.addView(gruposims);
+            txtcant.setText(("5"));
+            txtname.setText(("combo1"));
+            txtmeta.setText(("10"));
+            txtpercent.setText(("5%"));
+            pgr.setProgress((int) 6);}
+
+        for (int i=0; i<3; i++){
+
+
+            LayoutInflater inflater =(LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            grupocombos = inflater.inflate(R.layout.single_progress, null);
+            txtcant = (TextView ) grupocombos.findViewById(R.id.txtcant);
+            txtname = (TextView ) grupocombos.findViewById(R.id.txtname);
+            txtmeta = (TextView ) grupocombos.findViewById(R.id.txtmeta);
+            txtpercent = (TextView ) grupocombos.findViewById(R.id.txtpercent);
+            pgr= (ProgressBar) grupocombos.findViewById(R.id.progressBar);
+            linearcombos.addView(grupocombos);
+            txtcant.setText(("5"));
+            txtname.setText(("combo1"));
+            txtmeta.setText(("10"));
+            txtpercent.setText(("5%"));
+            pgr.setProgress((int) 7);}
     }
 
     /*private void parseJSONVendedor(String response) {

@@ -18,6 +18,8 @@ import net.movilbox.dcsperu.Entry.EntIndicadores;
 import net.movilbox.dcsperu.Entry.EntLisSincronizar;
 import net.movilbox.dcsperu.Entry.EntLoginR;
 import net.movilbox.dcsperu.Entry.EntRuteroList;
+import net.movilbox.dcsperu.Entry.ListaGrupoCombos;
+import net.movilbox.dcsperu.Entry.ListaGrupoSims;
 import net.movilbox.dcsperu.Entry.Motivos;
 import net.movilbox.dcsperu.Entry.NoVisita;
 import net.movilbox.dcsperu.Entry.Nomenclatura;
@@ -62,6 +64,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
+        String sqlGrupoCombos = "CREATE TABLE grupo_combos (id integer primary key AUTOINCREMENT, nombre_grupo_combos STRING, cant_cumplimiento_grupo_combos INT, cant_ventas_grupo_combos INT )";
+
+        String sqlGrupoSims = "CREATE TABLE grupo_sims (id integer primary key AUTOINCREMENT, nombre_grupo_sims STRING, cant_cumplimiento_grupo_sims INT, cant_ventas_grupo_sims INT)";
+
+        String sqlIndicadores = "CREATE TABLE indicadoresdas (id_auto integer primary key AUTOINCREMENT, cant_ventas_sim INT, cant_ventas_combo INT, cant_cumplimiento_sim INT, cant_cumplimiento_combo INT, cant_quiebre_sim_mes INT, id_vendedor INT, id_distri INT )";
 
         String sqlIntro = "CREATE TABLE intro (id integer primary key AUTOINCREMENT, idintro text )";
 
@@ -127,14 +135,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String sqlEntregaPedido = "CREATE TABLE entrega_pedido (id integer primary key AUTOINCREMENT, latitud REAL, longitud REAL, iduser INT, iddis INT, db TEXT, idpos INT, obs TEXT, idpedido INT, indicador INT, fecha_pedido fecha TEXT, hora_pedido TEXT) ";
 
-        String sqlIndicadores = "CREATE TABLE indicadoresdas (id_auto integer primary key AUTOINCREMENT, cant_ventas_sim INT, cant_ventas_combo INT, cant_cumplimiento_sim INT, cant_cumplimiento_combo INT, cant_quiebre_sim_mes INT, id_vendedor INT, id_distri INT )";
 
         String sqlIndicadores_detalle = "CREATE TABLE indicadoresdas_detalle (id_auto integer primary key AUTOINCREMENT, idpos INT, tipo_visita INT, stock_sim INT, stock_combo INT, stock_seguridad_sim INT," +
                 "  stock_seguridad_combo INT, dias_inve_sim REAL, dias_inve_combo REAL, id_vendedor INT, id_distri INT, fecha_dia TEXT, fecha_ult TEXT, hora_ult TEXT, orden INT)";
 
         String sqlMotivos = "CREATE TABLE motivos (id INT, descripcion TEXT)";
 
-
+        db.execSQL(sqlGrupoCombos);
+        db.execSQL(sqlGrupoSims);
         db.execSQL(sqlDetallepedidoEntregar);
         db.execSQL(sqlDetallepedidoEntregarROW);
         db.execSQL(sqlDetallepedidoEntregarNUMERO);
@@ -206,6 +214,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS lista_precios");
         db.execSQL("DROP TABLE IF EXISTS referencia_combo");
         db.execSQL("DROP TABLE IF EXISTS detalle_combo");
+        db.execSQL("DROP TABLE IF EXISTS grupo_combos");
+        db.execSQL("DROP TABLE IF EXISTS grupo_sim");
 
         this.onCreate(db);
 
@@ -925,7 +935,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String sql = "SELECT refe.id, refe.pn, 0 stock, refe.producto, 0 dias_inve, 0 ped_sugerido, lprecio.valor_referencia, lprecio.valor_directo, 0 quiebre " +
                 " FROM " +
-                "  referencia_simcard refe INNER JOIN lista_precios lprecio ON lprecio.id_referencia = refe.id AND lprecio.idpos = ?";
+                "  referencia_simcard refe INNER JOIN lista_precios lprecio ON lprecio.id_referencia = refe.id AND lprecio.idpos = ? GROUP BY refe.id";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(sql, new String[] {indicardor});
@@ -963,7 +973,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 " refe.so, refe.web, 0 quiebre, lprecio.valor_referencia, lprecio.valor_directo, refe.img " +
                 " FROM " +
                 "   referencia_combo refe INNER JOIN lista_precios lprecio ON lprecio.id_referencia = refe.id AND lprecio.idpos = ? AND " +
-                " lprecio.tipo_pro = 2";
+                " lprecio.tipo_pro = 2 GROUP BY refe.id";
 
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -987,7 +997,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         "     detalle_combo deta INNER JOIN lista_precios lprecio ON lprecio.id_referencia = deta.id " +
                         "   WHERE " +
                         "     deta.id_padre = ? AND " +
-                        "     lprecio.tipo_pro = 2 GROUP BY deta.id ";
+                        "     lprecio.tipo_pro = 2 GROUP BY deta.id";
 
                 Cursor cursor_detalle = db.rawQuery(sqlDestall, new String[] {String.valueOf(cursor.getInt(0))});
                 List<Referencia> referenciaList = new ArrayList<>();
@@ -2003,6 +2013,113 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return true;
+    }
+
+    public boolean insert_grupo_sim(Sincronizar data) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        try {
+
+            for (int i = 0; i < data.getGrupo_sims_sincroniza().size(); i++) {
+
+                values.put("nombre_grupo_sims", data.getGrupo_sims_sincroniza().get(i).getNombre_grupo_sims());
+                values.put("cant_cumplimiento_grupo_sims", data.getGrupo_sims_sincroniza().get(i).getCant_cumplimiento_grupo_sims());
+                values.put("cant_ventas_grupo_sims", data.getGrupo_sims_sincroniza().get(i).getCant_ventas_grupo_sims());
+
+                db.insert("grupo_sims", null, values);
+            }
+
+        } catch (SQLiteConstraintException e) {
+            Log.d("data", "failure to insert word,", e);
+            return false;
+        } finally {
+            db.close();
+        }
+        return true;
+    }
+
+    public List<ListaGrupoSims> getGrupoSims() {
+
+        List<ListaGrupoSims> arrayList = new ArrayList<>();
+
+        String sql = "SELECT * FROM grupo_sims ORDER BY nombre_grupo_sims";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+
+        ListaGrupoSims listaGrupoSims;
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                listaGrupoSims = new ListaGrupoSims();
+
+                listaGrupoSims.setId(cursor.getInt(0));
+                listaGrupoSims.setNombre_grupo_sims(cursor.getString(1));
+                listaGrupoSims.setCant_cumplimiento_grupo_sims(cursor.getInt(2));
+                listaGrupoSims.setCant_ventas_grupo_sims(cursor.getInt(3));
+                arrayList.add(listaGrupoSims);
+
+            } while (cursor.moveToNext());
+        }
+
+        return arrayList;
+
+    }
+
+    public boolean insert_grupo_combos(Sincronizar data) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        try {
+
+            for (int i = 0; i < data.getGrupo_combos_sincroniza().size(); i++) {
+
+                values.put("nombre_grupo_combos", data.getGrupo_combos_sincroniza().get(i).getNombre_grupo_combos());
+                values.put("cant_cumplimiento_grupo_combos", data.getGrupo_combos_sincroniza().get(i).getCant_cumplimiento_grupo_combos());
+                values.put("cant_ventas_grupo_combos", data.getGrupo_combos_sincroniza().get(i).getCant_ventas_grupo_combos());
+
+                db.insert("grupo_combos", null, values);
+            }
+
+        } catch (SQLiteConstraintException e) {
+            Log.d("data", "failure to insert word,", e);
+            return false;
+        } finally {
+            db.close();
+        }
+        return true;
+    }
+
+    public List<ListaGrupoCombos> getGrupoCombos() {
+
+        List<ListaGrupoCombos> arrayList = new ArrayList<>();
+
+        String sql = "SELECT * FROM grupo_combos ORDER BY nombre_grupo_combos";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+
+        ListaGrupoCombos listaGrupoCombos;
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                listaGrupoCombos = new ListaGrupoCombos();
+
+                listaGrupoCombos.setId(cursor.getInt(0));
+                listaGrupoCombos.setNombre_grupo_combos(cursor.getString(1));
+                listaGrupoCombos.setCant_cumplimiento_grupo_combos(cursor.getInt(2));
+                listaGrupoCombos.setCant_ventas_grupo_combos(cursor.getInt(3));
+
+
+                arrayList.add(listaGrupoCombos);
+
+
+            } while (cursor.moveToNext());
+        }
+
+        return arrayList;
+
     }
 
     public EntIndicadores getIndicadores(int id_vendedor, int id_distri) {
