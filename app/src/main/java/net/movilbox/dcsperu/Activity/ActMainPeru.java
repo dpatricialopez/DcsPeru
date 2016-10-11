@@ -65,6 +65,7 @@ import net.movilbox.dcsperu.Fragment.FragmentPlanificar;
 import net.movilbox.dcsperu.Fragment.FragmentReporteAprobacionPdv;
 import net.movilbox.dcsperu.Fragment.FragmentReportePedidosRepartidor;
 import net.movilbox.dcsperu.Fragment.FragmentRuteroVendedor;
+import net.movilbox.dcsperu.Fragment.FragmentSolProducto;
 import net.movilbox.dcsperu.Fragment.FragmenteAproPdv;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
@@ -157,6 +158,9 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                 navigationView.inflateMenu(R.menu.drawer_supervisor);
 
             }
+            //se setea el la notificacion; se debe poner una condicion para mostrar o no
+            TextView view = (TextView) navigationView.getMenu().findItem(R.id.nav_noticias).getActionView();
+            view.setText("1");
         } else {
 
             Intent intent = new Intent(this, ActLoginUser.class);
@@ -395,6 +399,17 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                     Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
                 }
 
+            } else if (id == R.id.nav_sol_producto) {
+
+                if (connectionDetector.isConnected()) {
+                    toolbar.setTitle("Solicitar Producto");
+                    editaPunto = 0;
+                    accion = "Guardar";
+                    fragmentClass = FragmentSolProducto.class;
+                } else {
+                    Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
+                }
+
             } else if (id == R.id.nav_aprobaciones_super) {
                 if (connectionDetector.isConnected()) {
                     toolbar.setTitle("Reporte Aprobación PDVS");
@@ -445,6 +460,16 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                     editaPunto = 0;
                     accion = "Guardar";
                     fragmentClass = FragmentReportePedidosRepartidor.class;
+                } else {
+                    Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
+                }
+            }else if (id == R.id.nav_noticias) {
+
+                if (connectionDetector.isConnected()) {
+                    toolbar.setTitle("Mis Noticias");
+                    editaPunto = 0;
+                    accion = "Guardar";
+                    //fragmentClass = FragmentReportePedidosRepartidor.class;
                 } else {
                     Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
                 }

@@ -99,8 +99,6 @@ public class FragmentCombos extends BaseVolleyFragment {
         } else {
             getComboLocal();
         }
-
-
     }
 
     private void getComboLocal() {
@@ -159,7 +157,7 @@ public class FragmentCombos extends BaseVolleyFragment {
 
         // Implementing ActionBar Search inside a fragment
         MenuItem item = menu.add("Search");
-        item.setIcon(R.drawable.abc_ic_search_api_mtrl_alpha); // sets icon
+        item.setIcon(R.drawable.ic_search_white_24dp); // sets icon
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         SearchView sv = new SearchView(((ActTomarPedido) getActivity()).getSupportActionBar().getThemedContext());

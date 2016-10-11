@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group android:checkableBehavior="single">
 
@@ -35,7 +36,11 @@
                     android:title="Mis Pedidos" />
             </menu>
         </item>
-
+        <item
+            android:id="@+id/nav_noticias"
+            android:icon="@drawable/ic_picture_in_picture_black_24dp"
+            android:title="Noticias"
+            app:actionLayout="@layout/menu_counter_noticia"/>
         <item
             android:id="@+id/nav_cerrar_sesion"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
