@@ -5,20 +5,21 @@ package net.movilbox.dcsperu.Entry;
  */
 
 public class EntNoticia {
-    private int id;
-    private String titulo;
-    private String contenido;
-    private String url_image;
+    private int id, estado;
+    private String name, status, image, profilePic, timeStamp, url;
 
 
-    private int estado;
-
-    public EntNoticia(int id, String titulo, String contenido, String url_image, int estado){
-            this.id=id;
-            this.titulo=titulo;
-            this.contenido=contenido;
-            this.url_image=url_image;
-            this.estado=estado;
+    public EntNoticia(int id, String name, String image, String status,
+                      String profilePic, String timeStamp, String url, int estado){
+        super();
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.status = status;
+        this.profilePic = profilePic;
+        this.timeStamp = timeStamp;
+        this.url = url;
+        this.estado=estado;
 
     }
 
@@ -27,42 +28,72 @@ public class EntNoticia {
     }
 
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public String getTitulo(){
-        return titulo;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getContenido(){
-        return contenido;
+    public String getName() {
+        return name;
     }
 
-    public int getEstado(){
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getImge() {
+        return image;
+    }
+
+    public void setImge(String image) {
+        this.image = image;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;}
+
+    public int getEstado() {
         return estado;
     }
-    public String getUrl_image(){
-        return url_image;
-    }
 
-    public void setId(int id){
-        this.id=id;
-    }
-    public void setTitulo(String titulo){
-        this.titulo=titulo;
-    }
-    public void setContenido(String contenido){
-        this.contenido=contenido;
-    }
+    public void setEstado(int estado) {
+        this.estado = estado;
 
-    public void setEstado(int estado){
-        this.estado=estado;
     }
-    public void setUrl_image(String url_image){
-        this.url_image=url_image;
-    }
-
-
-
 }
+
+
+
+
+

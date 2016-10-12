@@ -60,6 +60,7 @@ import net.movilbox.dcsperu.Fragment.FragmentHomeSuperPrin;
 import net.movilbox.dcsperu.Fragment.FragmentInventarioRepartidor;
 import net.movilbox.dcsperu.Fragment.FragmentMisBajas;
 import net.movilbox.dcsperu.Fragment.FragmentMisPedidos;
+import net.movilbox.dcsperu.Fragment.FragmentNoticia;
 import net.movilbox.dcsperu.Fragment.FragmentPedidosSupervisor;
 import net.movilbox.dcsperu.Fragment.FragmentPlanificar;
 import net.movilbox.dcsperu.Fragment.FragmentReporteAprobacionPdv;
@@ -441,7 +442,14 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                 } else {
                     Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
                 }
+            } else if (id == R.id.nav_noticias) {
 
+                if (connectionDetector.isConnected()) {
+                    toolbar.setTitle("Noticias");
+                    fragmentClass = FragmentNoticia.class;
+                } else {
+                    Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
+                }
             } else if (id == R.id.nav_inventario) {
 
                 if (connectionDetector.isConnected()) {

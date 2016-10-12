@@ -1,4 +1,4 @@
-package net.movilbox.dcsperu.Activity;
+package net.movilbox.dcsperu.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +41,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
+import net.movilbox.dcsperu.Activity.ActMainPeru;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.CategoriasEstandar;
 import net.movilbox.dcsperu.Entry.EntNoticia;
@@ -64,21 +65,21 @@ import dmax.dialog.SpotsDialog;
 import static net.movilbox.dcsperu.Entry.EntLoginR.getIndicador_refres;
 import static net.movilbox.dcsperu.Entry.EntLoginR.setIndicador_refres;
 
-public class ActNoticia extends AppCompatActivity  {
+public class FragmentNoticia extends AppCompatActivity  {
 
 
-    private RequestQueue rq;
-    private List<CategoriasEstandar> ListaTipoDoc = new ArrayList<>();
+
     private ConnectionDetector connectionDetector;
     private DBHelper mydb;
     private ListView noticias;
+    private List<EntNoticia> entNoticia;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_noticia);
+        setContentView(R.layout.noticia);
         connectionDetector = new ConnectionDetector(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -106,17 +107,7 @@ public class ActNoticia extends AppCompatActivity  {
 
         Gson gson = new Gson();
 
-        String exnoticia=gson.toJson(
-                new EntNoticia(
-                        1,
-                        "title3",
-                        "contain3","url",1));
-        Log.e("Objeto",exnoticia);
 
-        parseJSONNoticia(exnoticia);
-        List<EntNoticia> listaNoticias = mydb.getNoticiaList();
-        Log.e("listanoti", String.valueOf(listaNoticias.get(0).getContenido()));
-        noticias=(ListView)findViewById(R.id.lista_noticia);
 
 
      }
@@ -128,7 +119,7 @@ public class ActNoticia extends AppCompatActivity  {
 
 
         final EntNoticia entNoticia = gson.fromJson(response, EntNoticia.class);
-        Log.w("parse",entNoticia.getContenido().toString());
+
 
         mydb.insertListNoticias(entNoticia);
 

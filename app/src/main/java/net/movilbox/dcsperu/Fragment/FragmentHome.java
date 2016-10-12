@@ -149,7 +149,6 @@ public class FragmentHome extends BaseVolleyFragment {
 
         final ListaGrupos listaGrupos=gson.fromJson(response, ListaGrupos.class);
 
-        Log.d("servicelista", String.valueOf(listaGrupos.getGrupoCombos().get(0).getCant_grupo_vendedor())+String.valueOf(listaGrupos.getGrupoCombos().get(1).getCant_grupo_vendedor())+String.valueOf(listaGrupos.getGrupoSims().get(0).getCant_grupo_vendedor()+String.valueOf(listaGrupos.getGrupoSims().get(1).getCant_grupo_vendedor())));
 
         mydb.deleteObject("grupo_combos");
         mydb.deleteObject("grupo_sims");

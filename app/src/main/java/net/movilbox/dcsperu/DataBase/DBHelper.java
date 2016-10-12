@@ -63,13 +63,13 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "MydbDealerPeru.db";
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, 14);
+        super(context, DATABASE_NAME, null, 15);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String sqlNoticias="CREATE TABLE ListaNoticias (id INT, titulo TEXT, contenido TEXT, url_image TEXT, estado int)";
+        String sqlNoticias="CREATE TABLE ListaNoticias (id INT, name TEXT, status TEXT, url TEXT, url_image TEXT, timeStamp TEXT, estado int)";
 
         String sqlGrupoCombos = "CREATE TABLE grupo_combos (id INT, nombre_grupo_combos TEXT, cant_cumplimiento_grupo_combos INT, cant_ventas_grupo_combos INT )";
 
@@ -191,7 +191,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
 
         // TODO Auto-generated method stub
-        db.execSQL("DROP TABLE IF EXISTS noticias");
+        db.execSQL("DROP TABLE IF EXISTS ListaNoticias");
         db.execSQL("DROP TABLE IF EXISTS intro");
         db.execSQL("DROP TABLE IF EXISTS carrito_pedido");
         db.execSQL("DROP TABLE IF EXISTS time_services");
@@ -223,7 +223,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS referencia_combo");
         db.execSQL("DROP TABLE IF EXISTS detalle_combo");
         db.execSQL("DROP TABLE IF EXISTS grupo_combos");
-        db.execSQL("DROP TABLE IF EXISTS grupo_sim");
+        db.execSQL("DROP TABLE IF EXISTS grupo_sims");
 
         this.onCreate(db);
 
@@ -1368,10 +1368,12 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
 
             values.put("id", data.getId());
-            values.put("titulo", data.getTitulo());
-            values.put("contenido", data.getContenido());
-            values.put("url_image", data.getUrl_image());
+            values.put("name", data.getName());
+            values.put("status", data.getStatus());
+            values.put("url", data.getUrl());
+            values.put("url_image", data.getImge());
             values.put("estado", data.getEstado());
+            values.put("timeStamp", data.getTimeStamp());
             db.insert("ListaNoticias", null, values);
 
         } catch (SQLiteConstraintException e) {
@@ -2765,10 +2767,10 @@ public class DBHelper extends SQLiteOpenHelper {
             do {
                 EntNoticia entNoticia = new EntNoticia();
                 entNoticia.setId(cursor.getInt(0));
-                entNoticia.setTitulo(cursor.getString(1));
-                entNoticia.setContenido(cursor.getString(2));
-                entNoticia.setUrl_image(cursor.getString(3));
-                entNoticia.setEstado(cursor.getInt(4));
+                entNoticia.setName(cursor.getString(1));
+                entNoticia.setStatus(cursor.getString(2));
+                entNoticia.setUrl(cursor.getString(3));
+                entNoticia.setTimeStamp(cursor.getString(4));
 
 
                 NoticiaArrayList.add(entNoticia);
