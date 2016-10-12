@@ -29,6 +29,8 @@ import static net.movilbox.dcsperu.Entry.EntLoginR.getIndicador_refres;
 @SuppressLint("ValidFragment")
 public class FragmentDasboardVendedor extends BaseVolleyFragment {
 
+
+
     private ProgressBar mProgress;
     private ProgressBar progressBar2;
     private ProgressBar progressBarCumpli;
