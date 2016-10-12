@@ -36,6 +36,7 @@ public class EntSincronizar {
     @SerializedName("motivos")
     private int motivos;
 
+
     public int getMotivos() {
         return motivos;
     }

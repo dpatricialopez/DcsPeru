@@ -51,28 +51,6 @@ public class Sincronizar {
     @SerializedName("fecha_sincroniza")
     private String fecha_sincroniza;
 
-    @SerializedName("grupo_combos")
-    private List<ListaGrupoCombos> grupo_combos;
-
-    @SerializedName("grupo_sims")
-    private List<ListaGrupoSims> grupo_sims;
-
-    public List<ListaGrupoCombos> getGrupo_combos_sincroniza() {
-        return grupo_combos;
-    }
-
-    public void setGrupo_combos_sincroniza(List<ListaGrupoCombos> grupo_combos) {
-        this.grupo_combos = grupo_combos;
-    }
-
-    public List<ListaGrupoSims> getGrupo_sims_sincroniza() {
-        return grupo_sims;
-    }
-
-    public void setGrupo_sims_sincroniza(List<ListaGrupoSims> grupo_sims) {
-        this.grupo_sims = grupo_sims;
-    }
-
     public String getFecha_sincroniza() {
         return fecha_sincroniza;
     }

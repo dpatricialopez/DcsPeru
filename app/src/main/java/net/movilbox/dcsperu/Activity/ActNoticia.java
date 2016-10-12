@@ -1,12 +1,16 @@
 package net.movilbox.dcsperu.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,8 +19,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -36,7 +43,11 @@ import com.google.gson.Gson;
 
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.CategoriasEstandar;
+import net.movilbox.dcsperu.Entry.EntNoticia;
+import net.movilbox.dcsperu.Entry.EntSincronizar;
 import net.movilbox.dcsperu.Entry.RequestGuardarEditarPunto;
+import net.movilbox.dcsperu.Entry.Tracing;
+import net.movilbox.dcsperu.Fragment.FragmentHome;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
 
@@ -44,21 +55,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.movilbox.dcsperu.Adapter.AdaptadorNoticia;
+
+import org.json.JSONObject;
 
 import dmax.dialog.SpotsDialog;
 
+import static net.movilbox.dcsperu.Entry.EntLoginR.getIndicador_refres;
 import static net.movilbox.dcsperu.Entry.EntLoginR.setIndicador_refres;
 
 public class ActNoticia extends AppCompatActivity  {
 
 
-
-    private SpotsDialog alertDialog;
     private RequestQueue rq;
     private List<CategoriasEstandar> ListaTipoDoc = new ArrayList<>();
     private ConnectionDetector connectionDetector;
     private DBHelper mydb;
-
+    private ListView noticias;
 
 
 
@@ -81,25 +94,48 @@ public class ActNoticia extends AppCompatActivity  {
 
         setSupportActionBar(toolbar);
 
-
-        alertDialog = new SpotsDialog(this, R.style.Custom);
-
-
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setIndicador_refres(1);
-                Intent intent = new Intent(ActNoticia.this, ActMainPeru.class);
-                startActivity(intent);
+                finish();
             }
         });
 
-    }
+        Gson gson = new Gson();
 
+        String exnoticia=gson.toJson(
+                new EntNoticia(
+                        1,
+                        "title3",
+                        "contain3","url",1));
+        Log.e("Objeto",exnoticia);
+
+        parseJSONNoticia(exnoticia);
+        List<EntNoticia> listaNoticias = mydb.getNoticiaList();
+        Log.e("listanoti", String.valueOf(listaNoticias.get(0).getContenido()));
+        noticias=(ListView)findViewById(R.id.lista_noticia);
+
+
+     }
+
+
+    private void parseJSONNoticia(String response) {
+
+        Gson gson = new Gson();
+
+
+        final EntNoticia entNoticia = gson.fromJson(response, EntNoticia.class);
+        Log.w("parse",entNoticia.getContenido().toString());
+
+        mydb.insertListNoticias(entNoticia);
+
+
+
+
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -120,68 +156,6 @@ public class ActNoticia extends AppCompatActivity  {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-
-    private void CargarDatosPunto() {
-        alertDialog.show();
-        String url = String.format("%1$s%2$s", getString(R.string.url_base), "consultar_info_puntos");
-        rq = Volley.newRequestQueue(this);
-        StringRequest jsonRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // response
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // error
-                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                            Toast.makeText(ActNoticia.this, "Error de tiempo de espera", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof AuthFailureError) {
-                            Toast.makeText(ActNoticia.this, "Error Servidor", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof ServerError) {
-                            Toast.makeText(ActNoticia.this, "Server Error", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof NetworkError) {
-                            Toast.makeText(ActNoticia.this, "Error de red", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof ParseError) {
-                            Toast.makeText(ActNoticia.this, "Error al serializar los datos", Toast.LENGTH_LONG).show();
-                        }
-
-                        alertDialog.dismiss();
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-
-                params.put("iduser", String.valueOf(mydb.getUserLogin().getId()));
-                params.put("iddis", mydb.getUserLogin().getId_distri());
-                params.put("db", mydb.getUserLogin().getBd());
-                params.put("perfil", String.valueOf(mydb.getUserLogin().getPerfil()));
-
-                return params;
-            }
-        };
-
-        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(100000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        rq.add(jsonRequest);
-
-    }
-
-
-    private void selectSpinnerValue(List<CategoriasEstandar> ListaEstado, Spinner spinner, int id) {
-        for (int i = 0; i < ListaEstado.size(); i++) {
-            if (ListaEstado.get(i).getId() == id) {
-                spinner.setSelection(i);
-                break;
-            }
-        }
     }
 
 
