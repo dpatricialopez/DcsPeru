@@ -1,9 +1,14 @@
 package net.movilbox.dcsperu.Entry;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.TextView;
+
+import net.movilbox.dcsperu.R;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,33 +30,72 @@ public class ExpandableListAdapterSol extends BaseExpandableListAdapter {
     }
 
     @Override
+    public EntReferenciaSol getChild(int listPosition, int expandedListPosition) {
+        return this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).get(expandedListPosition);
+    }
+
+    @Override
+    public long getChildId(int listPosition, int expandedListPosition) {
+        return expandedListPosition;
+    }
+
+    @Override
+    public View getChildView(int listPosition, final int expandedListPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        final EntReferenciaSol expandedListText = (EntReferenciaSol) getChild(listPosition, expandedListPosition);
+
+        if (convertView == null) {
+            LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.item_sol_producto, null);
+        }
+
+        TextView txt_referencia_sol = (TextView) convertView.findViewById(R.id.txt_referencia_sol);
+        TextView txt_cantidad_sol = (TextView) convertView.findViewById(R.id.txt_cantidad_sol);
+        TextView txtCantSol = (TextView) convertView.findViewById(R.id.txtCantSol);
+
+        txt_referencia_sol.setText(String.format("%s", expandedListText.getProducto()));
+        txt_cantidad_sol.setText(String.format("Disponible: %s", expandedListText.getTotal()));
+
+        txtCantSol.setVisibility(View.GONE);
+        txtCantSol.setText(String.format("%s", 0));
+
+        if (expandedListText.getCantidadSol() > 0) {
+            txtCantSol.setVisibility(View.VISIBLE);
+            txtCantSol.setText(String.format("Cantidad Solicitada: %s", expandedListText.getCantidadSol()));
+        } else {
+            txtCantSol.setVisibility(View.GONE);
+            txtCantSol.setText(String.format("%s", 0));
+        }
+
+
+        return convertView;
+    }
+
+    @Override
+    public int getChildrenCount(int listPosition) {
+        if (this.expandableListDetail.get(this.expandableListTitle.get(listPosition)) == null) {
+            return 0;
+        } else {
+            return this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).size();
+        }
+    }
+
+    @Override
+    public Object getGroup(int listPosition) {
+        return this.expandableListTitle.get(listPosition);
+    }
+
+    @Override
     public int getGroupCount() {
-        return 0;
+        if (this.expandableListTitle == null) {
+            return 0;
+        } else {
+            return this.expandableListTitle.size();
+        }
     }
 
     @Override
-    public int getChildrenCount(int i) {
-        return 0;
-    }
-
-    @Override
-    public Object getGroup(int i) {
-        return null;
-    }
-
-    @Override
-    public Object getChild(int i, int i1) {
-        return null;
-    }
-
-    @Override
-    public long getGroupId(int i) {
-        return 0;
-    }
-
-    @Override
-    public long getChildId(int i, int i1) {
-        return 0;
+    public long getGroupId(int listPosition) {
+        return listPosition;
     }
 
     @Override
@@ -60,17 +104,34 @@ public class ExpandableListAdapterSol extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
-        return null;
+    public View getGroupView(int listPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        String listTitle = (String) getGroup(listPosition);
+        if (convertView == null) {
+            LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.item_inventario_list_detalle, null);
+        }
+
+        TextView listTitleTextView = (TextView) convertView.findViewById(R.id.listTitle);
+        listTitleTextView.setTypeface(null, Typeface.BOLD);
+        String nombretitulo;
+
+        if (listTitle.equals("0"))
+            nombretitulo = "Sin Paquete";
+        else
+            nombretitulo = String.format("Paquete: %s", listTitle);
+
+        listTitleTextView.setText(nombretitulo);
+        return convertView;
     }
 
-    @Override
-    public View getChildView(int i, int i1, boolean b, View view, ViewGroup viewGroup) {
-        return null;
-    }
 
     @Override
-    public boolean isChildSelectable(int i, int i1) {
-        return false;
+    public boolean isChildSelectable(int listPosition, int expandedListPosition) {
+        return true;
+    }
+
+    public void setData(HashMap<String, List<EntReferenciaSol>> expandableListDetail){
+        this.expandableListDetail = expandableListDetail;
+        notifyDataSetChanged();
     }
 }
