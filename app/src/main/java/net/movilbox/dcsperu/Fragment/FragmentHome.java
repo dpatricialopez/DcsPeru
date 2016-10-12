@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,8 +28,10 @@ import com.google.gson.Gson;
 import net.movilbox.dcsperu.Adapter.TabsAdapter;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntIndicadores;
+import net.movilbox.dcsperu.Entry.GrupoCombos;
 import net.movilbox.dcsperu.Entry.ListPuntosSincronizar;
 import net.movilbox.dcsperu.Entry.ListUpdateservice;
+import net.movilbox.dcsperu.Entry.ListaGrupos;
 import net.movilbox.dcsperu.Entry.NoVisita;
 import net.movilbox.dcsperu.Entry.RequestGuardarEditarPunto;
 import net.movilbox.dcsperu.Entry.SincronizarPedidos;
@@ -144,20 +147,25 @@ public class FragmentHome extends BaseVolleyFragment {
 
         Gson gson = new Gson();
 
-        final EntIndicadores entIndicadores = gson.fromJson(response, EntIndicadores.class);
+        final ListaGrupos listaGrupos=gson.fromJson(response, ListaGrupos.class);
 
+        Log.d("servicelista", String.valueOf(listaGrupos.getGrupoCombos().get(0).getCant_grupo_vendedor())+String.valueOf(listaGrupos.getGrupoCombos().get(1).getCant_grupo_vendedor())+String.valueOf(listaGrupos.getGrupoSims().get(0).getCant_grupo_vendedor()+String.valueOf(listaGrupos.getGrupoSims().get(1).getCant_grupo_vendedor())));
+
+        mydb.deleteObject("grupo_combos");
+        mydb.deleteObject("grupo_sims");
         mydb.deleteObject("indicadoresdas");
         mydb.deleteObject("indicadoresdas_detalle");
 
+        boolean succes=mydb.insert_grupo(listaGrupos);
+        mydb.insertDetalleIndicadoreslist(listaGrupos);
+
+    /*    final EntIndicadores entIndicadores = gson.fromJson(response, EntIndicadores.class);
         mydb.insertIndicadores(entIndicadores);
-        mydb.insertDetalleIndicadores(entIndicadores);
+        mydb.insertDetalleIndicadores(entIndicadores);*/
 
         tabsAdapter = new TabsAdapter(getChildFragmentManager());
-
         tabsAdapter.addFragment(new FragmentDasboardVendedor(0), "Dashboard");
-
         tabsAdapter.addFragment(new FragmentRuteroVendedor(0), "Rutero");
-
         viewPager.setAdapter(tabsAdapter);
         tabLayout.setupWithViewPager(viewPager);
 

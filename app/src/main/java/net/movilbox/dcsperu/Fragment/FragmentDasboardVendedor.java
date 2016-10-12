@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntIndicadores;
 import net.movilbox.dcsperu.Entry.EntRuteroList;
+import net.movilbox.dcsperu.Entry.GrupoCombos;
+import net.movilbox.dcsperu.Entry.GrupoSims;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
 
@@ -51,6 +54,10 @@ public class FragmentDasboardVendedor extends BaseVolleyFragment {
     private int vendedor;
     LinearLayout linearcombos, linearsims;
     private EntIndicadores entIndicadoresLocal;
+
+    private List<GrupoSims> grupoSimsLocal;
+    private List<GrupoCombos> grupoCombosLocal;
+
     private ConnectionDetector connectionDetector;
     private DBHelper mydb;
     private Handler mHandler = new Handler();
@@ -129,20 +136,17 @@ public class FragmentDasboardVendedor extends BaseVolleyFragment {
     private void indicadorVendedor() {
 
         if(vendedor == 0) {
-            entIndicadoresLocal = mydb.getIndicadores(mydb.getUserLogin().getId(), Integer.parseInt(mydb.getUserLogin().getId_distri()));
             entRuteroLists = mydb.getRuteroDia(mydb.getUserLogin().getId());
+
         } else {
-            entIndicadoresLocal = mydb.getIndicadores(vendedor, Integer.parseInt(mydb.getUserLogin().getId_distri()));
             entRuteroLists = mydb.getRuteroDia(vendedor);
+
         }
 
+        grupoCombosLocal=mydb.getGrupoCombos();
+        grupoSimsLocal=mydb.getGrupoSims();
         txtFinal.setText(String.format("%1$s", entRuteroLists.size()));
 
-        txtFinalCumpli.setText(String.format("%1$s", entIndicadoresLocal.getCant_cumplimiento_sim()));
-        txtFinalPedidoCumpli.setText(String.format("%1$s", entIndicadoresLocal.getCant_cumplimiento_combo()));
-
-        txtCantidadCumpli.setText(String.format("%1$s",entIndicadoresLocal.getCant_ventas_sim()));
-        txtPromediopedidoCumpli.setText(String.format("%1$s",entIndicadoresLocal.getCant_ventas_combo()));
 
         new Thread(new Runnable() {
             public void run() {
@@ -180,27 +184,48 @@ public class FragmentDasboardVendedor extends BaseVolleyFragment {
                             txtPorCum.setText((int) promedio + "%");
                             txtPorEfec.setText((int) promedio2 + "%");
 
-                            //Cumplimiento
-                            //Progress 1
-                            float progress3 = ((float) entIndicadoresLocal.getCant_ventas_sim() / (float) entIndicadoresLocal.getCant_cumplimiento_sim()) * 100;
-
-                            progressBarCumpli.setProgress(entIndicadoresLocal.getCant_ventas_sim());
-                            progressBarCumpli.setProgress((int) progress3);
-                            txtPorCumCumpli.setText((int) progress3 +"%");
-
-                            //Progress 2
-                            float progress4 = ((float) entIndicadoresLocal.getCant_ventas_combo() / (float) entIndicadoresLocal.getCant_cumplimiento_combo()) * 100;
-
-                            progressBar2Cumpli.setMax(entIndicadoresLocal.getCant_cumplimiento_sim());
-                            progressBar2Cumpli.setProgress((int) progress4);
-                            txtPorCombos.setText((int) progress4 +"%");
-
-                            loadprogress();
+                            linearsims.removeView(gruposims);
+                            linearcombos.removeView(grupocombos);
 
 
-                        }
+                            for (int i=0; i<grupoSimsLocal.size(); i++){
+                                LayoutInflater inflater =(LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                gruposims = inflater.inflate(R.layout.single_progress, null);
+                                txtcant = (TextView ) gruposims.findViewById(R.id.txtcant);
+                                txtname = (TextView ) gruposims.findViewById(R.id.txtname);
+                                txtmeta = (TextView ) gruposims.findViewById(R.id.txtmeta);
+                                txtpercent = (TextView ) gruposims.findViewById(R.id.txtpercent);
+                                pgr= (ProgressBar) gruposims.findViewById(R.id.progressBar);
+                                linearsims.addView(gruposims);
+                                txtcant.setText(String.valueOf(grupoSimsLocal.get(i).getCant_grupo_vendedor()));
+                                txtname.setText(grupoSimsLocal.get(i).getNombre_grupo());
+                                txtmeta.setText(String.valueOf(grupoSimsLocal.get(i).getCant_grupo_distri()));
+                                float progressfloat = ((float) grupoSimsLocal.get(i).getCant_grupo_vendedor() / (float) grupoSimsLocal.get(i).getCant_grupo_distri()) * 100;
+                                txtpercent.setText(progressfloat+"%");
+                                pgr.setProgress((int) progressfloat);}
+
+                            for (int i=0; i<grupoCombosLocal.size(); i++){
+
+
+                                LayoutInflater inflater =(LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                grupocombos = inflater.inflate(R.layout.single_progress, null);
+                                txtcant = (TextView ) grupocombos.findViewById(R.id.txtcant);
+                                txtname = (TextView ) grupocombos.findViewById(R.id.txtname);
+                                txtmeta = (TextView ) grupocombos.findViewById(R.id.txtmeta);
+                                txtpercent = (TextView ) grupocombos.findViewById(R.id.txtpercent);
+                                pgr= (ProgressBar) grupocombos.findViewById(R.id.progressBar);
+                                linearcombos.addView(grupocombos);
+                                txtcant.setText(String.valueOf(grupoCombosLocal.get(i).getCant_grupo_vendedor()));
+                                txtname.setText(grupoCombosLocal.get(i).getNombre_grupo());
+                                txtmeta.setText(String.valueOf(grupoCombosLocal.get(i).getCant_grupo_distri()));
+                                float progressfloat2 = ((float) grupoCombosLocal.get(i).getCant_grupo_vendedor() / (float) grupoCombosLocal.get(i).getCant_grupo_distri()) * 100;
+                                txtpercent.setText(progressfloat2+"%");
+                                pgr.setProgress((int) progressfloat2);}
+                            }
+
+
                     });
-                    //
+
 
 
             }
@@ -208,45 +233,7 @@ public class FragmentDasboardVendedor extends BaseVolleyFragment {
 
     }
 
-    private void loadprogress(){
-        linearsims.removeView(gruposims);
-        linearcombos.removeView(grupocombos);
 
-
-        for (int i=0; i<2; i++){
-
-
-            LayoutInflater inflater =(LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            gruposims = inflater.inflate(R.layout.single_progress, null);
-            txtcant = (TextView ) gruposims.findViewById(R.id.txtcant);
-            txtname = (TextView ) gruposims.findViewById(R.id.txtname);
-            txtmeta = (TextView ) gruposims.findViewById(R.id.txtmeta);
-            txtpercent = (TextView ) gruposims.findViewById(R.id.txtpercent);
-            pgr= (ProgressBar) gruposims.findViewById(R.id.progressBar);
-            linearsims.addView(gruposims);
-            txtcant.setText(("5"));
-            txtname.setText(("combo1"));
-            txtmeta.setText(("10"));
-            txtpercent.setText(("5%"));
-            pgr.setProgress((int) 6);}
-
-        for (int i=0; i<3; i++){
-
-
-            LayoutInflater inflater =(LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            grupocombos = inflater.inflate(R.layout.single_progress, null);
-            txtcant = (TextView ) grupocombos.findViewById(R.id.txtcant);
-            txtname = (TextView ) grupocombos.findViewById(R.id.txtname);
-            txtmeta = (TextView ) grupocombos.findViewById(R.id.txtmeta);
-            txtpercent = (TextView ) grupocombos.findViewById(R.id.txtpercent);
-            pgr= (ProgressBar) grupocombos.findViewById(R.id.progressBar);
-            linearcombos.addView(grupocombos);
-            txtcant.setText(("5"));
-            txtname.setText(("combo1"));
-            txtmeta.setText(("10"));
-            txtpercent.setText(("5%"));
-            pgr.setProgress((int) 7);}
-    }
 
     /*private void parseJSONVendedor(String response) {
 

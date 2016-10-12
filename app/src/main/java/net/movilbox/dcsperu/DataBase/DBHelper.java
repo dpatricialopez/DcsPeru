@@ -17,9 +17,13 @@ import net.movilbox.dcsperu.Entry.EntEstandar;
 import net.movilbox.dcsperu.Entry.EntIndicadores;
 import net.movilbox.dcsperu.Entry.EntLisSincronizar;
 import net.movilbox.dcsperu.Entry.EntLoginR;
+import net.movilbox.dcsperu.Entry.EntNoticia;
 import net.movilbox.dcsperu.Entry.EntRuteroList;
-import net.movilbox.dcsperu.Entry.ListaGrupoCombos;
-import net.movilbox.dcsperu.Entry.ListaGrupoSims;
+import net.movilbox.dcsperu.Entry.GrupoCombos;
+import net.movilbox.dcsperu.Entry.GrupoSims;
+import net.movilbox.dcsperu.Entry.GrupoCombos;
+import net.movilbox.dcsperu.Entry.GrupoSims;
+import net.movilbox.dcsperu.Entry.ListaGrupos;
 import net.movilbox.dcsperu.Entry.Motivos;
 import net.movilbox.dcsperu.Entry.NoVisita;
 import net.movilbox.dcsperu.Entry.Nomenclatura;
@@ -65,9 +69,11 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String sqlGrupoCombos = "CREATE TABLE grupo_combos (id integer primary key AUTOINCREMENT, nombre_grupo_combos STRING, cant_cumplimiento_grupo_combos INT, cant_ventas_grupo_combos INT )";
+        String sqlNoticias="CREATE TABLE ListaNoticias (id INT, titulo TEXT, contenido TEXT, url_image TEXT, estado int)";
 
-        String sqlGrupoSims = "CREATE TABLE grupo_sims (id integer primary key AUTOINCREMENT, nombre_grupo_sims STRING, cant_cumplimiento_grupo_sims INT, cant_ventas_grupo_sims INT)";
+        String sqlGrupoCombos = "CREATE TABLE grupo_combos (id INT, nombre_grupo_combos TEXT, cant_cumplimiento_grupo_combos INT, cant_ventas_grupo_combos INT )";
+
+        String sqlGrupoSims = "CREATE TABLE grupo_sims (id INT, nombre_grupo_sims TEXT, cant_cumplimiento_grupo_sims INT, cant_ventas_grupo_sims INT)";
 
         String sqlIndicadores = "CREATE TABLE indicadoresdas (id_auto integer primary key AUTOINCREMENT, cant_ventas_sim INT, cant_ventas_combo INT, cant_cumplimiento_sim INT, cant_cumplimiento_combo INT, cant_quiebre_sim_mes INT, id_vendedor INT, id_distri INT )";
 
@@ -141,6 +147,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String sqlMotivos = "CREATE TABLE motivos (id INT, descripcion TEXT)";
 
+        db.execSQL(sqlNoticias);
         db.execSQL(sqlGrupoCombos);
         db.execSQL(sqlGrupoSims);
         db.execSQL(sqlDetallepedidoEntregar);
@@ -184,6 +191,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
 
         // TODO Auto-generated method stub
+        db.execSQL("DROP TABLE IF EXISTS noticias");
         db.execSQL("DROP TABLE IF EXISTS intro");
         db.execSQL("DROP TABLE IF EXISTS carrito_pedido");
         db.execSQL("DROP TABLE IF EXISTS time_services");
@@ -1352,6 +1360,29 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean insertListNoticias(EntNoticia data) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        try {
+
+            values.put("id", data.getId());
+            values.put("titulo", data.getTitulo());
+            values.put("contenido", data.getContenido());
+            values.put("url_image", data.getUrl_image());
+            values.put("estado", data.getEstado());
+            db.insert("ListaNoticias", null, values);
+
+        } catch (SQLiteConstraintException e) {
+            Log.d("data", "failure to insert word,", e);
+            return false;
+        } finally {
+            db.close();
+        }
+        return true;
+    }
+
     public boolean insertListMotivos(EntLisSincronizar data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -1979,6 +2010,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+
     public boolean insertDetalleIndicadores(EntIndicadores data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -2015,19 +2047,30 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean insert_grupo_sim(Sincronizar data) {
+    public boolean insertDetalleIndicadoreslist(ListaGrupos data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+
         try {
 
-            for (int i = 0; i < data.getGrupo_sims_sincroniza().size(); i++) {
+            for (int i = 0; i < data.getEntPuntoIndicadoList().size(); i++) {
+                values.put("idpos", data.getEntPuntoIndicadoList().get(i).getIdpos());
+                values.put("tipo_visita", data.getEntPuntoIndicadoList().get(i).getTipo_visita());
+                values.put("stock_sim", data.getEntPuntoIndicadoList().get(i).getStock_sim());
+                values.put("stock_combo", data.getEntPuntoIndicadoList().get(i).getStock_combo());
+                values.put("stock_seguridad_sim", data.getEntPuntoIndicadoList().get(i).getStock_seguridad_sim());
+                values.put("stock_seguridad_combo", data.getEntPuntoIndicadoList().get(i).getStock_seguridad_combo());
+                values.put("dias_inve_sim", data.getEntPuntoIndicadoList().get(i).getDias_inve_sim());
+                values.put("dias_inve_combo", data.getEntPuntoIndicadoList().get(i).getDias_inve_combo());
+                values.put("id_vendedor", data.getEntPuntoIndicadoList().get(i).getId_vendedor());
+                values.put("id_distri", data.getEntPuntoIndicadoList().get(i).getId_distri());
+                values.put("fecha_dia", data.getEntPuntoIndicadoList().get(i).getFecha_dia());
+                values.put("fecha_ult", data.getEntPuntoIndicadoList().get(i).getFecha_ult());
+                values.put("hora_ult", data.getEntPuntoIndicadoList().get(i).getHora_ult());
+                values.put("orden", data.getEntPuntoIndicadoList().get(i).getOrden());
 
-                values.put("nombre_grupo_sims", data.getGrupo_sims_sincroniza().get(i).getNombre_grupo_sims());
-                values.put("cant_cumplimiento_grupo_sims", data.getGrupo_sims_sincroniza().get(i).getCant_cumplimiento_grupo_sims());
-                values.put("cant_ventas_grupo_sims", data.getGrupo_sims_sincroniza().get(i).getCant_ventas_grupo_sims());
-
-                db.insert("grupo_sims", null, values);
+                db.insert("indicadoresdas_detalle", null, values);
             }
 
         } catch (SQLiteConstraintException e) {
@@ -2036,50 +2079,59 @@ public class DBHelper extends SQLiteOpenHelper {
         } finally {
             db.close();
         }
+
         return true;
     }
 
-    public List<ListaGrupoSims> getGrupoSims() {
+    public List<GrupoSims> getGrupoSims() {
 
-        List<ListaGrupoSims> arrayList = new ArrayList<>();
-
-        String sql = "SELECT * FROM grupo_sims ORDER BY nombre_grupo_sims";
+        GrupoSims grupoSims= new GrupoSims();
+        String sql = "SELECT *  FROM grupo_sims ORDER BY nombre_grupo_sims";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(sql, null);
 
-        ListaGrupoSims listaGrupoSims;
+        List<GrupoSims> listaGrupoSims =  new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
 
-                listaGrupoSims = new ListaGrupoSims();
+                grupoSims = new  GrupoSims();
 
-                listaGrupoSims.setId(cursor.getInt(0));
-                listaGrupoSims.setNombre_grupo_sims(cursor.getString(1));
-                listaGrupoSims.setCant_cumplimiento_grupo_sims(cursor.getInt(2));
-                listaGrupoSims.setCant_ventas_grupo_sims(cursor.getInt(3));
-                arrayList.add(listaGrupoSims);
+                grupoSims.setId(cursor.getInt(0));
+                grupoSims.setNombre_grupo(cursor.getString(1));
+                grupoSims.setCant_grupo_distri(cursor.getInt(2));
+                grupoSims.setCant_grupo_vendedor(cursor.getInt(3));
+                listaGrupoSims.add(grupoSims);
 
             } while (cursor.moveToNext());
         }
 
-        return arrayList;
+        return listaGrupoSims;
 
     }
 
-    public boolean insert_grupo_combos(Sincronizar data) {
+    public boolean insert_grupo(ListaGrupos data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        ContentValues values1 = new ContentValues();
+        ContentValues values2 = new ContentValues();
         try {
 
-            for (int i = 0; i < data.getGrupo_combos_sincroniza().size(); i++) {
+            for (int i = 0; i < data.getGrupoCombos().size(); i++) {
+                values2.put("id",data.getGrupoCombos().get(i).getId());
+                values2.put("nombre_grupo_combos", data.getGrupoCombos().get(i).getNombre_grupo());
+                values2.put("cant_cumplimiento_grupo_combos", data.getGrupoCombos().get(i).getCant_grupo_distri());
+                values2.put("cant_ventas_grupo_combos", data.getGrupoCombos().get(i).getCant_grupo_vendedor());
 
-                values.put("nombre_grupo_combos", data.getGrupo_combos_sincroniza().get(i).getNombre_grupo_combos());
-                values.put("cant_cumplimiento_grupo_combos", data.getGrupo_combos_sincroniza().get(i).getCant_cumplimiento_grupo_combos());
-                values.put("cant_ventas_grupo_combos", data.getGrupo_combos_sincroniza().get(i).getCant_ventas_grupo_combos());
+                db.insert("grupo_combos", null, values2);
+            }
+            for (int i = 0; i < data.getGrupoSims().size(); i++) {
+                values1.put("id",data.getGrupoSims().get(i).getId());
+                values1.put("nombre_grupo_sims", data.getGrupoSims().get(i).getNombre_grupo());
+                values1.put("cant_cumplimiento_grupo_sims", data.getGrupoSims().get(i).getCant_grupo_distri());
+                values1.put("cant_ventas_grupo_sims", data.getGrupoSims().get(i).getCant_grupo_vendedor());
 
-                db.insert("grupo_combos", null, values);
+                db.insert("grupo_sims", null, values1);
             }
 
         } catch (SQLiteConstraintException e) {
@@ -2091,34 +2143,33 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public List<ListaGrupoCombos> getGrupoCombos() {
+    public List<GrupoCombos> getGrupoCombos() {
 
-        List<ListaGrupoCombos> arrayList = new ArrayList<>();
+        List<GrupoCombos> listaGrupoCombos = new ArrayList<>();
 
         String sql = "SELECT * FROM grupo_combos ORDER BY nombre_grupo_combos";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(sql, null);
 
-        ListaGrupoCombos listaGrupoCombos;
 
         if (cursor.moveToFirst()) {
             do {
 
-                listaGrupoCombos = new ListaGrupoCombos();
+                GrupoCombos grupoCombos = new GrupoCombos();
 
-                listaGrupoCombos.setId(cursor.getInt(0));
-                listaGrupoCombos.setNombre_grupo_combos(cursor.getString(1));
-                listaGrupoCombos.setCant_cumplimiento_grupo_combos(cursor.getInt(2));
-                listaGrupoCombos.setCant_ventas_grupo_combos(cursor.getInt(3));
+                grupoCombos.setId(cursor.getInt(0));
+                grupoCombos.setNombre_grupo(cursor.getString(1));
+                grupoCombos.setCant_grupo_distri(cursor.getInt(2));
+                grupoCombos.setCant_grupo_vendedor(cursor.getInt(3));
 
 
-                arrayList.add(listaGrupoCombos);
+                listaGrupoCombos.add(grupoCombos);
 
 
             } while (cursor.moveToNext());
         }
 
-        return arrayList;
+        return listaGrupoCombos;
 
     }
 
@@ -2143,8 +2194,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return indicadores_val;
     }
-
-    // Nueva edición -------------------------------------------------------
 
 
     public boolean insertCategoria(Sincronizar data) {
@@ -2700,6 +2749,35 @@ public class DBHelper extends SQLiteOpenHelper {
             db.close();
         }
         return true;
+    }
+
+    public List<EntNoticia> getNoticiaList() {
+
+        List<EntNoticia> NoticiaArrayList = new ArrayList<>();
+
+        String sql = "SELECT id, titulo, contenido, url_image, estado FROM ListaNoticias ";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                EntNoticia entNoticia = new EntNoticia();
+                entNoticia.setId(cursor.getInt(0));
+                entNoticia.setTitulo(cursor.getString(1));
+                entNoticia.setContenido(cursor.getString(2));
+                entNoticia.setUrl_image(cursor.getString(3));
+                entNoticia.setEstado(cursor.getInt(4));
+
+
+                NoticiaArrayList.add(entNoticia);
+
+            } while (cursor.moveToNext());
+        }
+
+        return NoticiaArrayList;
+
     }
 
     public List<Tracing> getTracingService () {

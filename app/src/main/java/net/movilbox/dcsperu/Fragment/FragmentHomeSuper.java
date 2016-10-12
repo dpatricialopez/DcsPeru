@@ -25,8 +25,7 @@ import com.google.gson.Gson;
 import net.movilbox.dcsperu.Adapter.TabsAdapter;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntIndicadores;
-import net.movilbox.dcsperu.Entry.ListaGrupoCombos;
-import net.movilbox.dcsperu.Entry.ListaGrupoSims;
+
 import net.movilbox.dcsperu.Entry.ListaGrupos;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
