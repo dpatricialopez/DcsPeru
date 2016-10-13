@@ -13,8 +13,9 @@
         android:layout_marginTop="@dimen/feed_item_margin"
         android:background="@drawable/bg_parent_rounded_corner"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/feed_item_padding_top_bottom"
-        android:paddingTop="@dimen/feed_item_padding_top_bottom" >
+        android:paddingBottom="@dimen/feed_item_padding_bottom"
+        android:layout_marginBottom="@dimen/feed_item_margin"
+        android:paddingTop="@dimen/feed_item_padding_top" >
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -30,7 +31,6 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:scaleType="fitXY"
-                android:visibility="visible"
                 android:layout_weight="1" />
 
             <LinearLayout
@@ -44,10 +44,12 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/feed_item_profile_name"
+                    android:text="hola"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/timestamp"
+                    android:text="hola"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/timestamp"
@@ -60,6 +62,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
+            android:text="hola"
             android:paddingLeft="@dimen/feed_item_status_pad_left_right"
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
             android:paddingTop="@dimen/feed_item_status_pad_top" />
@@ -71,6 +74,7 @@
             android:linksClickable="true"
             android:paddingBottom="10dp"
             android:paddingLeft="@dimen/feed_item_status_pad_left_right"
+            android:text="hola"
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
             android:textColorLink="@color/link" />
 
@@ -87,6 +91,7 @@
             android:layout_height="wrap_content"
             style="@style/BrandButtonStyle2"
             android:text="Ver"
+
             android:gravity="center_vertical|center_horizontal"
             android:id="@+id/button"
             android:layout_gravity="right"
