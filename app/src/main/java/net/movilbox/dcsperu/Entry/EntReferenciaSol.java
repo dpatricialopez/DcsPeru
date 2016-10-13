@@ -19,6 +19,9 @@ public class EntReferenciaSol {
     @SerializedName("total")
     private int total;
 
+    @SerializedName("totalCupo")
+    private int totalCupo;
+
     @SerializedName("tipo_bodega")
     private int tipo_bodega_re;
 
@@ -103,5 +106,13 @@ public class EntReferenciaSol {
 
     public void setPrecio_publico(double precio_publico) {
         this.precio_publico = precio_publico;
+    }
+
+    public int getTotalCupo() {
+        return totalCupo;
+    }
+
+    public void setTotalCupo(int totalCupo) {
+        this.totalCupo = totalCupo;
     }
 }

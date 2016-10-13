@@ -51,9 +51,11 @@ public class ExpandableListAdapterSol extends BaseExpandableListAdapter {
         TextView txt_referencia_sol = (TextView) convertView.findViewById(R.id.txt_referencia_sol);
         TextView txt_cantidad_sol = (TextView) convertView.findViewById(R.id.txt_cantidad_sol);
         TextView txtCantSol = (TextView) convertView.findViewById(R.id.txtCantSol);
+        TextView txtPrecio = (TextView) convertView.findViewById(R.id.txtPrecio);
 
         txt_referencia_sol.setText(String.format("%s", expandedListText.getProducto()));
         txt_cantidad_sol.setText(String.format("Disponible: %s", expandedListText.getTotal()));
+        txtPrecio.setText(String.format("S/.  %s", expandedListText.getPrecio_pdv()));
 
         txtCantSol.setVisibility(View.GONE);
         txtCantSol.setText(String.format("%s", 0));

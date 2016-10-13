@@ -17,14 +17,28 @@
             android:text="Referencia: "
             android:textStyle="bold"
             android:id="@+id/txt_referencia_sol" />
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Disponible: "
-            android:layout_marginTop="4dp"
-            android:textStyle="bold"
-            android:id="@+id/txt_cantidad_sol" />
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Disponible: "
+                android:layout_marginTop="4dp"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:id="@+id/txt_cantidad_sol" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="S/."
+                android:layout_marginTop="4dp"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:id="@+id/txtPrecio" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"

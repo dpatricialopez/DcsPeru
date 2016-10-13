@@ -26,22 +26,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="5dp"
+        android:padding="10dp"
         android:background="@color/colorPrimary"
         android:layout_gravity="bottom|end"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/linearLayout">
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Disponible"
+            android:layout_marginRight="5dp"
+            android:textColor="@color/actionBarColorText" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cupo Disponible:"
             android:textStyle="bold"
             android:textColor="@color/actionBarColorText"
-            android:layout_weight="1"
-            android:id="@+id/txtValorPagar" />
+            android:text="S/. 0,0"
+            android:id="@+id/txtCupo" />
 
     </LinearLayout>
 

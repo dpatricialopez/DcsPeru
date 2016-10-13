@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -37,6 +39,7 @@ import net.movilbox.dcsperu.Activity.DialogEmail;
 import net.movilbox.dcsperu.Activity.DialogSolProducto;
 import net.movilbox.dcsperu.Adapter.ExpandableListDataPumpSol;
 import net.movilbox.dcsperu.DataBase.DBHelper;
+import net.movilbox.dcsperu.Entry.EntCupo;
 import net.movilbox.dcsperu.Entry.EntReferenciaSol;
 import net.movilbox.dcsperu.Entry.EntRespuestaServices;
 import net.movilbox.dcsperu.Entry.ExpandableListAdapterSol;
@@ -44,6 +47,7 @@ import net.movilbox.dcsperu.Entry.LisSolicitarProduct;
 import net.movilbox.dcsperu.Entry.ListEntReferenciaSol;
 import net.movilbox.dcsperu.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +67,9 @@ public class FragmentSolProducto extends BaseVolleyFragment {
     private ListEntReferenciaSol listEntReferenciaSol;
     private HashMap<String, List<EntReferenciaSol>> expandableListDetail;
     private EditText editSol;
+    public TextView txtCupo;
     public ProgressDialog progressDialog;
+    private DecimalFormat format;
 
     public FragmentSolProducto() {
         // Required empty public constructor
@@ -75,8 +81,9 @@ public class FragmentSolProducto extends BaseVolleyFragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_sol_producto, container, false);
-
+        format = new DecimalFormat("#.00");
         expandable_sol = (ExpandableListView) view.findViewById(R.id.expandable_sol);
+        txtCupo = (TextView) view.findViewById(R.id.txtCupo);
         alertDialog = new SpotsDialog(getActivity(), R.style.Custom);
         //controllerLogin = new ControllerLogin(getActivity());
         // Inflate the layout for this fragment
@@ -172,14 +179,13 @@ public class FragmentSolProducto extends BaseVolleyFragment {
 
     private void JSONSolicitud(String response) {
 
-        progressDialog.dismiss();
+
 
         Gson gson = new Gson();
         EntRespuestaServices entRespuestaServices = gson.fromJson(response, EntRespuestaServices.class);
 
         if (entRespuestaServices.getEstado() == 0) {
-            Toast.makeText(getActivity(), entRespuestaServices.getMsg(), Toast.LENGTH_LONG);
-
+            Toast.makeText(getActivity(), entRespuestaServices.getMsg(), Toast.LENGTH_LONG).show();
             startActivity(new Intent(getActivity(), ActMainPeru.class));
             getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             getActivity().finish();
@@ -187,6 +193,7 @@ public class FragmentSolProducto extends BaseVolleyFragment {
         } else if (entRespuestaServices.getEstado() == -1) {
             Toast.makeText(getActivity(), entRespuestaServices.getMsg(), Toast.LENGTH_LONG).show();
         }
+        // progressDialog.dismiss();
 
     }
     @Override
@@ -194,7 +201,7 @@ public class FragmentSolProducto extends BaseVolleyFragment {
         super.onActivityCreated(savedInstanceState);
 
         mydb = new DBHelper(getActivity());
-        
+
         setHasOptionsMenu(true);
         consultarReporte();
     }
@@ -251,7 +258,7 @@ public class FragmentSolProducto extends BaseVolleyFragment {
         alertDialog.dismiss();
 
         Gson gson = new Gson();
-
+        final List<EntCupo> listaCupo = new ArrayList<>();
         listEntReferenciaSol = gson.fromJson(response, ListEntReferenciaSol.class);
 
         if (listEntReferenciaSol.getAccion() == 0) {
@@ -277,9 +284,8 @@ public class FragmentSolProducto extends BaseVolleyFragment {
             builder.show();
 
         } else if (listEntReferenciaSol.getAccion() == 1) {
-           // prepareListData(listEntReferenciaSol);
-            //ExpandableListAdapterSol expandableListAdapter = new ExpandableListAdapterSol(getActivity(), listDataHeader, listDataChild);
-            //expandable_sol.setAdapter(expandableListAdapter);
+
+            txtCupo.setText(String.format("S/. %s", format.format(listEntReferenciaSol.getCupo_disponible())));
             //Puede realizar o solicitar inventario.
             expandableListDetail = ExpandableListDataPumpSol.getData(listEntReferenciaSol);
             final ArrayList<String> expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
@@ -311,11 +317,105 @@ public class FragmentSolProducto extends BaseVolleyFragment {
                                 //...
                                 dialog.dismiss();
 
-                                listEntReferenciaSol.getEntSolPedidos().get(groupPosition).getEntReferenciaSols().get(childPosition).setCantidadSol(Integer.parseInt(editSol.getText().toString().trim()));
+                                EntCupo pojoCupo = new EntCupo();
 
-                                expandableListDetail = ExpandableListDataPumpSol.getData(listEntReferenciaSol);
+                                int idBode = listEntReferenciaSol.getEntSolPedidos().get(groupPosition).getEntReferenciaSols().get(childPosition).getId_bodega();
+                                int idReferencia = listEntReferenciaSol.getEntSolPedidos().get(groupPosition).getEntReferenciaSols().get(childPosition).getId_referencia();
+                                int tipoBode = listEntReferenciaSol.getEntSolPedidos().get(groupPosition).getEntReferenciaSols().get(childPosition).getTipo_bodega();
+                                boolean bandera = true;
+                                double totalView = 0;
+                                double precio = listEntReferenciaSol.getEntSolPedidos().get(groupPosition).getEntReferenciaSols().get(childPosition).getPrecio_pdv();
+                                int cantidad = Integer.parseInt(editSol.getText().toString().trim());
+                                double total = cantidad * precio;
 
-                                expandableListAdapter.setData(expandableListDetail);
+
+
+                                if(listaCupo.size() == 0)
+                                {
+
+                                    if(total <= listEntReferenciaSol.getCupo_disponible())
+                                    {
+                                        pojoCupo.setIdBode(idBode);
+                                        pojoCupo.setIdReferencia(idReferencia);
+                                        pojoCupo.setTipo_bodega(tipoBode);
+                                        pojoCupo.setTotalRef(total);
+                                        listaCupo.add(pojoCupo);
+                                        //listEntReferenciaSol.setCupo_disponible(listEntReferenciaSol.getCupo_disponible() - total);
+
+                                        txtCupo.setText(String.format("S/. %s", format.format(listEntReferenciaSol.getCupo_disponible() - total)));
+
+                                        listEntReferenciaSol.getEntSolPedidos().get(groupPosition).getEntReferenciaSols().get(childPosition).setCantidadSol(cantidad);
+
+                                        expandableListDetail = ExpandableListDataPumpSol.getData(listEntReferenciaSol);
+
+                                        expandableListAdapter.setData(expandableListDetail);
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(getActivity(),"La cantidas solicitada supera el valor del cupo disonible",Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                                else
+                                {
+                                    for (int j = 0;j < listaCupo.size(); j++ )
+                                    {
+                                        totalView += listaCupo.get(j).getTotalRef();
+                                    }
+
+                                    for (int i = 0;i < listaCupo.size(); i++ )
+                                    {
+                                        if (idBode == listaCupo.get(i).getIdBode() && idReferencia == listaCupo.get(i).getIdReferencia() && tipoBode == listaCupo.get(i).getTipo_bodega())
+                                        {
+                                            totalView = (totalView - listaCupo.get(i).getTotalRef()) + total;
+
+                                            if(totalView <= listEntReferenciaSol.getCupo_disponible())
+                                            {
+                                                listaCupo.get(i).setTotalRef(total);
+
+                                                txtCupo.setText(String.format("S/. %s", format.format(listEntReferenciaSol.getCupo_disponible() - totalView)));
+
+                                                listEntReferenciaSol.getEntSolPedidos().get(groupPosition).getEntReferenciaSols().get(childPosition).setCantidadSol(cantidad);
+
+                                                expandableListDetail = ExpandableListDataPumpSol.getData(listEntReferenciaSol);
+
+                                                expandableListAdapter.setData(expandableListDetail);
+
+                                                bandera = false;
+                                            }
+                                            else
+                                            {
+                                                Toast.makeText(getActivity(),"La cantidad solicitada supera el valor del cupo disonible",Toast.LENGTH_LONG).show();
+                                            }
+                                            break;
+                                        }
+                                    }
+
+                                    if (bandera)
+                                    {    totalView = totalView + total;
+                                        if(totalView <= listEntReferenciaSol.getCupo_disponible())
+                                        {
+                                            pojoCupo.setIdBode(idBode);
+                                            pojoCupo.setIdReferencia(idReferencia);
+                                            pojoCupo.setTipo_bodega(tipoBode);
+                                            pojoCupo.setTotalRef(total);
+                                            listaCupo.add(pojoCupo);
+
+                                            txtCupo.setText(String.format("S/. %s", format.format(listEntReferenciaSol.getCupo_disponible() - totalView)));
+
+                                            listEntReferenciaSol.getEntSolPedidos().get(groupPosition).getEntReferenciaSols().get(childPosition).setCantidadSol(cantidad);
+
+                                            expandableListDetail = ExpandableListDataPumpSol.getData(listEntReferenciaSol);
+
+                                            expandableListAdapter.setData(expandableListDetail);
+
+                                        }
+                                        else
+                                        {
+                                            Toast.makeText(getActivity(),"La cantidad solicitada supera el valor del cupo disonible",Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                }
+
 
                             }
 

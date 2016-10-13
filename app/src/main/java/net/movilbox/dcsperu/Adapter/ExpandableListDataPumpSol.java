@@ -34,6 +34,7 @@ public class ExpandableListDataPumpSol {
                     entEstandar.setTipo_bodega(data.getEntSolPedidos().get(i).getEntReferenciaSols().get(a).getTipo_bodega());
                     entEstandar.setTipo_ref(data.getEntSolPedidos().get(i).getEntReferenciaSols().get(a).getTipo_ref());
                     entEstandar.setCantidadSol(data.getEntSolPedidos().get(i).getEntReferenciaSols().get(a).getCantidadSol());
+                    entEstandar.setPrecio_pdv(data.getEntSolPedidos().get(i).getEntReferenciaSols().get(a).getPrecio_pdv());
 
                     technology.add(entEstandar);
 
