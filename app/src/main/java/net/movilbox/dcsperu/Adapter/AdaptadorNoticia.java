@@ -1,91 +1,152 @@
 package net.movilbox.dcsperu.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+
+import net.movilbox.dcsperu.Entry.EntNoticia;
+import net.movilbox.dcsperu.Entry.EntRuteroList;
+import net.movilbox.dcsperu.Entry.ReferenciasSims;
 import net.movilbox.dcsperu.R;
 
 import org.json.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.List;
+
+import static net.movilbox.dcsperu.R.id.android_pay_dark;
 
 /**
  * Created by dianalopez on 10/10/16.
  */
 
-public class AdaptadorNoticia {
-    private int id;
-    private String name, status, image, profilePic, timeStamp, url;
+public class AdaptadorNoticia extends BaseAdapter {
+
+    private Activity actx;
+    List<EntNoticia> data;
 
 
-    private static LayoutInflater inflater = null;
-
-    public AdaptadorNoticia(int id, String name, String image, String status,
-                String profilePic, String timeStamp, String url) {
-            super();
-            this.id = id;
-            this.name = name;
-            this.image = image;
-            this.status = status;
-            this.profilePic = profilePic;
-            this.timeStamp = timeStamp;
-            this.url = url;}
-
-    public int getId() {
-        return id;
+    public AdaptadorNoticia(Activity actx, List<EntNoticia> data) {
+        this.actx = actx;
+        this.data = data;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    @Override
+    public int getCount() {
+        if (data == null) {
+            return 0;
+        } else {
+            return data.size();
+        }
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public EntNoticia getItem(int position) {
+        return data.get(position);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
-    public String getImge() {
-        return image;
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        if (convertView == null) {
+            convertView = View.inflate(actx, R.layout.noticia, null);
+            new ViewHolder(convertView);
+        }
+
+        ViewHolder holder = (ViewHolder) convertView.getTag();
+
+        holder.name.setText(data.get(position).getTitle());
+        holder.timestamp.setText(data.get(position).getDate());
+        holder.txtStatusMsg.setText(data.get(position).getStatus());
+        holder.txtUrl.setText(data.get(position).getUrl());
+        loadeImagenView(holder.Image,data.get(position).getImge());
+        if (data.get(position).getStatus()==0) {
+            holder.read.setImageResource(R.drawable.ic_play_dark);
+
+        } else {
+            holder.read.setImageResource(R.drawable.ic_play_light);
+        }
+
+
+        return convertView;
     }
 
-    public void setImge(String image) {
-        this.image = image;
+    private void loadeImagenView(ImageView img_producto, String img) {
+
+        ImageLoadingListener listener = new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String arg0, View arg1) {
+                // TODO Auto-generated method stub
+                //Inicia metodo
+                //holder.progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onLoadingCancelled(String arg0, View arg1) {
+                // TODO Auto-generated method stub
+                //Cancelar
+                //holder.progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLoadingComplete(String arg0, View arg1, Bitmap arg2) {
+                //Completado
+                //holder.progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLoadingFailed(String arg0, View arg1, FailReason arg2) {
+                // TODO Auto-generated method stub
+                //Error al cargar la imagen.
+                //holder.progressBar.setVisibility(View.GONE);
+            }
+        };
+
+
     }
 
-    public String getStatus() {
-        return status;
+    class ViewHolder {
+
+        TextView name;
+        TextView timestamp;
+        TextView txtStatusMsg;
+        TextView txtUrl;
+        ImageView Image;
+        ImageView read;
+
+        public ViewHolder(View view) {
+
+            name = (TextView) view.findViewById(R.id.name);
+            timestamp = (TextView) view.findViewById(R.id.timestamp);
+            txtStatusMsg = (TextView) view.findViewById(R.id.txtStatusMsg);
+            txtUrl = (TextView) view.findViewById(R.id.txtUrl);
+            Image = (ImageView) view.findViewById(R.id.Image);
+            read = (ImageView) view.findViewById(R.id.read);
+
+            view.setTag(this);
+        }
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getProfilePic() {
-        return profilePic;
-    }
-
-    public void setProfilePic(String profilePic) {
-        this.profilePic = profilePic;
-    }
-
-    public String getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 }

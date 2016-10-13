@@ -24,6 +24,7 @@ import net.movilbox.dcsperu.Entry.GrupoSims;
 import net.movilbox.dcsperu.Entry.GrupoCombos;
 import net.movilbox.dcsperu.Entry.GrupoSims;
 import net.movilbox.dcsperu.Entry.ListaGrupos;
+import net.movilbox.dcsperu.Entry.ListaNoticias;
 import net.movilbox.dcsperu.Entry.Motivos;
 import net.movilbox.dcsperu.Entry.NoVisita;
 import net.movilbox.dcsperu.Entry.Nomenclatura;
@@ -63,13 +64,13 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "MydbDealerPeru.db";
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, 15);
+        super(context, DATABASE_NAME, null, 16);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String sqlNoticias="CREATE TABLE ListaNoticias (id INT, name TEXT, status TEXT, url TEXT, url_image TEXT, timeStamp TEXT, estado int)";
+        String sqlNoticias="CREATE TABLE ListaNoticias (id INT, name TEXT, status TEXT, url TEXT, url_image TEXT, timeStamp TEXT, estado int, fileName TEXT, fileUrl TEXT )";
 
         String sqlGrupoCombos = "CREATE TABLE grupo_combos (id INT, nombre_grupo_combos TEXT, cant_cumplimiento_grupo_combos INT, cant_ventas_grupo_combos INT )";
 
@@ -1360,21 +1361,25 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean insertListNoticias(EntNoticia data) {
+    public boolean insertNoticias(ListaNoticias data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         try {
+            for (int i = 0; i < data.size(); i++) {
+                values.put("id", data.get(i).getId());
+                values.put("name", data.get(i).getTitle());
+                values.put("status", data.get(i).getContain());
+                values.put("url", data.get(i).getUrl());
+                values.put("url_image", data.get(i).getImge());
+                values.put("estado", data.get(i).getStatus());
+                values.put("timeStamp", data.get(i).getDate());
+                values.put("fileName", data.get(i).getFileName());
+                values.put("fileUrl", data.get(i).getFile_url());
+                db.insert("ListaNoticias", null, values);
+            }
 
-            values.put("id", data.getId());
-            values.put("name", data.getName());
-            values.put("status", data.getStatus());
-            values.put("url", data.getUrl());
-            values.put("url_image", data.getImge());
-            values.put("estado", data.getEstado());
-            values.put("timeStamp", data.getTimeStamp());
-            db.insert("ListaNoticias", null, values);
 
         } catch (SQLiteConstraintException e) {
             Log.d("data", "failure to insert word,", e);
@@ -2757,20 +2762,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
         List<EntNoticia> NoticiaArrayList = new ArrayList<>();
 
-        String sql = "SELECT id, titulo, contenido, url_image, estado FROM ListaNoticias ";
+        String sql = "SELECT * FROM ListaNoticias ORDER BY estado ASC";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(sql, null);
-
-
 
         if (cursor.moveToFirst()) {
             do {
                 EntNoticia entNoticia = new EntNoticia();
                 entNoticia.setId(cursor.getInt(0));
-                entNoticia.setName(cursor.getString(1));
-                entNoticia.setStatus(cursor.getString(2));
+                entNoticia.setTitle(cursor.getString(1));
+                entNoticia.setContain(cursor.getString(2));
                 entNoticia.setUrl(cursor.getString(3));
-                entNoticia.setTimeStamp(cursor.getString(4));
+                entNoticia.setDate(cursor.getString(4));
+                entNoticia.setStatus(cursor.getInt(5));
+                entNoticia.setFileName(cursor.getString(6));
+                entNoticia.setFile_url(cursor.getString(7));
 
 
                 NoticiaArrayList.add(entNoticia);
@@ -2779,6 +2785,20 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return NoticiaArrayList;
+
+    }
+
+    public int getCantNoticias() {
+
+
+        String sql = "SELECT count(*) FROM ListaNoticias where estado=0";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor mCount = db.rawQuery(sql, null);
+        mCount.moveToFirst();
+        int count= mCount.getInt(0);
+        mCount.close();
+
+        return count;
 
     }
 

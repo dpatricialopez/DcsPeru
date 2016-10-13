@@ -159,9 +159,18 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                 navigationView.inflateMenu(R.menu.drawer_supervisor);
 
             }
+            TextView view = (TextView) navigationView.getMenu().findItem( R.id.nav_noticias ).getActionView().findViewById( R.id.counter_txt );
+
             //se setea el la notificacion; se debe poner una condicion para mostrar o no
-            TextView view = (TextView) navigationView.getMenu().findItem(R.id.nav_noticias).getActionView();
-            view.setText("1");
+
+            if(mydb.getCantNoticias()==0){
+                view.setVisibility(View.GONE);
+            }
+            else{
+                view.setText(String.valueOf(mydb.getCantNoticias()));
+                view.setVisibility(View.VISIBLE);
+            }
+
         } else {
 
             Intent intent = new Intent(this, ActLoginUser.class);

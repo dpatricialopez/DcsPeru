@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:gravity="center"
-    android:textColor="#FFF"
-    android:textStyle="bold"
-    android:background="@drawable/btn_round_semitransperant"
-    android:text="1">
+    android:id="@+id/counter_item"
+    android:orientation="horizontal">
 
-</TextView>
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:id="@+id/counter_txt"
+        android:layout_height="wrap_content"
+        android:textColor="#FFF"
+        android:textStyle="bold"
+        android:padding="6dp"
+        android:background="@drawable/btn_round_semitransperant">
+
+    </TextView>
+</LinearLayout>
+

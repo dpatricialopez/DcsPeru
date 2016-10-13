@@ -1,31 +1,39 @@
 package net.movilbox.dcsperu.Entry;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by dianalopez on 10/10/16.
  */
 
 public class EntNoticia {
-    private int id, estado;
-    private String name, status, image, profilePic, timeStamp, url;
 
+    @SerializedName("id")
+    private int id;
 
-    public EntNoticia(int id, String name, String image, String status,
-                      String profilePic, String timeStamp, String url, int estado){
-        super();
-        this.id = id;
-        this.name = name;
-        this.image = image;
-        this.status = status;
-        this.profilePic = profilePic;
-        this.timeStamp = timeStamp;
-        this.url = url;
-        this.estado=estado;
+    @SerializedName("title")
+    private String  title;
 
-    }
+    @SerializedName("contain")
+    private String contain;
 
-    public EntNoticia() {
+    @SerializedName("url")
+    private String url;
 
-    }
+    @SerializedName("date")
+    private String date;
+
+    @SerializedName("image")
+    private String image;
+
+    @SerializedName("file_name")
+    private String file_name;
+
+    @SerializedName("file_url")
+    private String file_url;
+
+    @SerializedName("status")
+    private int status;
 
 
     public int getId() {
@@ -36,12 +44,12 @@ public class EntNoticia {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getImge() {
@@ -52,28 +60,20 @@ public class EntNoticia {
         this.image = image;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public String getProfilePic() {
-        return profilePic;
+    public String getDate() {
+        return date;
     }
 
-    public void setProfilePic(String profilePic) {
-        this.profilePic = profilePic;
-    }
-
-    public String getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getUrl() {
@@ -83,12 +83,30 @@ public class EntNoticia {
     public void setUrl(String url) {
         this.url = url;}
 
-    public int getEstado() {
-        return estado;
+    public String getContain() {
+        return contain ;
     }
 
-    public void setEstado(int estado) {
-        this.estado = estado;
+    public void setContain(String contain) {
+        this.contain = contain;
+
+    }
+
+    public String getFileName() {
+        return file_name ;
+    }
+
+    public void setFileName(String file_name) {
+        this.file_name = file_name;
+
+    }
+
+    public String getFile_url() {
+        return file_url ;
+    }
+
+    public void setFile_url(String file_url) {
+        this.file_url = file_url;
 
     }
 }
