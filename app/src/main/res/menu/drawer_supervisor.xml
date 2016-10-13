@@ -31,6 +31,10 @@
         <item android:title="Reportes">
             <menu>
                 <item
+                    android:id="@+id/nav_inventario"
+                    android:icon="@drawable/ic_dns_black_24dp"
+                    android:title="Inventario" />
+                <item
                     android:id="@+id/nav_pedido_super"
                     android:icon="@drawable/ic_directions_walk_black_24dp"
                     android:title="Pedidos" />

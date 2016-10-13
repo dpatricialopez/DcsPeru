@@ -22,6 +22,12 @@ public class EntReferenciaSol {
     @SerializedName("tipo_bodega")
     private int tipo_bodega_re;
 
+    @SerializedName("precio_pdv")
+    private double precio_pdv;
+
+    @SerializedName("precio_publico")
+    private double precio_publico;
+
     @SerializedName("tipo_ref")
     private int tipo_ref;
 
@@ -81,5 +87,21 @@ public class EntReferenciaSol {
 
     public void setTipo_ref(int tipo_ref) {
         this.tipo_ref = tipo_ref;
+    }
+
+    public double getPrecio_pdv() {
+        return precio_pdv;
+    }
+
+    public void setPrecio_pdv(double precio_pdv) {
+        this.precio_pdv = precio_pdv;
+    }
+
+    public double getPrecio_publico() {
+        return precio_publico;
+    }
+
+    public void setPrecio_publico(double precio_publico) {
+        this.precio_publico = precio_publico;
     }
 }

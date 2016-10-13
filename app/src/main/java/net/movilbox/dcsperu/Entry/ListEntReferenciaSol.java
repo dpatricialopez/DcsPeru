@@ -15,6 +15,9 @@ public class ListEntReferenciaSol {
     @SerializedName("msg")
     private String msg;
 
+    @SerializedName("cupo_disponible")
+    private double cupo_disponible;
+
     @SerializedName("datos")
     private List<EntSolPedido> entSolPedidos;
 
@@ -51,5 +54,13 @@ public class ListEntReferenciaSol {
 
     public void setEntSolPedidos(List<EntSolPedido> entSolPedidos) {
         this.entSolPedidos = entSolPedidos;
+    }
+
+    public double getCupo_disponible() {
+        return cupo_disponible;
+    }
+
+    public void setCupo_disponible(double cupo_disponible) {
+        this.cupo_disponible = cupo_disponible;
     }
 }
