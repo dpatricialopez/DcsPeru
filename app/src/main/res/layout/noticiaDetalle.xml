@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+    <ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/feed_bg"
+    android:orientation="vertical">
+
+
+
+        <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/feed_bg"
@@ -22,8 +34,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/feed_item_padding_left_right"
-            android:paddingRight="@dimen/feed_item_padding_left_right"
-            android:weightSum="1">
+            android:paddingRight="@dimen/feed_item_padding_left_right" >
 
 
             <LinearLayout
@@ -48,22 +59,16 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="30dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.24">
-
-                <ImageView
-                    android:id="@+id/read"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/alert_dark_frame"
-                    android:scaleType="fitXY"
-                    android:layout_gravity="right" />
-            </LinearLayout>
-
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ImageUrl"
+            android:layout_marginLeft="@dimen/feed_item_status_pad_left_right"
+            android:layout_marginRight="@dimen/feed_item_status_pad_left_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:scaleType="fitXY" />
 
         <TextView
             android:id="@+id/txtStatusMsg"
@@ -84,24 +89,23 @@
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
             android:textColorLink="@color/link" />
 
-        <ImageView
-            android:id="@+id/ImageUrl"
-            android:layout_marginLeft="@dimen/feed_item_status_pad_left_right"
-            android:layout_marginRight="@dimen/feed_item_status_pad_left_right"
+        <TextView
+            android:id="@+id/download"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="fitXY" />
+            android:linksClickable="true"
+            android:paddingBottom="10dp"
+            android:clickable="true"
+            android:onClick="download"
+            android:text="hola"
+            android:paddingLeft="@dimen/feed_item_status_pad_left_right"
+            android:paddingRight="@dimen/feed_item_status_pad_left_right"
+            android:textColorLink="@color/link"
+            android:textColor="@color/link"
+            android:textStyle="italic" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/BrandButtonStyle2"
-            android:text="Ver"
-            android:gravity="center_vertical|center_horizontal"
-            android:id="@+id/button"
-            android:layout_gravity="right"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp" />
     </LinearLayout>
 
-</LinearLayout>
+        </LinearLayout>
+
+</ScrollView>

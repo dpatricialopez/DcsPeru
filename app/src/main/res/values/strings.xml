@@ -50,6 +50,7 @@
     <string name="olvido_pass"><u>¿ Haz olvidado tu contraseña ?</u></string>
     <string name="txtEstimadaEntrega"><u>Detalle Pedido</u></string>
     <string name="title_activity_act_reporte_inventario_rep">Reporte de Inventario</string>
+    <string name="noticia">Noticia</string>
     <string name="estado_comercial">Estado Comercial</string>
     <string name="departamento">Departamento:</string>
     <string name="ruta">Ruta</string>
