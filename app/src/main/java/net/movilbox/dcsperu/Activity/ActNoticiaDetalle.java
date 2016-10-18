@@ -1,8 +1,13 @@
 package net.movilbox.dcsperu.Activity;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,13 +18,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.webkit.MimeTypeMap;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,31 +70,39 @@ import net.movilbox.dcsperu.Services.FileDownloader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 
+
 import static net.movilbox.dcsperu.Entry.EntLoginR.setIndicador_refres;
 import static net.movilbox.dcsperu.Entry.ResponseHome.setResponseHomeListS;
-
 /**
  * Created by dianalopez on 14/10/16.
  */
 
 public class ActNoticiaDetalle  extends AppCompatActivity {
 
-    private TextView txtUrl, name, timestamp, txtStatusMsg, file ;
+    private TextView txtUrl, name, timestamp, txtStatusMsg ;
     private ImageView Image;
+    private Button file;
+    private DownloadManager.Request request;
     private List<EntNoticia> entNoticias;
     private com.nostra13.universalimageloader.core.ImageLoader imageLoader1;
     private DBHelper mydb;
     private DisplayImageOptions options1;
     private SpotsDialog alertDialog;
     private RequestQueue rq;
-     int idNoticia;
+    Integer[] array;
+    int idNoticia,idsiguiente, idanterior;
+    LinearLayout swipe;
+    private long downloadReferenceId;
+
     EntNoticia entNoticia;
 
     @Override
@@ -104,8 +121,9 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         name = (TextView) findViewById(R.id.name);
         timestamp = (TextView) findViewById(R.id.timestamp);
         txtStatusMsg = (TextView) findViewById(R.id.txtStatusMsg);
-        file = (TextView) findViewById(R.id.download);
+        file = (Button) findViewById(R.id.download);
         Image = (ImageView) findViewById(R.id.ImageUrl);
+        swipe=(LinearLayout)findViewById(R.id.swipe);
         options1 = new DisplayImageOptions.Builder()
                 .cacheInMemory()
                 .cacheOnDisc()
@@ -114,51 +132,12 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            idNoticia = bundle.getInt("idNew");
+            idNoticia = Integer.parseInt(bundle.getString("idNew"));
         }
 
-        entNoticia=mydb.getNoticia(idNoticia);
 
-        if (entNoticia.getContain()!=null){
-            txtStatusMsg.setText(entNoticia.getContain());
-            txtStatusMsg.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            txtStatusMsg.setVisibility(View.GONE);
-        }
+        loadnoticia(idNoticia);
 
-        if (entNoticia.getUrl() != null) {
-            txtUrl.setText(Html.fromHtml("<a href=\"" + entNoticia.getUrl() + "\">"
-                    + entNoticia.getUrl() + "</a> "));
-
-            // Making url clickable
-            txtUrl.setMovementMethod(LinkMovementMethod.getInstance());
-            txtUrl.setVisibility(View.VISIBLE);
-        } else {
-            // url is null, remove from the view
-            txtUrl.setVisibility(View.GONE);
-        }
-
-        if (entNoticia.getImge()!=null ){
-            loadeImagenView(Image, entNoticia.getImge()                                                                                                                                          );
-            Image.setVisibility(View.VISIBLE);
-        }
-        else{
-            Image.setVisibility(View.GONE);
-        }
-
-        if (entNoticia.getStatus()==0){
-         //  MarcarComoLeìdo();
-
-        }
-
-        timestamp.setText(entNoticia.getDate());
-        name.setText(entNoticia.getTitle());
-        file.setText(entNoticia.getFileName());
-        file.setClickable(true);
-
-        loadeImagenView(Image, entNoticia.getImge());
 
 
    /*     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -169,6 +148,15 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
                 finish();
             }
         });*/
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        array = new Integer[mydb.getNoticiaList().size()];
+        for (int i=0; i<mydb.getNoticiaList().size();i++){
+            array[i]=mydb.getNoticiaList().get(i).getId();
+        }
     }
 
     private void loadeImagenView(ImageView img_producto, String img) {
@@ -208,49 +196,149 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
     public void download(View v)
     {
-        new DownloadFile().execute(entNoticia.getFile_url(), entNoticia.getFileName());
+        Log.d("Strin", "uryl" );
+        downloadByDownloadManager("https://sites.google.com/site/cursoscei/cursos/excel/docsexcel/AcumuladosporMeses.xls?attredirects=0&d=1", entNoticia.getFileName());
     }
 
-    public void view(View v)
-    {
-        File pdfFile = new File(Environment.getExternalStorageDirectory() + "/testthreepdf/" + "maven.pdf");  // -> filename = maven.pdf
-        Uri path = Uri.fromFile(pdfFile);
-        Intent pdfIntent = new Intent(Intent.ACTION_VIEW);
-        pdfIntent.setDataAndType(path, "application/pdf");
-        pdfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        try{
-            startActivity(pdfIntent);
-        }catch(ActivityNotFoundException e){
-            Toast.makeText(ActNoticiaDetalle.this, "No Application available to view PDF", Toast.LENGTH_SHORT).show();
+    public void loadnoticia( int idNoticia){
+        entNoticia=mydb.getNoticia(idNoticia);
+        entNoticias=mydb.getNoticiaList();
+        if (entNoticia.getContain()!=null){
+            txtStatusMsg.setText(entNoticia.getContain());
+            txtStatusMsg.setVisibility(View.VISIBLE);
         }
+        else
+        {
+            txtStatusMsg.setVisibility(View.GONE);
+        }
+
+        if (entNoticia.getUrl() != null) {
+            txtUrl.setText(Html.fromHtml("<a href=\"" + entNoticia.getUrl() + "\">"
+                    + entNoticia.getUrl() + "</a> "));
+
+            // Making url clickable
+            txtUrl.setMovementMethod(LinkMovementMethod.getInstance());
+            txtUrl.setVisibility(View.VISIBLE);
+        } else {
+            // url is null, remove from the view
+            txtUrl.setVisibility(View.GONE);
+        }
+
+        if (entNoticia.getImge()!=null ){
+            loadeImagenView(Image, entNoticia.getImge()                                                                                                                                          );
+            Image.setVisibility(View.VISIBLE);
+        }
+        else{
+            Image.setVisibility(View.GONE);
+        }
+
+        if (entNoticia.getStatus()==0){
+            //  MarcarComoLeìdo();
+
+        }
+
+        if (entNoticia.getFileName() != null) {
+            file.setText(Html.fromHtml("<a>"
+                    + entNoticia.getFileName() + "</a> "));
+            file.setMovementMethod(LinkMovementMethod.getInstance());
+            file.setVisibility(View.VISIBLE);
+
+        } else {
+            file.setVisibility(View.GONE);
+        }
+        timestamp.setText(entNoticia.getDate());
+        name.setText(entNoticia.getTitle());
+
+        loadeImagenView(Image, entNoticia.getImge());
+
     }
 
-    private class DownloadFile extends AsyncTask<String, Void, Void> {
+    public void downloadByDownloadManager(String url, String outputFileName) {
+        final DownloadManager downloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
 
-        @Override
-        protected Void doInBackground(String... strings) {
-            String fileUrl = strings[0];   // -> http://maven.apache.org/maven-1.x/maven.pdf
-            String fileName = strings[1];  // -> maven.pdf
-            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-            File folder = new File(extStorageDirectory, "testthreepdf");
-            folder.mkdir();
+        request = new DownloadManager.Request(Uri.parse(url));
+        request.setDescription("Archivo adjunto");
+        request.setTitle("AcumuladosporMeses.xls");
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.allowScanningByMediaScanner();
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "AcumuladosporMeses.xls");
+        request.setVisibleInDownloadsUi(true);
+        request.setMimeType(getMimeFromFileName(entNoticia.getFileName()));
+        Log.d("MainActivity: ", "download folder>>>>" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+        BroadcastReceiver receiver;
 
-            File pdfFile = new File(folder, fileName);
+         downloadReferenceId = downloadManager.enqueue(request);
 
-            try{
-                pdfFile.createNewFile();
-            }catch (IOException e){
-                e.printStackTrace();
+
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String mAction = intent.getAction();
+                if(DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(mAction)){
+                    long returnedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                    if(returnedId == downloadReferenceId){
+                        DownloadManager.Query mQuery = new DownloadManager.Query();
+                        mQuery.setFilterById(returnedId);
+                        Cursor cursor = downloadManager.query(mQuery);
+                        if(cursor.moveToFirst()){
+                            int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                            if (DownloadManager.STATUS_SUCCESSFUL != cursor.getInt(statusIndex)) {
+                                Toast.makeText(ActNoticiaDetalle.this, "Whoop!! Download Failed", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+
+                        }
+                    }
+                }
             }
-            FileDownloader.downloadFile(fileUrl, pdfFile);
-            return null;
-        }
+        };
+        IntentFilter mIntentFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        registerReceiver(receiver, mIntentFilter);
     }
 
+    public void siguiente(View view){
+        if (Arrays.asList(array).indexOf(idNoticia)>=mydb.getNoticiaList().size()-1)
+            idsiguiente=array[0];
+        else
+            idsiguiente=array[Arrays.asList(array).indexOf(idNoticia)+1];
+
+
+        if(mydb.getNoticia(idNoticia).getStatus()==0)
+            MarcarComoLeìdo();
+
+        idNoticia=idsiguiente;
+        loadnoticia(idsiguiente);
+    }
+
+    public void anterior(View view){
+        if (Arrays.asList(array).indexOf(idNoticia)==0)
+            idanterior=array[mydb.getNoticiaList().size()-1];
+        else
+            idanterior=array[Arrays.asList(array).indexOf(idNoticia)-1];
+
+
+        if(mydb.getNoticia(idNoticia).getStatus()==0)
+            MarcarComoLeìdo();
+
+        idNoticia=idanterior;
+        loadnoticia(idanterior);
+    }
+
+    public void finish(View view){
+        finish();
+    }
+
+    private String getMimeFromFileName(String fileName) {
+        MimeTypeMap map = MimeTypeMap.getSingleton();
+        String ext = MimeTypeMap.getFileExtensionFromUrl(fileName);
+        return map.getMimeTypeFromExtension(ext);
+    }
 
     private void MarcarComoLeìdo() {
-        alertDialog.show();
+
+
+        /*alertDialog.show();
         String url = String.format("%1$s%2$s", getString(R.string.url_base), "guardar_pedido");
         rq = Volley.newRequestQueue(this);
 
@@ -293,10 +381,11 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
             }
         };
         jsonRequest.setRetryPolicy(new DefaultRetryPolicy(100000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        rq.add(jsonRequest);
+        rq.add(jsonRequest);*/
     }
 
     public void parseJSON(String response){
+
 
         Gson gson = new Gson();
 

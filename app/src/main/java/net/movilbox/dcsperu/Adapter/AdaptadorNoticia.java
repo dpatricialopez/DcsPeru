@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -135,7 +136,7 @@ public class AdaptadorNoticia extends BaseAdapter {
         String contenido;
         if (data.get(position).getContain()!=null){
             if (data.get(position).getContain().length()>70){
-                contenido= data.get(position).getContain().substring(0,30)+"...";
+                contenido= data.get(position).getContain().substring(0,100)+"...";
             }
             else
             {
@@ -170,11 +171,12 @@ public class AdaptadorNoticia extends BaseAdapter {
         }
 
         if (data.get(position).getStatus()==1){
-                holder.read.setImageResource(R.drawable.check_blue);
+
+            holder.read.setColorFilter(Color.rgb(28, 144, 192));
 
         }
         else{
-            holder.read.setImageResource(R.drawable.check_gray);
+            holder.read.setColorFilter(Color.rgb(204, 204, 204));
         }
 
 
@@ -186,7 +188,7 @@ public class AdaptadorNoticia extends BaseAdapter {
                 if (connectionDetector.isConnected()){
                     Bundle bundle = new Bundle();
                     Intent intent = new Intent(actx, ActNoticiaDetalle.class);
-                    bundle.putSerializable("idNew", String.valueOf(data.get(position).getId()));
+                    bundle.putString("idNew", String.valueOf(data.get(position).getId()));
                     intent.putExtras(bundle);
                     actx.startActivity(intent);
                 }

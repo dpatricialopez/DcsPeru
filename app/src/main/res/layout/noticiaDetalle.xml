@@ -3,6 +3,7 @@
 
     <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,9 +16,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/feed_bg"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+            android:id="@+id/swipe">
 
-    <LinearLayout
+            <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/feed_item_margin"
@@ -61,15 +63,6 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/ImageUrl"
-            android:layout_marginLeft="@dimen/feed_item_status_pad_left_right"
-            android:layout_marginRight="@dimen/feed_item_status_pad_left_right"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:scaleType="fitXY" />
-
         <TextView
             android:id="@+id/txtStatusMsg"
             android:layout_width="fill_parent"
@@ -78,6 +71,26 @@
             android:paddingLeft="@dimen/feed_item_status_pad_left_right"
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
             android:paddingTop="@dimen/feed_item_status_pad_top" />
+
+                <ImageView
+                    android:id="@+id/ImageUrl"
+                    android:layout_marginLeft="@dimen/feed_item_status_pad_left_right"
+                    android:layout_marginRight="@dimen/feed_item_status_pad_left_right"
+                    android:layout_width="match_parent"
+                    android:paddingBottom="10dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:scaleType="fitCenter" />
+
+                <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/md_yellow_A200"
+            android:textSize="@dimen/feed_item_timestamp"
+            android:paddingLeft="@dimen/feed_item_status_pad_left_right"
+            android:paddingRight="@dimen/feed_item_status_pad_left_right"
+            tools:text="jjjjj"
+            android:visibility="visible" />b
 
         <TextView
             android:id="@+id/txtUrl"
@@ -90,21 +103,83 @@
             android:textColorLink="@color/link" />
 
         <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/timestamp"
+            android:textSize="@dimen/feed_item_timestamp"
+            android:paddingLeft="@dimen/feed_item_status_pad_left_right"
+            android:paddingRight="@dimen/feed_item_status_pad_left_right"
+            tools:text="@string/Adjuntos"
+            android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/name1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/Adjuntos"
+                    android:textSize="@dimen/feed_item_profile_name"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/timestamp1"
+                    android:layout_width="fill_parent"
+                    tools:text="@string/Adjuntos"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/timestamp"
+                    android:textSize="@dimen/feed_item_timestamp" />
+
+
+
+        <Button
             android:id="@+id/download"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:linksClickable="true"
-            android:paddingBottom="10dp"
-            android:clickable="true"
             android:onClick="download"
-            android:text="hola"
+            android:paddingBottom="10dp"
             android:paddingLeft="@dimen/feed_item_status_pad_left_right"
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
-            android:textColorLink="@color/link"
-            android:textColor="@color/link"
-            android:textStyle="italic" />
+            android:gravity="left"
+            android:textSize="12sp"
+            android:background="#00ffffff" />
 
-    </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="15dp">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/cast_ic_notification_skip_prev"
+                    android:id="@+id/imback"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:background="@null"
+                    android:onClick="anterior" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/cast_ic_notification_rewind"
+                    android:id="@+id/imclose"
+                    android:clickable="true"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:onClick="finish" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    app:srcCompat="@drawable/cast_ic_notification_skip_prev"
+                    android:id="@+id/imnext"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:onClick="siguiente" />
+            </LinearLayout>
 
         </LinearLayout>
 
