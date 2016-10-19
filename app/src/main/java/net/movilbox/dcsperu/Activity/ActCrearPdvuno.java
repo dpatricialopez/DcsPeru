@@ -413,14 +413,14 @@ public class ActCrearPdvuno extends AppCompatActivity implements View.OnClickLis
             edit_cedula.setFocusableInTouchMode(true);
             edit_cedula.requestFocus();
             edit_cedula.setText("");
-            edit_cedula.setError("El Ruc debe ser igual a 11");
+            edit_cedula.setError("El Ruc debe tener 11 dígitos");
             indicadorValidate = true;
         } else if (tipoDocumento != 1 && edit_cedula.getText().toString().length() < 8) {
             edit_cedula.setFocusable(true);
             edit_cedula.setFocusableInTouchMode(true);
             edit_cedula.requestFocus();
             edit_cedula.setText("");
-            edit_cedula.setError("El Dni debe ser igual a 8");
+            edit_cedula.setError("El Dni debe tener 8 dígitos");
             indicadorValidate = true;
         } else if (isValidNumber(edit_nom_cli.getText().toString().trim())) {
             edit_nom_cli.setFocusable(true);
@@ -440,7 +440,7 @@ public class ActCrearPdvuno extends AppCompatActivity implements View.OnClickLis
             edit_correo_edit.setFocusable(true);
             edit_correo_edit.setFocusableInTouchMode(true);
             edit_correo_edit.requestFocus();
-            edit_correo_edit.setError("Correo no valido");
+            edit_correo_edit.setError("Correo no válido");
             indicadorValidate = true;
         } else if (isValidNumber(edit_tel_edit.getText().toString().trim())) {
             edit_tel_edit.setFocusable(true);
@@ -462,7 +462,7 @@ public class ActCrearPdvuno extends AppCompatActivity implements View.OnClickLis
                 editMovil.setFocusable(true);
                 editMovil.setFocusableInTouchMode(true);
                 editMovil.requestFocus();
-                editMovil.setError("El numero móvil debe tener 9 dígitos");
+                editMovil.setError("El número móvil debe tener 9 dígitos");
                 indicadorValidate = true;
             } else {
                 indicadorValidate = false;

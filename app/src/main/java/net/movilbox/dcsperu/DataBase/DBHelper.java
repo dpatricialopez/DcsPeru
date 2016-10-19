@@ -2809,10 +2809,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 entNoticia.setTitle(cursor.getString(1));
                 entNoticia.setContain(cursor.getString(2));
                 entNoticia.setUrl(cursor.getString(3));
-                entNoticia.setDate(cursor.getString(4));
-                entNoticia.setStatus(cursor.getInt(5));
-                entNoticia.setFileName(cursor.getString(6));
-                entNoticia.setFile_url(cursor.getString(7));
+                entNoticia.setImge(cursor.getString(4));
+                entNoticia.setDate(cursor.getString(5));
+                entNoticia.setStatus(cursor.getInt(6));
+                entNoticia.setFileName(cursor.getString(7));
+                entNoticia.setFile_url(cursor.getString(8));
 
 
                 NoticiaArrayList.add(entNoticia);
@@ -2821,6 +2822,29 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return NoticiaArrayList;
+
+    }
+
+    public EntNoticia getNoticia(int id) {
+
+        String sql = "SELECT * FROM ListaNoticias  WHERE id="+id;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+        EntNoticia entNoticia = new EntNoticia();
+
+        if (cursor.moveToFirst()) {
+                entNoticia.setId(cursor.getInt(0));
+                entNoticia.setTitle(cursor.getString(1));
+                entNoticia.setContain(cursor.getString(2));
+                entNoticia.setUrl(cursor.getString(3));
+                entNoticia.setImge(cursor.getString(4));
+                entNoticia.setDate(cursor.getString(5));
+                entNoticia.setStatus(cursor.getInt(6));
+                entNoticia.setFileName(cursor.getString(7));
+                entNoticia.setFile_url(cursor.getString(8));
+        }
+
+        return entNoticia;
 
     }
 

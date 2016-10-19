@@ -462,13 +462,13 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                     Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
                 }
             } else if (id == R.id.nav_noticias) {
-
+                fragmentClass = FragmentNoticia.class;
                 if (connectionDetector.isConnected()) {
                     toolbar.setTitle("Noticias");
-                    fragmentClass = FragmentNoticia.class;
                 } else {
-                    Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
+                    toolbar.setTitle("Noticias Offline");
                 }
+
             } else if (id == R.id.nav_inventario) {
 
                 if (connectionDetector.isConnected()) {

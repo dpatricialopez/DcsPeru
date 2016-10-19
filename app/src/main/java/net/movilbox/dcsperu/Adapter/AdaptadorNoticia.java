@@ -1,51 +1,71 @@
 package net.movilbox.dcsperu.Adapter;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.view.LayoutInflater;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.toolbox.ImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import net.movilbox.dcsperu.Activity.ActMapsPunto;
+import net.movilbox.dcsperu.Activity.ActNoticiaDetalle;
+import net.movilbox.dcsperu.Activity.ActResponAvanBusqueda;
 import net.movilbox.dcsperu.Entry.EntNoticia;
 import net.movilbox.dcsperu.Entry.EntRuteroList;
-import net.movilbox.dcsperu.Entry.ReferenciasSims;
+import net.movilbox.dcsperu.Entry.ListaNoticias;
+import net.movilbox.dcsperu.Entry.ResponseHome;
+import net.movilbox.dcsperu.Fragment.FeedImageView;
 import net.movilbox.dcsperu.R;
+import net.movilbox.dcsperu.Services.ConnectionDetector;
 
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
-
-import static net.movilbox.dcsperu.R.id.android_pay_dark;
-
-/**
- * Created by dianalopez on 10/10/16.
- */
 
 public class AdaptadorNoticia extends BaseAdapter {
 
     private Activity actx;
-    List<EntNoticia> data;
-
+    private List<EntNoticia> data;
+    private com.nostra13.universalimageloader.core.ImageLoader imageLoader1;
+    private DisplayImageOptions options1;
+    private DecimalFormat format;
+    private ConnectionDetector connectionDetector;
 
     public AdaptadorNoticia(Activity actx, List<EntNoticia> data) {
         this.actx = actx;
         this.data = data;
+        connectionDetector = new ConnectionDetector(actx);
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(actx).build();
+        imageLoader1 = com.nostra13.universalimageloader.core.ImageLoader.getInstance();
+        imageLoader1.init(config);
+        format = new DecimalFormat("#.00");
+
+        //Setup options for ImageLoader so it will handle caching for us.
+        options1 = new DisplayImageOptions.Builder()
+                .cacheInMemory()
+                .cacheOnDisc()
+                .build();
     }
 
     @Override
@@ -55,42 +75,6 @@ public class AdaptadorNoticia extends BaseAdapter {
         } else {
             return data.size();
         }
-    }
-
-    @Override
-    public EntNoticia getItem(int position) {
-        return data.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        if (convertView == null) {
-            convertView = View.inflate(actx, R.layout.noticia, null);
-            new ViewHolder(convertView);
-        }
-
-        ViewHolder holder = (ViewHolder) convertView.getTag();
-
-        holder.name.setText(data.get(position).getTitle());
-        holder.timestamp.setText(data.get(position).getDate());
-        holder.txtStatusMsg.setText(data.get(position).getStatus());
-        holder.txtUrl.setText(data.get(position).getUrl());
-        loadeImagenView(holder.Image,data.get(position).getImge());
-        if (data.get(position).getStatus()==0) {
-            holder.read.setImageResource(R.drawable.ic_play_dark);
-
-        } else {
-            holder.read.setImageResource(R.drawable.ic_play_light);
-        }
-
-
-        return convertView;
     }
 
     private void loadeImagenView(ImageView img_producto, String img) {
@@ -124,29 +108,124 @@ public class AdaptadorNoticia extends BaseAdapter {
             }
         };
 
+        imageLoader1.displayImage(img, img_producto, options1, listener);
 
+    }
+    @Override
+    public EntNoticia getItem(int position) {
+        return data.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = View.inflate(actx, R.layout.noticia, null);
+            new ViewHolder(convertView);
+        }
+
+        final ViewHolder holder = (ViewHolder) convertView.getTag();
+        holder.name.setText(data.get(position).getTitle());
+        holder.timestamp.setText(data.get(position).getDate());
+
+        String contenido;
+        if (data.get(position).getContain()!=null){
+            if (data.get(position).getContain().length()>70){
+                contenido= data.get(position).getContain().substring(0,100)+"...";
+            }
+            else
+            {
+                contenido=data.get(position).getContain();
+            }
+            holder.txtStatusMsg.setText(contenido);
+            holder.txtStatusMsg.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            holder.txtStatusMsg.setVisibility(View.GONE);
+        }
+
+        if (data.get(position).getUrl() != null) {
+            holder.txtUrl.setText(Html.fromHtml("<a href=\"" + data.get(position).getUrl() + "\">"
+                    + data.get(position).getUrl() + "</a> "));
+
+            // Making url clickable
+            holder.txtUrl.setMovementMethod(LinkMovementMethod.getInstance());
+            holder.txtUrl.setVisibility(View.VISIBLE);
+        } else {
+            // url is null, remove from the view
+            holder.txtUrl.setVisibility(View.GONE);
+        }
+
+        if (data.get(position).getImge()!=null && connectionDetector.isConnected()){
+            loadeImagenView(holder.Image, data.get(position).getImge());
+            holder.Image.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.Image.setVisibility(View.GONE);
+        }
+
+        if (data.get(position).getStatus()==1){
+
+            holder.read.setColorFilter(Color.rgb(28, 144, 192));
+
+        }
+        else{
+            holder.read.setColorFilter(Color.rgb(204, 204, 204));
+        }
+
+
+
+
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (connectionDetector.isConnected()){
+                    Bundle bundle = new Bundle();
+                    Intent intent = new Intent(actx, ActNoticiaDetalle.class);
+                    bundle.putString("idNew", String.valueOf(data.get(position).getId()));
+                    intent.putExtras(bundle);
+                    actx.startActivity(intent);
+                }
+                else{
+                    Toast.makeText(actx, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+        });
+
+
+
+           return convertView;
     }
 
     class ViewHolder {
 
         TextView name;
         TextView timestamp;
-        TextView txtStatusMsg;
-        TextView txtUrl;
-        ImageView Image;
+        TextView txtStatusMsg,txtUrl;
         ImageView read;
+        ImageView Image;
+        Button button;
 
         public ViewHolder(View view) {
-
+            txtUrl = (TextView) view.findViewById(R.id.txtUrl);
             name = (TextView) view.findViewById(R.id.name);
             timestamp = (TextView) view.findViewById(R.id.timestamp);
             txtStatusMsg = (TextView) view.findViewById(R.id.txtStatusMsg);
-            txtUrl = (TextView) view.findViewById(R.id.txtUrl);
-            Image = (ImageView) view.findViewById(R.id.Image);
             read = (ImageView) view.findViewById(R.id.read);
-
+            Image = (ImageView) view.findViewById(R.id.ImageUrl);
+            button=(Button)view.findViewById(R.id.button);
             view.setTag(this);
+
         }
     }
+
 
 }
