@@ -1,8 +1,6 @@
 package net.movilbox.dcsperu.Activity;
 
-import android.app.Activity;
 import android.app.DownloadManager;
-import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,10 +8,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -22,30 +18,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.webkit.MimeTypeMap;
-import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -53,35 +33,15 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import net.movilbox.dcsperu.DataBase.DBHelper;
-import net.movilbox.dcsperu.Entry.CategoriasEstandar;
-import net.movilbox.dcsperu.Entry.Ciudad;
-import net.movilbox.dcsperu.Entry.Departamentos;
-import net.movilbox.dcsperu.Entry.Distrito;
 import net.movilbox.dcsperu.Entry.EntNoticia;
-import net.movilbox.dcsperu.Entry.ListHome;
-import net.movilbox.dcsperu.Entry.ListResponsePedido;
 import net.movilbox.dcsperu.Entry.ListaNoticias;
-import net.movilbox.dcsperu.Entry.ResponseCreatePunt;
-import net.movilbox.dcsperu.Entry.ResponseMarcarPedido;
-import net.movilbox.dcsperu.Entry.Territorio;
-import net.movilbox.dcsperu.Entry.Zona;
 import net.movilbox.dcsperu.R;
-import net.movilbox.dcsperu.Services.FileDownloader;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 
-
-import static net.movilbox.dcsperu.Entry.EntLoginR.setIndicador_refres;
-import static net.movilbox.dcsperu.Entry.ResponseHome.setResponseHomeListS;
 /**
  * Created by dianalopez on 14/10/16.
  */
@@ -95,6 +55,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     private List<EntNoticia> entNoticias;
     private com.nostra13.universalimageloader.core.ImageLoader imageLoader1;
     private DBHelper mydb;
+    private ScrollView Scroll;
     private DisplayImageOptions options1;
     private SpotsDialog alertDialog;
     private RequestQueue rq;
@@ -124,6 +85,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         file = (Button) findViewById(R.id.download);
         Image = (ImageView) findViewById(R.id.ImageUrl);
         swipe=(LinearLayout)findViewById(R.id.swipe);
+        Scroll=(ScrollView)findViewById(R.id.scroll);
         options1 = new DisplayImageOptions.Builder()
                 .cacheInMemory()
                 .cacheOnDisc()
@@ -197,7 +159,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     public void download(View v)
     {
         Log.d("Strin", "uryl" );
-        downloadByDownloadManager("https://sites.google.com/site/cursoscei/cursos/excel/docsexcel/AcumuladosporMeses.xls?attredirects=0&d=1", entNoticia.getFileName());
+        downloadByDownloadManager(entNoticia.getFile_url(), entNoticia.getFileName());
     }
 
 
@@ -251,6 +213,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         name.setText(entNoticia.getTitle());
 
         loadeImagenView(Image, entNoticia.getImge());
+        Scroll.fullScroll(View.FOCUS_UP);
 
     }
 
@@ -259,13 +222,12 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
         request = new DownloadManager.Request(Uri.parse(url));
         request.setDescription("Archivo adjunto");
-        request.setTitle("AcumuladosporMeses.xls");
+        request.setTitle("DcsDealer");
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.allowScanningByMediaScanner();
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "AcumuladosporMeses.xls");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, outputFileName);
         request.setVisibleInDownloadsUi(true);
         request.setMimeType(getMimeFromFileName(entNoticia.getFileName()));
-        Log.d("MainActivity: ", "download folder>>>>" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
         BroadcastReceiver receiver;
 
          downloadReferenceId = downloadManager.enqueue(request);
@@ -298,6 +260,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     }
 
     public void siguiente(View view){
+
         if (Arrays.asList(array).indexOf(idNoticia)>=mydb.getNoticiaList().size()-1)
             idsiguiente=array[0];
         else
