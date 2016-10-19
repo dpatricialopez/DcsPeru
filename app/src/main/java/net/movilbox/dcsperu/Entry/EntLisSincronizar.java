@@ -228,6 +228,64 @@ public class EntLisSincronizar extends EntEstandar {
     @SerializedName("detalle")
     private String detalle;
 
+    @SerializedName("serie")
+    private String serie;
+
+    @SerializedName("referencias")
+    private List<EntReferencia> referenciaLis;
+
+    @SerializedName("paquete")
+    private int paquete;
+
+    @SerializedName("id_vendedor")
+    private int id_vendedor;
+
+    @SerializedName("distri")
+    private int distri;
+
+    @SerializedName("combo")
+    private int combo;
+
+    public int getCombo() {
+        return combo;
+    }
+
+    public void setCombo(int combo) {
+        this.combo = combo;
+    }
+
+    public String getSerie() {
+        return serie;
+    }
+
+    public void setSerie(String serie) {
+        this.serie = serie;
+    }
+
+    public int getPaquete() {
+        return paquete;
+    }
+
+    public void setPaquete(int paquete) {
+        this.paquete = paquete;
+    }
+
+    public int getId_vendedor() {
+        return id_vendedor;
+    }
+
+    public void setId_vendedor(int id_vendedor) {
+        this.id_vendedor = id_vendedor;
+    }
+
+    public int getDistri() {
+        return distri;
+    }
+
+    public void setDistri(int distri) {
+        this.distri = distri;
+    }
+
     public String getDetalle() {
         return detalle;
     }
@@ -235,9 +293,6 @@ public class EntLisSincronizar extends EntEstandar {
     public void setDetalle(String detalle) {
         this.detalle = detalle;
     }
-
-    @SerializedName("referencias")
-    private List<EntReferencia> referenciaLis;
 
     public List<EntReferencia> getReferenciaLis() {
         return referenciaLis;

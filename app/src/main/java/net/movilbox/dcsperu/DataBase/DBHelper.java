@@ -64,7 +64,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "MydbDealerPeru.db";
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, 16);
+        super(context, DATABASE_NAME, null, 17);
     }
 
     @Override
@@ -148,6 +148,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String sqlMotivos = "CREATE TABLE motivos (id INT, descripcion TEXT)";
 
+        String sqlInventario = "CREATE TABLE inventario (id INT, id_referencia INT, serie TEXT, paquete INT, id_vendedor INT, distri INT, tipo_pro INT, tipo_tabla INT, estado_accion INT, accion TEXT, combo INT )";
+
         db.execSQL(sqlNoticias);
         db.execSQL(sqlGrupoCombos);
         db.execSQL(sqlGrupoSims);
@@ -185,6 +187,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(sqlIndicadores);
         db.execSQL(sqlIndicadores_detalle);
         db.execSQL(sqlMotivos);
+        db.execSQL(sqlInventario);
 
     }
 
@@ -225,6 +228,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS detalle_combo");
         db.execSQL("DROP TABLE IF EXISTS grupo_combos");
         db.execSQL("DROP TABLE IF EXISTS grupo_sims");
+        db.execSQL("DROP TABLE IF EXISTS inventario");
 
         this.onCreate(db);
 
@@ -1409,6 +1413,38 @@ public class DBHelper extends SQLiteOpenHelper {
             db.close();
         }
         return true;
+    }
+
+    public boolean insertLisInventario(EntLisSincronizar data) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        try {
+            switch (data.getEstado_accion()) {
+                case 1:
+                    values.put("id", data.getId());
+                    values.put("id_referencia", data.getId_referencia());
+                    values.put("serie", data.getSerie());
+                    values.put("paquete", data.getPaquete());
+                    values.put("id_vendedor", data.getId_vendedor());
+                    values.put("distri", data.getDistri());
+                    values.put("tipo_pro", data.getTipo_pro());
+                    values.put("tipo_tabla", data.getTipoTabla());
+                    values.put("estado_accion", data.getEstado_accion());
+                    values.put("combo", data.getCombo());
+
+                    db.insert("inventario", null, values);
+                    break;
+                case 0:
+                    db.delete("inventario", "id = ? AND tipo_pro = ? ", new String[]{String.valueOf(data.getId()), String.valueOf(data.getTipo_pro())});
+                    break;
+            }
+        } catch (SQLiteConstraintException e) {
+            Log.d("data", "failure to insert word,", e);
+            return false;
+        }
+
+        return true;
+
     }
 
     public boolean insertReferenciaCombos(EntLisSincronizar data) {

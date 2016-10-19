@@ -87,7 +87,6 @@ public class AdapterAceptPedido extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 dialog = new DialogRechazar(actx, "Observación");
-                dialog.setCancelable(false);
                 dialog.show();
                 Button acceptButton = dialog.getButtonAccept();
                 acceptButton.setOnClickListener(new View.OnClickListener() {

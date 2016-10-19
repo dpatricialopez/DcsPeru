@@ -53,6 +53,7 @@ import net.movilbox.dcsperu.Entry.listSincronizarPedidos;
 import net.movilbox.dcsperu.Fragment.FragmenEntregarPedido;
 import net.movilbox.dcsperu.Fragment.FragmenMarcarvisita;
 import net.movilbox.dcsperu.Fragment.FragmentAceptPedido;
+import net.movilbox.dcsperu.Fragment.FragmentAceptPedidoVendedor;
 import net.movilbox.dcsperu.Fragment.FragmentBajasSupervisor;
 import net.movilbox.dcsperu.Fragment.FragmentHome;
 import net.movilbox.dcsperu.Fragment.FragmentHomeRep;
@@ -330,6 +331,15 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                 if (connectionDetector.isConnected()) {
                     toolbar.setTitle("Aceptar Pedido");
                     fragmentClass = FragmentAceptPedido.class;
+                } else {
+                    Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
+                }
+
+            }else if (id == R.id.nav_acpetar_pedido_vendedor) {
+
+                if (connectionDetector.isConnected()) {
+                    toolbar.setTitle("Aceptar Pedido");
+                    fragmentClass = FragmentAceptPedidoVendedor.class;
                 } else {
                     Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
                 }
@@ -932,6 +942,8 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
 
             if(sincronizar.getMotivos() > 0) { mydb.deleteObject("motivos"); }
 
+            if(sincronizar.getInventario() > 0) { mydb.deleteObject("inventario"); }
+
             new Thread(new Runnable() {
                 public void run() {
 
@@ -966,7 +978,10 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                                 mensaje = "Sincronizando Listas de Motivos no venta";
                                 mydb.insertListMotivos(sincronizar.getEntLisSincronizars().get(progressStatus));
                                 break;
-
+                            case 8:
+                                mensaje = "Sincronizando Listas de inventario";
+                                mydb.insertLisInventario(sincronizar.getEntLisSincronizars().get(progressStatus));
+                                break;
                         }
 
                         progressStatus++;

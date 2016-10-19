@@ -28,6 +28,10 @@
             android:id="@+id/nav_sol_producto"
             android:icon="@drawable/ic_sim_card_black_24dp"
             android:title="Solicitar Producto" />
+        <item
+            android:id="@+id/nav_acpetar_pedido_vendedor"
+            android:icon="@drawable/ic_done_all_black_24dp"
+            android:title="Aceptar Pedido" />
 
         <item android:title="Reportes">
             <menu>

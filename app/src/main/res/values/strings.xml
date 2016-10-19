@@ -8,11 +8,11 @@
 
 
     <!--URL BASE DESARROLLO -->
-     <string name="url_base">http://192.168.2.24:91/app/servicios/services.php?solicitud=</string>
-     <string name="url_base_correo">http://192.168.2.24:91/distribuidorbt/modulos/login/controlador.php</string>
+    <string name="url_base">http://192.168.2.24:91/app/servicios/services.php?solicitud=</string>
+    <string name="url_base_correo">http://192.168.2.24:91/distribuidorbt/modulos/login/controlador.php</string>
 
     <!--&lt;!&ndash;URL BASE PRUEBAS-->
-<!--    <string name="url_base">http://prueba.movilbox.net:88/movistar_peru/app_1107/servicios/services.php?solicitud=</string>
+    <!--    <string name="url_base">http://prueba.movilbox.net:88/movistar_peru/app_1107/servicios/services.php?solicitud=</string>
     <string name="url_base_correo">http://prueba.movilbox.net:88/movistar_peru/distribuidor/modulos/login/controlador.php</string>-->
 
     <!-- URL BASE PRODUCCION
