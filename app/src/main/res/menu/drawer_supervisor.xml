@@ -28,14 +28,14 @@
             android:icon="@drawable/ic_sim_card_black_24dp"
             android:title="Solicitar Producto" />
         <item
-            android:id="@+id/nav_acpetar_pedido"
+            android:id="@+id/nav_acpetar_pedido_vendedor"
             android:icon="@drawable/ic_done_all_black_24dp"
             android:title="Aceptar Pedido" />
 
         <item android:title="Reportes">
             <menu>
                 <item
-                    android:id="@+id/nav_inventario"
+                    android:id="@+id/nav_inventario_vendedor"
                     android:icon="@drawable/ic_dns_black_24dp"
                     android:title="Inventario" />
                 <item

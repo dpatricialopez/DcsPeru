@@ -1447,6 +1447,88 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public List<EntLisSincronizar> listReferenciasesReport(int indicador) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        List<EntLisSincronizar> referenciaList = new ArrayList<>();
+
+        String sql = "";
+
+        // 1. Reporte
+        // 2. Spinner
+
+        if (indicador == 1) {
+            sql = "SELECT inv.paquete, inv.id_referencia, inv.tipo_pro, CASE WHEN rs.producto is null THEN d_co.producto ELSE rs.producto END producto, count(inv.id) cantidad FROM inventario inv LEFT JOIN referencia_simcard rs ON rs.id = inv.id_referencia LEFT JOIN detalle_combo d_co ON d_co.id = inv.id_referencia GROUP BY inv.id_referencia";
+        } else if (indicador == 2) {
+            sql = "SELECT 0 paquete, 0 id_referencia, 0 tipo_pro,'SELECCIONAR' producto, 0 cantidad UNION SELECT inv.paquete,inv.id_referencia, inv.tipo_pro, rs.producto,count(inv.id) cantidad FROM inventario inv INNER JOIN refes_sims rs ON rs.id = inv.id_referencia GROUP BY inv.id_referencia";
+        }
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        EntLisSincronizar referencias;
+
+        if (cursor.moveToFirst()) {
+
+            do {
+                referencias = new EntLisSincronizar();
+                referencias.setPaquete(cursor.getInt(0));
+                referencias.setId_referencia(cursor.getInt(1));
+                referencias.setTipo_pro(cursor.getInt(2));
+                referencias.setProducto(cursor.getString(3));
+                referencias.setStock(cursor.getInt(4));
+
+                referenciaList.add(referencias);
+
+            } while (cursor.moveToNext());
+
+        }
+
+        return referenciaList;
+    }
+
+    public List<EntLisSincronizar> listPaqueteInvent(int id_referencia) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        List<EntLisSincronizar> referenciaList = new ArrayList<>();
+        String sql = "SELECT paquete, id_referencia, tipo_pro, count(id) cantidad FROM inventario inv WHERE id_referencia = ? GROUP BY paquete ";
+
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(id_referencia)});
+
+        if (cursor.moveToFirst()) {
+
+            do {
+
+                EntLisSincronizar referencias = new EntLisSincronizar();
+                referencias.setPaquete(cursor.getInt(0));
+                referencias.setId_referencia(cursor.getInt(1));
+                referencias.setTipo_pro(cursor.getInt(2));
+                referencias.setStock(cursor.getInt(3));
+
+                String sql2 = "SELECT id, serie, tipo_pro FROM inventario WHERE paquete = ? AND tipo_pro = ? AND id_referencia = ? ";
+                Cursor cursor2 = db.rawQuery(sql2, new String[]{String.valueOf(cursor.getInt(0)), String.valueOf(cursor.getInt(2)), String.valueOf(id_referencia) });
+                List<EntEstandar> entEstandarList = new ArrayList<>();
+
+                if (cursor2.moveToFirst()) {
+
+                    do {
+                        EntEstandar entEstandar = new EntEstandar();
+                        entEstandar.setId(cursor2.getInt(0));
+                        entEstandar.setDescripcion(cursor2.getString(1));
+                        entEstandar.setTipo_prod(cursor2.getInt(2));
+                        entEstandarList.add(entEstandar);
+                    } while (cursor2.moveToNext());
+
+                    referencias.setEntEstandarList(entEstandarList);
+                }
+
+                referenciaList.add(referencias);
+
+            } while (cursor.moveToNext());
+
+        }
+
+        return referenciaList;
+    }
+
     public boolean insertReferenciaCombos(EntLisSincronizar data) {
 
         SQLiteDatabase db = this.getWritableDatabase();

@@ -5,6 +5,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class EntEstandar extends EntNomenclaturas {
 
+    public EntEstandar() {}
+
+    public EntEstandar(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
+
     @SerializedName("id")
     private int id;
 
@@ -28,6 +35,17 @@ public class EntEstandar extends EntNomenclaturas {
 
     @SerializedName("tipo_tabla")
     public int tipoTabla;
+
+    @SerializedName("tipo_prod")
+    public int tipo_prod;
+
+    public int getTipo_prod() {
+        return tipo_prod;
+    }
+
+    public void setTipo_prod(int tipo_prod) {
+        this.tipo_prod = tipo_prod;
+    }
 
     public int getId() {
         return id;

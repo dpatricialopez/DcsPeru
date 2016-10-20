@@ -59,6 +59,7 @@ import net.movilbox.dcsperu.Fragment.FragmentHome;
 import net.movilbox.dcsperu.Fragment.FragmentHomeRep;
 import net.movilbox.dcsperu.Fragment.FragmentHomeSuperPrin;
 import net.movilbox.dcsperu.Fragment.FragmentInventarioRepartidor;
+import net.movilbox.dcsperu.Fragment.FragmentInventarioVendedor;
 import net.movilbox.dcsperu.Fragment.FragmentMisBajas;
 import net.movilbox.dcsperu.Fragment.FragmentMisPedidos;
 import net.movilbox.dcsperu.Fragment.FragmentNoticia;
@@ -479,6 +480,13 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                 } else {
                     Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
                 }
+
+            }else if (id == R.id.nav_inventario_vendedor) {
+
+                toolbar.setTitle("Mi Inventario");
+                editaPunto = 0;
+                accion = "Guardar";
+                fragmentClass = FragmentInventarioVendedor.class;
 
             } else if (id == R.id.nav_mis_pedidos_rep) {
 

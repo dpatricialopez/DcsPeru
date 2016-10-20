@@ -246,6 +246,16 @@ public class EntLisSincronizar extends EntEstandar {
     @SerializedName("combo")
     private int combo;
 
+    private List<EntEstandar> entEstandarList;
+
+    public List<EntEstandar> getEntEstandarList() {
+        return entEstandarList;
+    }
+
+    public void setEntEstandarList(List<EntEstandar> entEstandarList) {
+        this.entEstandarList = entEstandarList;
+    }
+
     public int getCombo() {
         return combo;
     }
