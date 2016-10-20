@@ -16,6 +16,7 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -50,12 +51,12 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
     private TextView txtUrl, name, timestamp, txtStatusMsg ;
     private ImageView Image;
-    private Button file;
+    private TextView file;
     private DownloadManager.Request request;
     private List<EntNoticia> entNoticias;
     private com.nostra13.universalimageloader.core.ImageLoader imageLoader1;
     private DBHelper mydb;
-    private ScrollView Scroll;
+    ScrollView Scroll;
     private DisplayImageOptions options1;
     private SpotsDialog alertDialog;
     private RequestQueue rq;
@@ -63,7 +64,8 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     int idNoticia,idsiguiente, idanterior;
     LinearLayout swipe;
     private long downloadReferenceId;
-
+    TextView txtlabelfile, txtlabelurl;
+    private float x1, x2,y1,y2,deltaX, deltaY;
     EntNoticia entNoticia;
 
     @Override
@@ -80,9 +82,11 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         imageLoader1.init(config);
         txtUrl = (TextView)findViewById(R.id.txtUrl);
         name = (TextView) findViewById(R.id.name);
+        txtlabelfile = (TextView)findViewById(R.id.labelfile);
+        txtlabelurl = (TextView) findViewById(R.id.labelEnlace);
         timestamp = (TextView) findViewById(R.id.timestamp);
         txtStatusMsg = (TextView) findViewById(R.id.txtStatusMsg);
-        file = (Button) findViewById(R.id.download);
+        file = (TextView) findViewById(R.id.download);
         Image = (ImageView) findViewById(R.id.ImageUrl);
         swipe=(LinearLayout)findViewById(R.id.swipe);
         Scroll=(ScrollView)findViewById(R.id.scroll);
@@ -97,9 +101,37 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
             idNoticia = Integer.parseInt(bundle.getString("idNew"));
         }
 
-
+        txtlabelurl.setText(R.string.Enlace);
+        txtlabelfile.setText(R.string.Adjuntos);
         loadnoticia(idNoticia);
 
+        Scroll.setOnTouchListener(
+                new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        // TODO Auto-generated method stub
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                x1 = event.getX();
+                                y1=event.getY();
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                x2 = event.getX();
+                                y2=event.getY();
+                                deltaX = x2 - x1;
+                                deltaY=y2-y1;
+                                Log.e("coord",Math.abs(deltaX)+"/"+Math.abs(deltaY));
+                                if (deltaX < 0 && Math.abs(deltaY)+10<Math.abs(deltaX)) {
+                                   siguiente(null);
+                                }else if(deltaX >0 && Math.abs(deltaY)+10<Math.abs(deltaX)){
+                                    anterior(null);
+                                }
+                                break;
+                        }
+
+                        return false;
+                    }
+                });
 
 
    /*     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -164,6 +196,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
 
     public void loadnoticia( int idNoticia){
+
         entNoticia=mydb.getNoticia(idNoticia);
         entNoticias=mydb.getNoticiaList();
         if (entNoticia.getContain()!=null){
