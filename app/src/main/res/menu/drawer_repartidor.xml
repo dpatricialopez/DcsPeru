@@ -45,6 +45,10 @@
             android:id="@+id/nav_cerrar_sesion"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
             android:title="Cerrar Sesión" />
+        <item
+            android:id="@+id/nav_disconnect"
+            android:icon="@drawable/rss"
+            android:title="Conexión" />
 
     </group>
 
