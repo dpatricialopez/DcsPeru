@@ -444,6 +444,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/BrandButtonStyle2"
+                    android:text="autoventa"
+                    android:visibility="gone"
+                    android:id="@+id/btn_auto_venta"
+                    android:gravity="center_vertical|center_horizontal" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/BrandButtonStyle2"
                     android:text="@string/no_venta"
                     android:id="@+id/btn_no_venta"
                     android:visibility="gone"

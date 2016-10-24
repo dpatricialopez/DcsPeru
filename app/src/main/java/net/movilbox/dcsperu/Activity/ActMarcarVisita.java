@@ -125,6 +125,15 @@ public class ActMarcarVisita extends AppCompatActivity implements View.OnClickLi
             btn_tomar_pedido.setOnClickListener(this);
         }
 
+        Button btn_auto_venta = (Button) findViewById(R.id.btn_auto_venta);
+        if (btn_auto_venta != null) {
+            if(mydb.inventarioPropio()){
+                btn_auto_venta.setVisibility(View.VISIBLE);
+                btn_auto_venta.setOnClickListener(this);
+            }
+
+        }
+
         Button btn_inventariar = (Button) findViewById(R.id.btn_inventariar);
         if (btn_inventariar != null) {
             btn_inventariar.setOnClickListener(this);
@@ -492,6 +501,17 @@ public class ActMarcarVisita extends AppCompatActivity implements View.OnClickLi
                 } else {
                     Toast.makeText(this, "Esta opción no esta habilitada offline", Toast.LENGTH_LONG).show();
                 }
+
+                break;
+
+            case R.id.btn_auto_venta:
+
+                    Bundle bundle4 = new Bundle();
+                    Intent intent4 = new Intent(this, ActTomarAutoVenta.class);
+
+                bundle4.putSerializable("value", mDescribable);
+                intent4.putExtras(bundle4);
+                startActivity(intent4);
 
                 break;
         }

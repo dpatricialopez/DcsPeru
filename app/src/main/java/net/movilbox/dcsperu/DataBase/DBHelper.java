@@ -977,6 +977,69 @@ public class DBHelper extends SQLiteOpenHelper {
         return referenciasSimses;
     }
 
+    public List<ReferenciasSims> getSimcardLocalVenta(String indicardor) {
+
+        List<ReferenciasSims> referenciasSimses = new ArrayList<>();
+        String sql = "SELECT inv.id_referencia AS id,rs.producto,count(inv.id_referencia) AS stock,rs.dias_inve,lp.valor_referencia AS precio_referencia,lp.valor_directo AS precio_publico,rs.quiebre\n" +
+                "FROM inventario inv \n" +
+                "INNER JOIN lista_precios lp ON lp.id_referencia = inv.id_referencia\n" +
+                "INNER JOIN referencia_simcard rs ON rs.id = inv.id_referencia\n" +
+                "WHERE inv.combo = 0 AND lp.idpos = ?\n" +
+                "GROUP BY inv.id_referencia;";
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, new String[] {indicardor});
+        ReferenciasSims referenciasSims;
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                referenciasSims = new ReferenciasSims();
+
+                referenciasSims.setId(cursor.getInt(0));
+                referenciasSims.setProducto(cursor.getString(1));
+                referenciasSims.setStock(cursor.getInt(2));
+                referenciasSims.setDias_inve(cursor.getDouble(3));
+                referenciasSims.setPrecio_referencia(cursor.getDouble(4));
+                referenciasSims.setPrecio_publico(cursor.getDouble(5));
+                referenciasSims.setQuiebre(cursor.getInt(6));
+                referenciasSims.setTipo_producto(1);//esto es para hacer una condicion en el adaptador del recycler AdapterRecyclerSimcardAutoVenta
+                referenciasSimses.add(referenciasSims);
+
+            } while (cursor.moveToNext());
+
+        }
+        return referenciasSimses;
+    }
+
+    public List<ReferenciasSims> getPaqueteSims(String indicardor) {
+
+        List<ReferenciasSims> referenciasSimsPaquete = new ArrayList<>();
+        String sql = "SELECT inv.paquete, count(inv.paquete) AS cantidad FROM inventario inv WHERE id_referencia = ? GROUP BY inv.paquete;";
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, new String[] {indicardor});
+        ReferenciasSims paqueteSims;
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                paqueteSims = new ReferenciasSims();
+
+                paqueteSims.setId(cursor.getInt(0));
+                paqueteSims.setStock(cursor.getInt(1));
+                paqueteSims.setTipo_producto(2);//esto es para hacer una condicion en el adaptador del recycler AdapterRecyclerSimcardAutoVenta
+
+                referenciasSimsPaquete.add(paqueteSims);
+
+            } while (cursor.moveToNext());
+
+        }
+        return referenciasSimsPaquete;
+    }
+
     public List<ReferenciasCombos> getProductosCombos(String indicardor) {
 
         List<ReferenciasCombos> referenciasComboses = new ArrayList<>();
@@ -1527,6 +1590,20 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return referenciaList;
+    }
+
+    public boolean inventarioPropio() {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String sql = "SELECT paquete, id_referencia, tipo_pro, count(id) cantidad FROM inventario inv";
+
+        Cursor cursor = db.rawQuery(sql,null);
+
+        if (cursor.moveToFirst()) {
+            return  true;
+        }
+
+        return false;
     }
 
     public boolean insertReferenciaCombos(EntLisSincronizar data) {
