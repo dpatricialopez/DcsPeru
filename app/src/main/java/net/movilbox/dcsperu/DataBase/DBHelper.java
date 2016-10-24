@@ -31,7 +31,9 @@ import net.movilbox.dcsperu.Entry.Nomenclatura;
 import net.movilbox.dcsperu.Entry.PedidosEntrega;
 import net.movilbox.dcsperu.Entry.PedidosEntregaSincronizar;
 import net.movilbox.dcsperu.Entry.Referencia;
+import net.movilbox.dcsperu.Entry.Referencia_equipo;
 import net.movilbox.dcsperu.Entry.ReferenciasCombos;
+import net.movilbox.dcsperu.Entry.ReferenciasEquipos;
 import net.movilbox.dcsperu.Entry.ReferenciasSims;
 import net.movilbox.dcsperu.Entry.RequestGuardarEditarPunto;
 import net.movilbox.dcsperu.Entry.ResponseCreatePunt;
@@ -116,6 +118,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String sqlRefesSim = "CREATE TABLE referencia_simcard (id INT, pn TEXT, stock INT, producto TEXT, dias_inve REAL, ped_sugerido TEXT, precio_referencia REAL, precio_publico REAL, quiebre INT, estado_accion INT )";
 
+        String sqlRefesEquipo = "CREATE TABLE referencia_equipo(id INT, descripcion TEXT, precioventa REAL, speech TEXT, pantalla TEXT, cam_frontal TEXT, cam_tras TEXT, flash TEXT, banda TEXT, " +
+                " memoria TEXT, expandible TEXT, bateria TEXT, bluetooth TEXT, tactil TEXT, tec_fisico TEXT, carrito_compras TEXT, correo TEXT, enrutador TEXT, radio TEXT, wifi TEXT, gps TEXT, so TEXT, " +
+                " web TEXT, precio_referencia REAL, precio_publico REAL, img TEXT, estado_accion INT  )";
+
         String sqlRefesCombo = "CREATE TABLE referencia_combo (id INT, descripcion TEXT, precioventa REAL, speech TEXT, pantalla TEXT, cam_frontal TEXT, cam_tras TEXT, flash TEXT, banda TEXT, " +
                 " memoria TEXT, expandible TEXT, bateria TEXT, bluetooth TEXT, tactil TEXT, tec_fisico TEXT, carrito_compras TEXT, correo TEXT, enrutador TEXT, radio TEXT, wifi TEXT, gps TEXT, so TEXT, " +
                 " web TEXT, precio_referencia REAL, precio_publico REAL, img TEXT, estado_accion INT  )";
@@ -123,6 +129,8 @@ public class DBHelper extends SQLiteOpenHelper {
         String sqlListaPrecio = "CREATE TABLE lista_precios (id_referencia INT, idpos INT, valor_referencia REAl, valor_directo REAL, tipo_pro INT, estado_accion INT )";
 
         String sqlReferencia = "CREATE TABLE detalle_combo (id INT, pn TEXT, producto TEXT, descripcion TEXT, precio_referencia REAL, precio_publico REAL, dias_inve REAL, stock INT, ped_sugerido REAL, img TEXT, estado_accion INT, id_padre INT )";
+
+        String sqlReferenciaequipo = "CREATE TABLE detalle_equipo (id INT, pn TEXT, producto TEXT, descripcion TEXT, precio_referencia REAL, precio_publico REAL, dias_inve REAL, stock INT, ped_sugerido REAL, img TEXT, estado_accion INT, id_padre INT )";
 
         String sqlNoVisita = "CREATE TABLE no_visita (idpos INT, motivo INT, observacion TEXT, latitud REAL, longitud REAL, iduser INT, iddis INT, db TEXT, perfil INT, fecha TEXT, hora TEXT)";
 
@@ -179,6 +187,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(sqlListaPrecio);
         db.execSQL(sqlRefesCombo);
         db.execSQL(sqlReferencia);
+        db.execSQL(sqlRefesEquipo);
+        db.execSQL(sqlReferenciaequipo);
         db.execSQL(sqlNoVisita);
         db.execSQL(sqlCabezaPedido);
         db.execSQL(sqlDetallePedido);
@@ -225,7 +235,9 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS referencia_simcard");
         db.execSQL("DROP TABLE IF EXISTS lista_precios");
         db.execSQL("DROP TABLE IF EXISTS referencia_combo");
+        db.execSQL("DROP TABLE IF EXISTS referencia_equipo");
         db.execSQL("DROP TABLE IF EXISTS detalle_combo");
+        db.execSQL("DROP TABLE IF EXISTS detalle_equipo");
         db.execSQL("DROP TABLE IF EXISTS grupo_combos");
         db.execSQL("DROP TABLE IF EXISTS grupo_sims");
         db.execSQL("DROP TABLE IF EXISTS inventario");
@@ -1107,6 +1119,76 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return referenciasComboses;
+
+    }
+
+    public List<ReferenciasEquipos> getProductosEquipos(String indicardor) {
+
+        List<ReferenciasEquipos> referenciasEquiposes = new ArrayList<>();
+
+        String sql = "SELECT refe.id, refe.descripcion, refe.precioventa, refe.speech, refe.pantalla, refe.cam_frontal, refe.cam_tras, refe.flash, refe.banda, refe.memoria, " +
+                " refe.expandible, refe.bateria, refe.bluetooth, refe.tactil, refe.tec_fisico, refe.carrito_compras, refe.correo, refe.enrutador, refe.radio, refe.wifi, refe.gps, " +
+                " refe.so, refe.web, 0 quiebre, lprecio.valor_referencia, lprecio.valor_directo, refe.img " +
+                " FROM " +
+                "   referencia_equipo refe INNER JOIN lista_precios lprecio ON lprecio.id_referencia = refe.id AND lprecio.idpos = ? AND " +
+                " lprecio.tipo_pro = 2 GROUP BY refe.id";
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, new String[] {indicardor});
+        ReferenciasEquipos referenciasEquipos;
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                referenciasEquipos = new ReferenciasEquipos();
+
+                referenciasEquipos.setId(cursor.getInt(0));
+                referenciasEquipos.setDescripcion(cursor.getString(1));
+                referenciasEquipos.setPrecio_referencia(cursor.getDouble(24));
+                referenciasEquipos.setPrecio_publico(cursor.getDouble(25));
+                referenciasEquipos.setImg(cursor.getString(26));
+
+                String sqlDestall = "SELECT deta.id, deta.pn, 0 stock, deta.producto, 0 dias_inve, 0 ped_sugerido, deta.descripcion, 0 stock_seguridad, lprecio.valor_referencia, " +
+                        " lprecio.valor_directo, deta.img, 0 quiebre " +
+                        "   FROM " +
+                        "     referenciasEquipos deta INNER JOIN lista_precios lprecio ON lprecio.id_referencia = deta.id " +
+                        "   WHERE " +
+                        "     deta.id_padre = ? AND " +
+                        "     lprecio.tipo_pro = 2 GROUP BY deta.id";
+
+                Cursor cursor_detalle = db.rawQuery(sqlDestall, new String[] {String.valueOf(cursor.getInt(0))});
+                List<Referencia_equipo> referenciaList = new ArrayList<>();
+                Referencia_equipo referencia;
+
+                if (cursor_detalle.moveToFirst()) {
+
+                    do {
+                        referencia = new Referencia_equipo();
+                        referencia.setId(cursor_detalle.getInt(0));
+                        referencia.setPn(cursor_detalle.getString(1));
+                        referencia.setStock(cursor_detalle.getInt(2));
+                        referencia.setProducto(cursor_detalle.getString(3));
+                        referencia.setDias_inve(cursor_detalle.getDouble(4));
+                        referencia.setPed_sugerido(cursor_detalle.getString(5));
+
+                        referencia.setPrecio_referencia(cursor_detalle.getDouble(8));
+                        referencia.setPrecio_publico(cursor_detalle.getDouble(9));
+
+                        referenciaList.add(referencia);
+
+                    } while (cursor_detalle.moveToNext());
+                }
+
+                referenciasEquipos.setReferenciaLis(referenciaList);
+
+                referenciasEquiposes.add(referenciasEquipos);
+
+            } while (cursor.moveToNext());
+
+        }
+
+        return referenciasEquiposes;
 
     }
 
