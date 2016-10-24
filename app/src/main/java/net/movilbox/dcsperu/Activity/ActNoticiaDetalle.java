@@ -10,12 +10,15 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -36,11 +39,14 @@ import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntNoticia;
 import net.movilbox.dcsperu.Entry.ListaNoticias;
 import net.movilbox.dcsperu.R;
+import net.movilbox.dcsperu.Services.ConnectionDetector;
 
 import java.util.Arrays;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
+
+import static net.movilbox.dcsperu.Entry.EntLoginR.setIndicador_refres;
 
 /**
  * Created by dianalopez on 14/10/16.
@@ -50,20 +56,23 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
     private TextView txtUrl, name, timestamp, txtStatusMsg ;
     private ImageView Image;
-    private Button file;
+    private TextView file;
     private DownloadManager.Request request;
     private List<EntNoticia> entNoticias;
     private com.nostra13.universalimageloader.core.ImageLoader imageLoader1;
     private DBHelper mydb;
-    private ScrollView Scroll;
+    ScrollView Scroll;
     private DisplayImageOptions options1;
     private SpotsDialog alertDialog;
     private RequestQueue rq;
     Integer[] array;
+    protected DialogEmail dialog;
     int idNoticia,idsiguiente, idanterior;
+    private ConnectionDetector connectionDetector;
     LinearLayout swipe;
     private long downloadReferenceId;
-
+    TextView txtlabelfile, txtlabelurl;
+    private float x1, x2,y1,y2,deltaX, deltaY;
     EntNoticia entNoticia;
 
     @Override
@@ -73,6 +82,11 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         setContentView(R.layout.noticia_detalle);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Noticia");
+        connectionDetector = new ConnectionDetector(this);
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        setSupportActionBar(toolbar);
 
         mydb = new DBHelper(this);
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
@@ -80,9 +94,11 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         imageLoader1.init(config);
         txtUrl = (TextView)findViewById(R.id.txtUrl);
         name = (TextView) findViewById(R.id.name);
+        txtlabelfile = (TextView)findViewById(R.id.labelfile);
+        txtlabelurl = (TextView) findViewById(R.id.labelEnlace);
         timestamp = (TextView) findViewById(R.id.timestamp);
         txtStatusMsg = (TextView) findViewById(R.id.txtStatusMsg);
-        file = (Button) findViewById(R.id.download);
+        file = (TextView) findViewById(R.id.download);
         Image = (ImageView) findViewById(R.id.ImageUrl);
         swipe=(LinearLayout)findViewById(R.id.swipe);
         Scroll=(ScrollView)findViewById(R.id.scroll);
@@ -97,9 +113,38 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
             idNoticia = Integer.parseInt(bundle.getString("idNew"));
         }
 
-
+        txtlabelurl.setText(R.string.Enlace);
+        txtlabelfile.setText(R.string.Adjuntos);
         loadnoticia(idNoticia);
 
+        Scroll.setOnTouchListener(
+                new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        // TODO Auto-generated method stub
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                x1 = event.getX();
+                                y1=event.getY();
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                x2 = event.getX();
+                                y2=event.getY();
+                                deltaX = x2 - x1;
+                                deltaY=y2-y1;
+                                Log.e("coord",Math.abs(deltaX)+"/"+Math.abs(deltaY));
+                                if (deltaX < 0 && Math.abs(deltaY)+10<Math.abs(deltaX)) {
+                                   siguiente(null);
+
+                                }else if(deltaX >0 && Math.abs(deltaY)+10<Math.abs(deltaX)){
+                                    anterior(null);
+                                }
+                                break;
+                        }
+
+                        return false;
+                    }
+                });
 
 
    /*     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -110,6 +155,16 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
                 finish();
             }
         });*/
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setIndicador_refres(1);
+                finish();
+            }
+        });
     }
 
     @Override
@@ -164,6 +219,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
 
     public void loadnoticia( int idNoticia){
+
         entNoticia=mydb.getNoticia(idNoticia);
         entNoticias=mydb.getNoticiaList();
         if (entNoticia.getContain()!=null){
@@ -246,7 +302,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
                         if(cursor.moveToFirst()){
                             int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
                             if (DownloadManager.STATUS_SUCCESSFUL != cursor.getInt(statusIndex)) {
-                                Toast.makeText(ActNoticiaDetalle.this, "Whoop!! Download Failed", Toast.LENGTH_LONG).show();
+                                Toast.makeText(ActNoticiaDetalle.this, "Fallo", Toast.LENGTH_LONG).show();
                                 return;
                             }
 
@@ -266,12 +322,19 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         else
             idsiguiente=array[Arrays.asList(array).indexOf(idNoticia)+1];
 
+        Bundle bundle = new Bundle();
+        Intent intent = new Intent(this, ActNoticiaDetalle.class);
+        bundle.putString("idNew", String.valueOf(idsiguiente));
+        intent.putExtras(bundle);
+        this.startActivity(intent);
 
-        if(mydb.getNoticia(idNoticia).getStatus()==0)
+        overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
+        finish();
+/*        if(mydb.getNoticia(idNoticia).getStatus()==0)
             MarcarComoLeìdo();
 
         idNoticia=idsiguiente;
-        loadnoticia(idsiguiente);
+        loadnoticia(idsiguiente);*/
     }
 
     public void anterior(View view){
@@ -279,13 +342,18 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
             idanterior=array[mydb.getNoticiaList().size()-1];
         else
             idanterior=array[Arrays.asList(array).indexOf(idNoticia)-1];
-
-
-        if(mydb.getNoticia(idNoticia).getStatus()==0)
+        Bundle bundle = new Bundle();
+        Intent intent = new Intent(this, ActNoticiaDetalle.class);
+        bundle.putString("idNew", String.valueOf(idanterior));
+        intent.putExtras(bundle);
+        this.startActivity(intent);
+        overridePendingTransition(R.animator.slide_in_left, R.animator.slide_out_left);
+        finish();
+      /*  if(mydb.getNoticia(idNoticia).getStatus()==0)
             MarcarComoLeìdo();
 
         idNoticia=idanterior;
-        loadnoticia(idanterior);
+        loadnoticia(idanterior)*/;
     }
 
     public void finish(View view){
@@ -363,8 +431,23 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.act_main_peru, menu);
+        //if(mydb.getUserLogin().getPerfil() == 1) {
+        getMenuInflater().inflate(R.menu.menu_new, menu);
+        //}
+
         return true;
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.refresh_new) {
+           Log.d("refresh","refresh");
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

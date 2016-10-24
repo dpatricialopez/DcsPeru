@@ -1,164 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/feed_bg"
-    android:orientation="vertical"
-        android:id="@+id/scrool">
-
-
-
-        <LinearLayout
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/feed_bg"
-    android:orientation="vertical"
-            android:id="@+id/swipe">
+    android:fitsSystemWindows="true"
+    tools:context="net.movilbox.dcsperu.Fragment.FragmentNoticia">
 
-            <LinearLayout
-        android:layout_width="fill_parent"
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/feed_item_margin"
-        android:layout_marginRight="@dimen/feed_item_margin"
-        android:layout_marginTop="@dimen/feed_item_margin"
-        android:background="@drawable/bg_parent_rounded_corner"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/feed_item_padding_bottom"
-        android:layout_marginBottom="@dimen/feed_item_margin"
-        android:paddingTop="@dimen/feed_item_padding_top" >
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="@dimen/feed_item_padding_left_right"
-            android:paddingRight="@dimen/feed_item_padding_left_right" >
-
-
-            <LinearLayout
-                android:layout_width="295dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/feed_item_profile_info_padd" >
-
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/feed_item_profile_name"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/timestamp"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/timestamp"
-                    android:textSize="@dimen/feed_item_timestamp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/txtStatusMsg"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="@dimen/feed_item_status_pad_left_right"
-            android:paddingRight="@dimen/feed_item_status_pad_left_right"
-            android:paddingTop="@dimen/feed_item_status_pad_top" />
-
-                <ImageView
-                    android:id="@+id/ImageUrl"
-                    android:layout_marginLeft="@dimen/feed_item_status_pad_left_right"
-                    android:layout_marginRight="@dimen/feed_item_status_pad_left_right"
-                    android:layout_width="match_parent"
-                    android:paddingBottom="10dp"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:scaleType="fitCenter" />
-
-                b
-
-                <TextView
-            android:id="@+id/txtUrl"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:linksClickable="true"
-            android:paddingBottom="10dp"
-            android:paddingLeft="@dimen/feed_item_status_pad_left_right"
-            android:paddingRight="@dimen/feed_item_status_pad_left_right"
-            android:textColorLink="@color/link" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/timestamp"
-            android:textSize="@dimen/feed_item_timestamp"
-            android:paddingLeft="@dimen/feed_item_status_pad_left_right"
-            android:paddingRight="@dimen/feed_item_status_pad_left_right"
-            tools:text="@string/Adjuntos"
-            android:visibility="visible"
-            android:typeface="normal" />
-
-
-                <Button
-            android:id="@+id/download"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:onClick="download"
-            android:paddingBottom="10dp"
-            android:paddingLeft="@dimen/feed_item_status_pad_left_right"
-            android:paddingRight="@dimen/feed_item_status_pad_left_right"
-            android:gravity="left"
-            android:textSize="12sp"
-            android:background="#00ffffff" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-            </LinearLayout>
+    </android.support.design.widget.AppBarLayout>
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="15dp">
+    <include layout="@layout/content_detalle_noticia" />
 
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/ic_dialog_alert"
-                    android:id="@+id/imback"
-                    android:layout_weight="1"
-                    android:tint="@drawable/selector"
-                    android:clickable="true"
-                    android:background="@null"
-                    android:onClick="anterior" />
+</android.support.design.widget.CoordinatorLayout>
 
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/ic_dialog_alert"
-                    android:id="@+id/imclose"
-                    android:tint="@drawable/selector"
-                    android:clickable="true"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:onClick="finish" />
 
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:tint="@drawable/selector"
-                    android:src="@android:drawable/ic_dialog_alert"
-                    android:id="@+id/imnext"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:onClick="siguiente" />
-            </LinearLayout>
 
-        </LinearLayout>
 
-</ScrollView>
