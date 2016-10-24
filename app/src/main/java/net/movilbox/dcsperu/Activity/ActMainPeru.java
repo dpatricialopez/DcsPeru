@@ -1,7 +1,9 @@
 package net.movilbox.dcsperu.Activity;
 
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,6 +20,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -254,7 +257,8 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-
+        Log.e("serviciotracing",String.valueOf(isMyServiceRunning(SetTracingServiceWeb.class)));
+        Log.e("serviciomonitoring",String.valueOf(isMyServiceRunning(MonitoringService.class)));
         int id = item.getItemId();
 
         if (id == R.id.nav_cerrar_sesion) {
@@ -548,6 +552,16 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
         }
     }
 
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
     private void setPuntoSincronizar(final List<RequestGuardarEditarPunto> puntoList) {
 
         String url = String.format("%1$s%2$s", getString(R.string.url_base), "guardar_punto");
