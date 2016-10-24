@@ -69,6 +69,8 @@ public class ActTomarPedido extends AppCompatActivity {
 
         tabsAdapter.addFragment(new FragmentCombos(thumbs.getId_pos(), thumbs.getIdZona()), "COMBOS");
 
+        tabsAdapter.addFragment(new FragmentCombos(thumbs.getId_pos(), thumbs.getIdZona()), "Equipos");
+
 
         viewPager.setAdapter(tabsAdapter);
         tabLayout.setupWithViewPager(viewPager);

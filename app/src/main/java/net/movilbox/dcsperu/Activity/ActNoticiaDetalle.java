@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -80,13 +82,17 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.noticia_detalle);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Noticia");
         connectionDetector = new ConnectionDetector(this);
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        if (connectionDetector.isConnected()) {
+            toolbar.setTitle("Noticia");
+            toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        } else {
+            toolbar.setBackgroundColor(Color.RED);
+            toolbar.setTitle("Noticia Offline");
+        }
+
 
         mydb = new DBHelper(this);
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
@@ -146,17 +152,16 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
                     }
                 });
 
-
-   /*     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
-        });*/
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        });
+
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,7 +218,14 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
     public void download(View v)
     {
-        Log.d("Strin", "uryl" );
+        Snackbar.make(v, "Descargar Archivo", Snackbar.LENGTH_LONG)
+                .setAction("Acción", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.i("Snackbar", "Pulsada acción snackbar!");
+                    }
+                })
+                .show();
         downloadByDownloadManager(entNoticia.getFile_url(), entNoticia.getFileName());
     }
 

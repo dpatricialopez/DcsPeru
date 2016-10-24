@@ -12,6 +12,9 @@ public class ResponseVenta {
     @SerializedName("referencias_combos")
     private List<ReferenciasCombos> referenciasCombosList;
 
+    @SerializedName("referencias_equipos")
+    private List<ReferenciasEquipos> referenciasEquiposList;
+
     public static int id_posStacti;
 
     public static int getId_posStacti() {
@@ -30,6 +33,14 @@ public class ResponseVenta {
 
     public static void setResponseVentaStatic(ResponseVenta responseVentaStatic) {
         ResponseVenta.responseVentaStatic = responseVentaStatic;
+    }
+
+    public List<ReferenciasEquipos> getReferenciasEquiposList() {
+        return referenciasEquiposList;
+    }
+
+    public void setReferenciasEquiposList(List<ReferenciasEquipos> referenciasEquiposList) {
+        this.referenciasEquiposList = referenciasEquiposList;
     }
 
     public List<ReferenciasSims> getReferenciasSimsList() {
