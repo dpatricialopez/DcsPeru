@@ -111,7 +111,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         Image = (ImageView) findViewById(R.id.ImageUrl);
         swipe=(LinearLayout)findViewById(R.id.swipe);
         Scroll=(ScrollView)findViewById(R.id.scroll);
-        anim = AnimationUtils.loadAnimation(getApplicationContext(), R.animator.slide_in_right);
+
         options1 = new DisplayImageOptions.Builder()
                 .cacheInMemory()
                 .cacheOnDisc()
@@ -143,10 +143,10 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
                                 deltaX = x2 - x1;
                                 deltaY=y2-y1;
                                 Log.e("coord",Math.abs(deltaX)+"/"+Math.abs(deltaY));
-                                if (deltaX < 0 && Math.abs(deltaY)+10<Math.abs(deltaX)) {
-                                   siguiente(null);
+                                if (deltaX < 0 && Math.abs(deltaY)+10<Math.abs(deltaX))
+                                  siguiente(null);
 
-                                }else if(deltaX >0 && Math.abs(deltaY)+10<Math.abs(deltaX)){
+                                else if(deltaX >0 && Math.abs(deltaY)+10<Math.abs(deltaX)){
                                     anterior(null);
                                 }
                                 break;
@@ -324,39 +324,49 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     }
 
     public void siguiente(View view){
+        Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_out_left));
 
         if (Arrays.asList(array).indexOf(idNoticia)>=mydb.getNoticiaList().size()-1)
             idsiguiente=array[0];
         else
             idsiguiente=array[Arrays.asList(array).indexOf(idNoticia)+1];
 
-        Bundle bundle = new Bundle();
+       /* Bundle bundle = new Bundle();
         Intent intent = new Intent(this, ActNoticiaDetalle.class);
         bundle.putString("idNew", String.valueOf(idsiguiente));
         intent.putExtras(bundle);
         this.startActivity(intent);
 
         overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
-        finish();
+        finish();*/
 /*        if(mydb.getNoticia(idNoticia).getStatus()==0)
-            MarcarComoLeìdo();
+            MarcarComoLeìdo();*/
 
         idNoticia=idsiguiente;
-        loadnoticia(idsiguiente);*/
+        loadnoticia(idsiguiente);
+        Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_in_right));
     }
 
     public void anterior(View view){
+        Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_out_right));
         if (Arrays.asList(array).indexOf(idNoticia)==0)
             idanterior=array[mydb.getNoticiaList().size()-1];
         else
             idanterior=array[Arrays.asList(array).indexOf(idNoticia)-1];
-        Bundle bundle = new Bundle();
+
+
+
+        idNoticia=idanterior;
+        loadnoticia(idanterior);
+        Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_in_left));
+
+/*        Bundle bundle = new Bundle();
         Intent intent = new Intent(this, ActNoticiaDetalle.class);
         bundle.putString("idNew", String.valueOf(idanterior));
         intent.putExtras(bundle);
         this.startActivity(intent);
-        overridePendingTransition(R.animator.slide_in_left, R.animator.slide_out_left);
-        finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
+        finish();*/
       /*  if(mydb.getNoticia(idNoticia).getStatus()==0)
             MarcarComoLeìdo();
 

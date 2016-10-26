@@ -28,7 +28,7 @@
     </android.support.design.widget.AppBarLayout>
 
 
-        <include layout="@layout/test"/>
+        <include layout="@layout/content_detalle_noticia"/>
     </LinearLayout>
 
 

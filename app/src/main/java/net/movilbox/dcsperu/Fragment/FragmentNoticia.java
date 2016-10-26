@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -31,6 +32,7 @@ public class FragmentNoticia extends BaseVolleyFragment {
     private AdaptadorNoticia listadapter;
     private List<EntNoticia> listaNoticias;
     ListView listView;
+    Spinner sptag;
 
     public FragmentNoticia() {
 
@@ -44,6 +46,7 @@ public class FragmentNoticia extends BaseVolleyFragment {
         View view =  inflater.inflate(R.layout.content_noticia, container, false);
         mydb = new DBHelper(getActivity());
         listView = (ListView) view.findViewById(R.id.lista_noticia);
+        sptag=(Spinner) view.findViewById(R.id.spTag);
         connectionDetector = new ConnectionDetector(getActivity());
         entNoticia1=new EntNoticia();
 
