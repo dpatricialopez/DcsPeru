@@ -58,6 +58,7 @@ import net.movilbox.dcsperu.Fragment.FragmenMarcarvisita;
 import net.movilbox.dcsperu.Fragment.FragmentAceptPedido;
 import net.movilbox.dcsperu.Fragment.FragmentAceptPedidoVendedor;
 import net.movilbox.dcsperu.Fragment.FragmentBajasSupervisor;
+import net.movilbox.dcsperu.Fragment.Fragment_connect;
 import net.movilbox.dcsperu.Fragment.FragmentHome;
 import net.movilbox.dcsperu.Fragment.FragmentHomeRep;
 import net.movilbox.dcsperu.Fragment.FragmentHomeSuperPrin;
@@ -256,9 +257,10 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+        // Logs para verificar que los servicios si estèn corriendo
         Log.e("serviciotracing",String.valueOf(isMyServiceRunning(SetTracingServiceWeb.class)));
         Log.e("serviciomonitoring",String.valueOf(isMyServiceRunning(MonitoringService.class)));
+
         int id = item.getItemId();
 
         if (id == R.id.nav_cerrar_sesion) {
@@ -474,7 +476,11 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                     toolbar.setTitle("Noticias Offline");
                 }
 
-            } else if (id == R.id.nav_inventario) {
+            } else if (id == R.id.nav_disconnect) {
+                fragmentClass =Fragment_connect.class;
+                toolbar.setTitle("Conexión");
+             }
+                else if (id == R.id.nav_inventario) {
 
                 if (connectionDetector.isConnected()) {
                     toolbar.setTitle("Mi Inventario");
@@ -502,17 +508,8 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                 } else {
                     Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
                 }
-            }else if (id == R.id.nav_noticias) {
-
-                if (connectionDetector.isConnected()) {
-                    toolbar.setTitle("Mis Noticias");
-                    editaPunto = 0;
-                    accion = "Guardar";
-                    //fragmentClass = FragmentReportePedidosRepartidor.class;
-                } else {
-                    Toast.makeText(this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
-                }
             }
+
             try {
 
                 Fragment fragment = (Fragment) fragmentClass.newInstance();

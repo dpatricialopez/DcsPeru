@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/feed_bg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/feed_item_margin"
+        android:layout_marginRight="@dimen/feed_item_margin"
+        android:layout_marginTop="@dimen/feed_item_margin"
+        android:background="@drawable/bg_parent_rounded_corner"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/feed_item_margin"
+        android:paddingBottom="@dimen/feed_item_padding_bottom">
+
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:weightSum="1">
+
+            <TextView
+                android:text="PROMOCIÓN"
+                android:layout_width="match_parent"
+                android:textColor="@color/colorPrimary"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+                android:id="@+id/type"
+                android:layout_weight="0.8"
+                android:layout_marginLeft="5dp" />
+
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.2"
+            android:layout_height="match_parent"
+            android:paddingRight="15dp">
+
+            <ImageView
+                android:id="@+id/read"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_check_black_24dp"
+                android:tint="@color/color_gris"
+                android:scaleType="fitXY"
+
+                android:layout_gravity="right" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="7dp"
+                android:layout_marginTop="7dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:background="@drawable/rounded_corner"
+                    android:layout_width="7dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="339dp"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" >
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingLeft="@dimen/feed_item_profile_info_padd"
+                        android:layout_weight="0.8"
+                        android:elevation="22dp">
+
+                        <TextView
+                            android:id="@+id/name"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/feed_item_profile_name"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/timestamp"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/timestamp"
+                            android:textSize="@dimen/feed_item_timestamp" />
+
+                    </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/ImageUrl"
+                    android:layout_marginLeft="@dimen/feed_item_status_pad_left_right"
+                    android:layout_marginRight="@dimen/feed_item_status_pad_left_right"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitCenter"
+                    android:paddingBottom="@dimen/feed_item_timestamp"
+                    android:paddingTop="@dimen/feed_item_timestamp"
+                    android:adjustViewBounds="true"/>
+
+                <TextView
+                    android:id="@+id/txtStatusMsg"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="@dimen/feed_item_status_pad_left_right"
+                    android:paddingRight="@dimen/feed_item_status_pad_left_right"
+                    android:paddingTop="@dimen/feed_item_status_pad_top" />
+
+                    <TextView
+                        android:id="@+id/txtUrl"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:linksClickable="true"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="@dimen/feed_item_status_pad_left_right"
+                        android:paddingRight="@dimen/feed_item_status_pad_left_right"
+                        android:textColorLink="@color/link" />
+
+
+            </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/BrandButtonStyle2"
+            android:text="Ver"
+            android:gravity="center_vertical|center_horizontal"
+            android:id="@+id/button"
+            android:layout_gravity="right"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="0.8" />
+
+    </LinearLayout>
+
+</LinearLayout>

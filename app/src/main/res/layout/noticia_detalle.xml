@@ -3,9 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/feed_bg"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="net.movilbox.dcsperu.Fragment.FragmentNoticia">
+    tools:context="net.movilbox.dcsperu.Activity.ActBuscarPunto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -21,10 +27,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_detalle_noticia" />
+
+        <include layout="@layout/test"/>
+    </LinearLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>
-
 
 
 

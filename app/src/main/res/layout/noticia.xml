@@ -13,14 +13,26 @@
         android:layout_marginTop="@dimen/feed_item_margin"
         android:background="@drawable/bg_parent_rounded_corner"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/feed_item_padding_bottom"
         android:layout_marginBottom="@dimen/feed_item_margin"
-        android:paddingTop="@dimen/feed_item_padding_top" >
+        android:paddingBottom="@dimen/feed_item_padding_bottom">
+
+
+        <TextView
+            android:id="@+id/type"
+            android:text=""
+            android:layout_width="match_parent"
+            android:padding="5dp"
+            android:textColor="@color/white"
+            android:gravity="left|center"
+            android:background="@drawable/rounded_corner"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:paddingTop="@dimen/feed_item_padding_top"
             android:paddingLeft="@dimen/feed_item_padding_left_right"
             android:weightSum="1">
 
@@ -94,6 +106,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:linksClickable="true"
+
             android:paddingBottom="10dp"
             android:paddingLeft="@dimen/feed_item_status_pad_left_right"
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
@@ -110,7 +123,6 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp" />
     </LinearLayout>
-
 
 
 </LinearLayout>

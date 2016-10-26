@@ -8,23 +8,24 @@ import com.google.gson.annotations.SerializedName;
 
 public class EntNoticia {
 
+
     @SerializedName("id")
     private int id;
 
     @SerializedName("title")
-    private String  title;
+    private String title;
 
-    @SerializedName("contain")
-    private String contain;
+    @SerializedName("contenido")
+    private String contenido;
 
     @SerializedName("url")
     private String url;
 
-    @SerializedName("date")
+    @SerializedName("fecha")
     private String date;
 
-    @SerializedName("image")
-    private String image;
+    @SerializedName("url_image")
+    private String url_image;
 
     @SerializedName("file_name")
     private String file_name;
@@ -32,9 +33,20 @@ public class EntNoticia {
     @SerializedName("file_url")
     private String file_url;
 
-    @SerializedName("status")
-    private int status;
+    @SerializedName("estado")
+    private int estado;
 
+    @SerializedName("tipo")
+    private int tipo;
+
+    @SerializedName("fecha_lectura")
+    private String fecha_lectura;
+
+    @SerializedName("sincronizado")
+    private int sincronizado;
+
+    @SerializedName("vigencia")
+    private int vigencia;
 
     public int getId() {
         return id;
@@ -52,20 +64,20 @@ public class EntNoticia {
         this.title = title;
     }
 
-    public String getImge() {
-        return image;
+    public String getContain() {
+        return contenido;
     }
 
-    public void setImge(String image) {
-        this.image = image;
+    public void setContain(String contain) {
+        this.contenido = contain;
     }
 
-    public int getStatus() {
-        return status;
+    public String getUrl() {
+        return url;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getDate() {
@@ -76,41 +88,70 @@ public class EntNoticia {
         this.date = date;
     }
 
-    public String getUrl() {
-        return url;
+    public String getImage() {
+        return url_image;
     }
 
-    public void setUrl(String url) {
-        this.url = url;}
-
-    public String getContain() {
-        return contain ;
+    public void setImage(String image) {
+        this.url_image = image;
     }
 
-    public void setContain(String contain) {
-        this.contain = contain;
-
+    public String getFile_name() {
+        return file_name;
     }
 
-    public String getFileName() {
-        return file_name ;
-    }
-
-    public void setFileName(String file_name) {
+    public void setFile_name(String file_name) {
         this.file_name = file_name;
-
     }
 
     public String getFile_url() {
-        return file_url ;
+        return file_url;
     }
 
     public void setFile_url(String file_url) {
         this.file_url = file_url;
+    }
 
+    public int getStatus() {
+        return estado;
+    }
+
+    public void setStatus(int status) {
+        this.estado = status;
+    }
+
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getFecha_lectura() {
+        return fecha_lectura;
+    }
+
+    public void setFecha_lectura(String fecha_lectura) {
+        this.fecha_lectura = fecha_lectura;
+    }
+
+    public int getSincronizado() {
+        return sincronizado;
+    }
+
+    public void setSincronizado(int sincronizado) {
+        this.sincronizado = sincronizado;
+    }
+
+    public int getVigencia() {
+        return vigencia;
+    }
+
+    public void setVigencia(int vigencia) {
+        this.vigencia = vigencia;
     }
 }
-
 
 
 

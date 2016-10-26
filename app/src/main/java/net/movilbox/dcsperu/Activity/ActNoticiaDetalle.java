@@ -22,6 +22,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -76,13 +78,14 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     TextView txtlabelfile, txtlabelurl;
     private float x1, x2,y1,y2,deltaX, deltaY;
     EntNoticia entNoticia;
+    Animation anim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.noticia_detalle);
         connectionDetector = new ConnectionDetector(this);
+        setContentView(R.layout.noticia_detalle);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         if (connectionDetector.isConnected()) {
@@ -92,7 +95,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
             toolbar.setBackgroundColor(Color.RED);
             toolbar.setTitle("Noticia Offline");
         }
-
+        setSupportActionBar(toolbar);
 
         mydb = new DBHelper(this);
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
@@ -108,6 +111,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         Image = (ImageView) findViewById(R.id.ImageUrl);
         swipe=(LinearLayout)findViewById(R.id.swipe);
         Scroll=(ScrollView)findViewById(R.id.scroll);
+        anim = AnimationUtils.loadAnimation(getApplicationContext(), R.animator.slide_in_right);
         options1 = new DisplayImageOptions.Builder()
                 .cacheInMemory()
                 .cacheOnDisc()
@@ -162,14 +166,6 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
             }
         });
 
-
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setIndicador_refres(1);
-                finish();
-            }
-        });
     }
 
     @Override
@@ -218,15 +214,15 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
     public void download(View v)
     {
-        Snackbar.make(v, "Descargar Archivo", Snackbar.LENGTH_LONG)
-                .setAction("Acción", new View.OnClickListener() {
+        Snackbar.make(v, "¿Desea descargar el archivo adjunto?", Snackbar.LENGTH_LONG)
+                .setAction("Descargar", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.i("Snackbar", "Pulsada acción snackbar!");
+                        downloadByDownloadManager(entNoticia.getFile_url(), entNoticia.getFile_name());
                     }
                 })
                 .show();
-        downloadByDownloadManager(entNoticia.getFile_url(), entNoticia.getFileName());
+
     }
 
 
@@ -255,8 +251,8 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
             txtUrl.setVisibility(View.GONE);
         }
 
-        if (entNoticia.getImge()!=null ){
-            loadeImagenView(Image, entNoticia.getImge()                                                                                                                                          );
+        if (entNoticia.getImage()!=null ){
+            loadeImagenView(Image, entNoticia.getImage()                                                                                                                                          );
             Image.setVisibility(View.VISIBLE);
         }
         else{
@@ -268,9 +264,9 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
         }
 
-        if (entNoticia.getFileName() != null) {
+        if (entNoticia.getFile_name() != null) {
             file.setText(Html.fromHtml("<a>"
-                    + entNoticia.getFileName() + "</a> "));
+                    + entNoticia.getFile_name() + "</a> "));
             file.setMovementMethod(LinkMovementMethod.getInstance());
             file.setVisibility(View.VISIBLE);
 
@@ -280,7 +276,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         timestamp.setText(entNoticia.getDate());
         name.setText(entNoticia.getTitle());
 
-        loadeImagenView(Image, entNoticia.getImge());
+        loadeImagenView(Image, entNoticia.getImage());
         Scroll.fullScroll(View.FOCUS_UP);
 
     }
@@ -295,7 +291,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         request.allowScanningByMediaScanner();
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, outputFileName);
         request.setVisibleInDownloadsUi(true);
-        request.setMimeType(getMimeFromFileName(entNoticia.getFileName()));
+        request.setMimeType(getMimeFromFileName(entNoticia.getFile_name()));
         BroadcastReceiver receiver;
 
          downloadReferenceId = downloadManager.enqueue(request);

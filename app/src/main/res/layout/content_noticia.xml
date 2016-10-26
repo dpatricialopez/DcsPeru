@@ -4,10 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:background="@color/feed_bg"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="net.movilbox.dcsperu.Fragment.FragmentNoticia"
     tools:showIn="@layout/activity_noticia">
+
+
 
     <ListView
         android:layout_width="fill_parent"

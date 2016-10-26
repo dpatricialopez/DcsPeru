@@ -131,6 +131,14 @@ public class AdaptadorNoticia extends BaseAdapter {
 
         final ViewHolder holder = (ViewHolder) convertView.getTag();
         holder.name.setText(data.get(position).getTitle());
+
+        if (data.get(position).getTipo()==0){
+             holder.type.setText("NOTICIA");
+        }
+        else   {
+            holder.type.setText("PROMOCIÒN");
+        }
+
         holder.timestamp.setText(data.get(position).getDate());
 
         String contenido;
@@ -162,8 +170,8 @@ public class AdaptadorNoticia extends BaseAdapter {
             holder.txtUrl.setVisibility(View.GONE);
         }
 
-        if (data.get(position).getImge()!=null && connectionDetector.isConnected()){
-            loadeImagenView(holder.Image, data.get(position).getImge());
+        if (data.get(position).getImage()!=null && connectionDetector.isConnected()){
+            loadeImagenView(holder.Image, data.get(position).getImage());
             holder.Image.setVisibility(View.VISIBLE);
         }
         else{
@@ -180,27 +188,16 @@ public class AdaptadorNoticia extends BaseAdapter {
         }
 
 
-
-
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (connectionDetector.isConnected()){
                     Bundle bundle = new Bundle();
                     Intent intent = new Intent(actx, ActNoticiaDetalle.class);
                     bundle.putString("idNew", String.valueOf(data.get(position).getId()));
                     intent.putExtras(bundle);
                     actx.startActivity(intent);
-                }
-                else{
-                    Toast.makeText(actx, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
-                }
-
-
             }
         });
-
-
 
            return convertView;
     }
@@ -208,6 +205,7 @@ public class AdaptadorNoticia extends BaseAdapter {
     class ViewHolder {
 
         TextView name;
+        TextView type;
         TextView timestamp;
         TextView txtStatusMsg,txtUrl;
         ImageView read;
@@ -221,7 +219,9 @@ public class AdaptadorNoticia extends BaseAdapter {
             txtStatusMsg = (TextView) view.findViewById(R.id.txtStatusMsg);
             read = (ImageView) view.findViewById(R.id.read);
             Image = (ImageView) view.findViewById(R.id.ImageUrl);
+            type=(TextView) view.findViewById(R.id.type);
             button=(Button)view.findViewById(R.id.button);
+
             view.setTag(this);
 
         }

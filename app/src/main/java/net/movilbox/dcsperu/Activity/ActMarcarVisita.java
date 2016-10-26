@@ -88,11 +88,11 @@ public class ActMarcarVisita extends AppCompatActivity implements View.OnClickLi
         mydb = new DBHelper(this);
 
         if (connectionDetector.isConnected()) {
-            toolbar.setTitle("Marcar Visita");
+            toolbar.setTitle("Noticia");
             toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         } else {
             toolbar.setBackgroundColor(Color.RED);
-            toolbar.setTitle("Marcar Visita Offline");
+            toolbar.setTitle("Noticia Offline");
         }
 
         setSupportActionBar(toolbar);
