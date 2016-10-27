@@ -8,8 +8,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -18,6 +21,7 @@ import net.movilbox.dcsperu.Adapter.AdaptadorNoticia;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntNoticia;
 import net.movilbox.dcsperu.Entry.ListaNoticias;
+import net.movilbox.dcsperu.Entry.Motivos;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
 
@@ -30,15 +34,16 @@ public class FragmentNoticia extends BaseVolleyFragment {
     private AdaptadorNoticia adaptadorNoticia;
     private ConnectionDetector connectionDetector;
     private AdaptadorNoticia listadapter;
-    private List<EntNoticia> listaNoticias;
+    private List<ListaNoticias> noticiasArrayList;
+    ArrayList<String> tipos;
     ListView listView;
+    int indexTipo;
     Spinner sptag;
 
-    public FragmentNoticia() {
 
+    public FragmentNoticia() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,35 +54,66 @@ public class FragmentNoticia extends BaseVolleyFragment {
         sptag=(Spinner) view.findViewById(R.id.spTag);
         connectionDetector = new ConnectionDetector(getActivity());
         entNoticia1=new EntNoticia();
+        tipos= new ArrayList();
+        tipos=mydb.getTiposNoticia();
+        tipos.add(0,"Todos");
+        String[] type = tipos.toArray(new String[tipos.size()]);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.textview_spinner, type);;
+        sptag.setAdapter(spinnerArrayAdapter);
+        sptag.setSelection(0);
+        sptag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                indexTipo = position;
+                cargarNoticias();
+            }
 
-        String response="[{'id':'0','tipo':'0','title':'noticia1','contenido':'Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos.', 'url':'http://www.w3schools.com/html/pic_mountain.jpg', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 1','file_name'='file1.doc','file_url':'https://sites.google.com/site/cursoscei/cursos/excel/docsexcel/AcumuladosporMeses.xls?attredirects=0&d=1','estado':'0','fecha_lectura':'Oct 6','sincronizado':'1','vigencia':'1'}, {'id':'1','tipo':'1','title':'noticia2','contenido':'', 'url':'http://www.w3schools.com/html/pic_mountain.jpg', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 2','status':'1','file_name'='file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','sincronizado':'1','vigencia':'1'}]";
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
 
-        JSONnews(response );
+        });
 
+       cargarNoticias();
         return view;
+
     }
 
+
     private void cargarNoticias() {
-        listaNoticias = mydb.getNoticiaList();
+        ListaNoticias listaNoticias= new ListaNoticias();
+        noticiasArrayList=mydb.getNoticiaList();
+        if (indexTipo==0) {
+            for (int i=0; i<tipos.size()-1;i++) {
+                listaNoticias.addAll(noticiasArrayList.get(i));
+            }
+        }
+        else{
+            listaNoticias = noticiasArrayList.get(indexTipo-1);
+        }
         AdaptadorNoticia adaptadorNoticia = new AdaptadorNoticia(getActivity(), listaNoticias);
         listView.setAdapter(adaptadorNoticia);
     }
 
-    public void JSONnews(String response){
+    /*public void JSONnews(String response){
         Gson gson = new Gson();
-        final ListaNoticias listaNoticia =gson.fromJson(response, ListaNoticias.class);
-        final ArrayList<Integer> eliminar=new ArrayList<>();
-        final ArrayList<Integer> actualizar=new ArrayList<>();
-        final ListaNoticias insertar = new ListaNoticias();
+         ListaNoticias listaNoticia =gson.fromJson(response, ListaNoticias.class);
+         ArrayList<Integer> eliminar=new ArrayList<>();
+         ArrayList<Integer> actualizar=new ArrayList<>();
+        ListaNoticias insertar = new ListaNoticias();
+
+
+
 
         for (int i = 0; i < listaNoticia.size(); i++) {
-            if (listaNoticia.get(i).getVigencia() == 0) {
-                eliminar.add(listaNoticia.get(i).getId());
+            if (mydb.getNoticia(listaNoticia.get(i).getId())!=null){ //existe
+                if (listaNoticia.get(i).getVigencia() == 0) {
+                    eliminar.add(listaNoticia.get(i).getId());
+                }
+                else {//Actualizar
+                    actualizar.add(listaNoticia.get(i).getId());
+                }
             }
-            else  if (listaNoticia.get(i).getStatus() == 1) {
-                actualizar.add(listaNoticia.get(i).getId());
-            }
-            else{
+            else{ //Nueva
                 insertar.add(listaNoticia.get(i));
             }
         }
@@ -88,6 +124,6 @@ public class FragmentNoticia extends BaseVolleyFragment {
         cargarNoticias();
 
 
-    }
+    }*/
 
 }

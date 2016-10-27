@@ -6,4 +6,4 @@
     android:padding="8dp"
     android:textAllCaps="true"
     android:text="@string/app_name"
-    android:layout_height="wrap_content" />
+    android:layout_height="48dp" />

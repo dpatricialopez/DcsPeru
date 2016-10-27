@@ -39,6 +39,17 @@ public class EntSincronizar {
     @SerializedName("inventario")
     private int inventario;
 
+    @SerializedName("noticias")
+    private int noticias;
+
+    public int getNoticias() {
+        return noticias;
+    }
+
+    public void setNoticias(int noticias) {
+        this.noticias = noticias;
+    }
+
     public int getInventario() {
         return inventario;
     }

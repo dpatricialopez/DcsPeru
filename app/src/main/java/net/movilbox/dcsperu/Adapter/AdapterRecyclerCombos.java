@@ -40,7 +40,7 @@ public class AdapterRecyclerCombos extends RecyclerView.Adapter<RowViewHolderCom
     private int idpos;
     private ConnectionDetector connectionDetector;
 
-    public AdapterRecyclerCombos(Activity context, List<ReferenciasCombos> responseHomeList, int idpos, int iduser) {
+public AdapterRecyclerCombos(Activity context, List<ReferenciasCombos> responseHomeList, int idpos, int iduser) {
         super();
         this.context = context;
         this.responseHomeList = responseHomeList;

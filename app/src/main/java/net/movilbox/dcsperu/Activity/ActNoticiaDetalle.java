@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -25,7 +24,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.MimeTypeMap;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -45,12 +43,11 @@ import net.movilbox.dcsperu.Entry.ListaNoticias;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
-
-import static net.movilbox.dcsperu.Entry.EntLoginR.setIndicador_refres;
 
 /**
  * Created by dianalopez on 14/10/16.
@@ -62,16 +59,13 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     private ImageView Image;
     private TextView file;
     private DownloadManager.Request request;
-    private List<EntNoticia> entNoticias;
     private com.nostra13.universalimageloader.core.ImageLoader imageLoader1;
     private DBHelper mydb;
     ScrollView Scroll;
     private DisplayImageOptions options1;
-    private SpotsDialog alertDialog;
-    private RequestQueue rq;
     Integer[] array;
     protected DialogEmail dialog;
-    int idNoticia,idsiguiente, idanterior;
+    int idNoticia,idsiguiente, idanterior,indexTipo;
     private ConnectionDetector connectionDetector;
     LinearLayout swipe;
     private long downloadReferenceId;
@@ -121,6 +115,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
             idNoticia = Integer.parseInt(bundle.getString("idNew"));
+            indexTipo = Integer.parseInt(bundle.getString("indexTipo"));
         }
 
         txtlabelurl.setText(R.string.Enlace);
@@ -171,10 +166,22 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        array = new Integer[mydb.getNoticiaList().size()];
-        for (int i=0; i<mydb.getNoticiaList().size();i++){
-            array[i]=mydb.getNoticiaList().get(i).getId();
+        List<ListaNoticias> noticiasArrayList=mydb.getNoticiaList();
+        if(indexTipo==0) {
+            int index=0;
+            for (int i=0; i<noticiasArrayList.size();i++){
+                array = new Integer[noticiasArrayList.get(i).size()];
+                for (int j=0; j<noticiasArrayList.get(i).size();j++){
+                    index++;
+                    array[index]=noticiasArrayList.get(i).get(j).getId();}
+            }
         }
+        else{
+        array = new Integer[noticiasArrayList.get(indexTipo-1).size()];
+            for (int i=0; i<noticiasArrayList.get(indexTipo-1).size();i++){
+                    array[i]=noticiasArrayList.get(i).get(i).getId();
+            }
+    }
     }
 
     private void loadeImagenView(ImageView img_producto, String img) {
@@ -214,14 +221,19 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
     public void download(View v)
     {
-        Snackbar.make(v, "¿Desea descargar el archivo adjunto?", Snackbar.LENGTH_LONG)
-                .setAction("Descargar", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        downloadByDownloadManager(entNoticia.getFile_url(), entNoticia.getFile_name());
-                    }
-                })
-                .show();
+        if (connectionDetector.isConnected()) {
+            Snackbar.make(v, R.string.download_file, Snackbar.LENGTH_LONG)
+                    .setAction("Descargar", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            downloadByDownloadManager(entNoticia.getFile_url(), entNoticia.getFile_name());
+                        }
+                    })
+                    .show();
+        } else {
+            Snackbar.make(v, R.string.download_file_offline, Snackbar.LENGTH_LONG).show();
+        }
+
 
     }
 
@@ -229,7 +241,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     public void loadnoticia( int idNoticia){
 
         entNoticia=mydb.getNoticia(idNoticia);
-        entNoticias=mydb.getNoticiaList();
+
         if (entNoticia.getContain()!=null){
             txtStatusMsg.setText(entNoticia.getContain());
             txtStatusMsg.setVisibility(View.VISIBLE);

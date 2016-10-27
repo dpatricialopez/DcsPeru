@@ -131,14 +131,7 @@ public class AdaptadorNoticia extends BaseAdapter {
 
         final ViewHolder holder = (ViewHolder) convertView.getTag();
         holder.name.setText(data.get(position).getTitle());
-
-        if (data.get(position).getTipo()==0){
-             holder.type.setText("NOTICIA");
-        }
-        else   {
-            holder.type.setText("PROMOCIÒN");
-        }
-
+        holder.type.setText(data.get(position).getTipo());
         holder.timestamp.setText(data.get(position).getDate());
 
         String contenido;
@@ -194,6 +187,7 @@ public class AdaptadorNoticia extends BaseAdapter {
                     Bundle bundle = new Bundle();
                     Intent intent = new Intent(actx, ActNoticiaDetalle.class);
                     bundle.putString("idNew", String.valueOf(data.get(position).getId()));
+                    bundle.putString("indexTipo", String.valueOf(data.get(position).getId()));
                     intent.putExtras(bundle);
                     actx.startActivity(intent);
             }

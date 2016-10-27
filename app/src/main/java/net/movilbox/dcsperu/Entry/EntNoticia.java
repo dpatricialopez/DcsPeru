@@ -37,7 +37,7 @@ public class EntNoticia {
     private int estado;
 
     @SerializedName("tipo")
-    private int tipo;
+    private String tipo;
 
     @SerializedName("fecha_lectura")
     private String fecha_lectura;
@@ -120,11 +120,11 @@ public class EntNoticia {
         this.estado = status;
     }
 
-    public int getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(int tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 

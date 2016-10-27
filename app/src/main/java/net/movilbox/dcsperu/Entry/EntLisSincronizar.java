@@ -246,6 +246,151 @@ public class EntLisSincronizar extends EntEstandar {
     @SerializedName("combo")
     private int combo;
 
+    @SerializedName("id_noticia")
+    private int id_noticia;
+
+    @SerializedName("title")
+    private String title;
+
+    @SerializedName("contenido")
+    private String contenido;
+
+    @SerializedName("url")
+    private String url;
+
+    @SerializedName("fecha")
+    private String date;
+
+    @SerializedName("url_image")
+    private String url_image;
+
+    @SerializedName("file_name")
+    private String file_name;
+
+    @SerializedName("file_url")
+    private String file_url;
+
+    @SerializedName("estado")
+    private int estado;
+
+    @SerializedName("tipo")
+    private String tipo;
+
+    @SerializedName("fecha_lectura")
+    private String fecha_lectura;
+
+    public int getVigencia() {
+        return vigencia;
+    }
+
+    public void setVigencia(int vigencia) {
+        this.vigencia = vigencia;
+    }
+
+    public int getSincronizado() {
+        return sincronizado;
+    }
+
+    public void setSincronizado(int sincronizado) {
+        this.sincronizado = sincronizado;
+    }
+
+    public String getFecha_lectura() {
+        return fecha_lectura;
+    }
+
+    public void setFecha_lectura(String fecha_lectura) {
+        this.fecha_lectura = fecha_lectura;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
+    public String getFile_url() {
+        return file_url;
+    }
+
+    public void setFile_url(String file_url) {
+        this.file_url = file_url;
+    }
+
+    public String getFile_name() {
+        return file_name;
+    }
+
+    public void setFile_name(String file_name) {
+        this.file_name = file_name;
+    }
+
+    public String getUrl_image() {
+        return url_image;
+    }
+
+    public void setUrl_image(String url_image) {
+        this.url_image = url_image;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getId_noticia() {
+        return id_noticia;
+    }
+
+    public void setId_noticia(int id_noticia) {
+        this.id_noticia = id_noticia;
+    }
+
+    @SerializedName("sincronizado")
+
+    private int sincronizado;
+
+    @SerializedName("vigencia")
+    private int vigencia;
+
+
     private List<EntEstandar> entEstandarList;
 
     public List<EntEstandar> getEntEstandarList() {

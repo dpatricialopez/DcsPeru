@@ -44,10 +44,12 @@ import com.google.gson.Gson;
 import net.movilbox.dcsperu.Adapter.Base64;
 import net.movilbox.dcsperu.BuildConfig;
 import net.movilbox.dcsperu.DataBase.DBHelper;
+import net.movilbox.dcsperu.Entry.EntNoticia;
 import net.movilbox.dcsperu.Entry.EntSincronizar;
 import net.movilbox.dcsperu.Entry.ListPuntosSincronizar;
 import net.movilbox.dcsperu.Entry.ListSincronizarRepartidor;
 import net.movilbox.dcsperu.Entry.ListUpdateservice;
+import net.movilbox.dcsperu.Entry.ListaNoticias;
 import net.movilbox.dcsperu.Entry.NoVisita;
 import net.movilbox.dcsperu.Entry.RequestGuardarEditarPunto;
 import net.movilbox.dcsperu.Entry.SincronizarPedidos;
@@ -81,6 +83,7 @@ import net.movilbox.dcsperu.Services.SetTracingServiceWeb;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +111,8 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
     public ProgressDialog progressDialog;
     private int progressStatus = 0;
     private String mensaje = "";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,17 +170,7 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                 navigationView.inflateMenu(R.menu.drawer_supervisor);
 
             }
-            TextView view = (TextView) navigationView.getMenu().findItem( R.id.nav_noticias ).getActionView().findViewById( R.id.counter_txt );
 
-            //se setea el la notificacion; se debe poner una condicion para mostrar o no
-
-            if(mydb.getCantNoticias()==0){
-                view.setVisibility(View.GONE);
-            }
-            else{
-                view.setText(String.valueOf(mydb.getCantNoticias()));
-                view.setVisibility(View.VISIBLE);
-            }
 
         } else {
 
@@ -239,9 +234,53 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
             startActivity(intent12);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
+        String response="[{'id':'5','tipo':'Noticia','title':'noticia1','contenido':'Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos.', 'url':'', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 1','file_name':'file1.doc','file_url':'https://sites.google.com/site/cursoscei/cursos/excel/docsexcel/AcumuladosporMeses.xls?attredirects=0&d=1','estado':'0','fecha_lectura':'Oct 6','sincronizado':'1','vigencia':'1'}, " +
+                "{'id':'6','tipo':'Promoción','title':'noticia2','contenido':'', 'url':'http://www.w3schools.com/html/pic_mountain.jpg', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','sincronizado':'1','vigencia':'1'},{'id':'2','tipo':'Otra','title':'noticia3','contenido':'', 'url':'', 'url_image':'', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'1','fecha_lectura':'Oct 9','sincronizado':'1','vigencia':'1'}]";
 
+        JSONnews(response);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        TextView view = (TextView) navigationView.getMenu().findItem( R.id.nav_noticias ).getActionView().findViewById( R.id.counter_txt );
+
+        //se setea el la notificacion; se debe poner una condicion para mostrar o no
+
+        if(mydb.getCantNoticias()==0){
+            view.setVisibility(View.GONE);
+        }
+        else{
+            view.setText(String.valueOf(mydb.getCantNoticias()));
+            view.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void JSONnews(String response){
+        Gson gson = new Gson();
+        ListaNoticias listaNoticia =gson.fromJson(response, ListaNoticias.class);
+        ArrayList<Integer> eliminar=new ArrayList<>();
+        ArrayList<Integer> actualizar=new ArrayList<>();
+        ListaNoticias insertar = new ListaNoticias();
+
+        for (int i = 0; i < listaNoticia.size(); i++) {
+            if (mydb.getNoticia(listaNoticia.get(i).getId())!=null){ //existe
+                if (listaNoticia.get(i).getVigencia() == 0) {
+                    eliminar.add(listaNoticia.get(i).getId());
+                }
+                else {//Actualizar
+                    actualizar.add(listaNoticia.get(i).getId());
+                }
+            }
+            else{ //Nueva
+                insertar.add(listaNoticia.get(i));
+            }
+        }
+
+        mydb.insertNoticias(insertar);
+
+    }
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onBackPressed() {
@@ -270,9 +309,7 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
             finish();
 
         } else {
-
             sincronizarData();
-
             String title_toolbar = "";
             toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
@@ -544,12 +581,18 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                     if (noVisitaList.size() > 0) {
                         setSincroinizarNoVisita();
                     }
+                    else {
+                        ListaNoticias noticiaList = mydb.sincronizarNoticia();
+                        if (noticiaList.size() > 0) {
+                            setSincroinizarNoticia();
+                        }
+                    }
                 }
             }
         }
     }
 
-
+// Funciòn para verificar que los servicios si estàn corriendo
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -559,6 +602,7 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
         }
         return false;
     }
+
     private void setPuntoSincronizar(final List<RequestGuardarEditarPunto> puntoList) {
 
         String url = String.format("%1$s%2$s", getString(R.string.url_base), "guardar_punto");
@@ -785,6 +829,11 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                 ex.printStackTrace();
             }
         }
+        //Llamar noticias
+        ListaNoticias noticiaList = mydb.sincronizarNoticia();
+        if (noticiaList.size() > 0) {
+            setSincroinizarNoticia();
+        }
     }
 
     private void offLineDataRepartidor() {
@@ -961,8 +1010,6 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
 
             if(sincronizar.getMotivos() > 0) { mydb.deleteObject("motivos"); }
 
-            if(sincronizar.getInventario() > 0) { mydb.deleteObject("inventario"); }
-
             new Thread(new Runnable() {
                 public void run() {
 
@@ -1000,6 +1047,10 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                             case 8:
                                 mensaje = "Sincronizando Listas de inventario";
                                 mydb.insertLisInventario(sincronizar.getEntLisSincronizars().get(progressStatus));
+                                break;
+                            case 9:
+                                mensaje = "Sincronizando noticias y promociones";
+                                mydb.insertListaNoticias(sincronizar.getEntLisSincronizars().get(progressStatus));
                                 break;
                         }
 
@@ -1054,6 +1105,73 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
         intent.putExtras(bundle);
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    private void setSincroinizarNoticia() {
+
+        String url = String.format("%1$s%2$s", getString(R.string.url_base), "actualizar_noticia");
+        rq = Volley.newRequestQueue(this);
+        StringRequest jsonRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(final String response) {
+                        parseJSONNew(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+
+                List<SincronizarPedidos> sincronizarPedidosList = mydb.sincronizarPedido();
+                String parJSON = new Gson().toJson(sincronizarPedidosList, listSincronizarPedidos.class);
+                params.put("datos", parJSON);
+                params.put("bd", mydb.getUserLogin().getBd());
+                params.put("iddis", mydb.getUserLogin().getId_distri());
+                params.put("iduser", String.valueOf(mydb.getUserLogin().getId()));
+
+                return params;
+
+            }
+        };
+
+        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(100000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        rq.add(jsonRequest);
+
+    }
+
+    private void parseJSONNew(String response) {
+
+        Gson gson = new Gson();
+        if (!response.equals("[]")) {
+
+            final ListUpdateservice sincronizar = gson.fromJson(response, ListUpdateservice.class);
+
+            for (int i = 0; i < sincronizar.size(); i++) {
+                if (sincronizar.get(i).getEstado().equals("-1")) {
+                    Toast.makeText(this, sincronizar.get(i).getMsg(), Toast.LENGTH_LONG).show();
+                    mydb.deleteObject("cabeza_pedido");
+                    mydb.deleteObject("detalle_pedido");
+                } else if (sincronizar.get(i).getEstado().equals("0")) {
+                    if (mydb.deleteObject("cabeza_pedido"))
+                        mydb.deleteObject("detalle_pedido");
+                    Toast.makeText(this, sincronizar.get(i).getMsg(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        //Llamar no visitas...
+        List<NoVisita> noVisitaList = mydb.sincronizarNoVisita();
+        if (noVisitaList.size() > 0) {
+            setSincroinizarNoVisita();
+        }
+
     }
 
     @Override

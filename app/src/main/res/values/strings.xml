@@ -179,5 +179,7 @@
     <string name="vende_recargas">Vende Recargas</string>
     <string name="nro_m_vil">Nro Móvil</string>
     <string name="download_file">¿Desea descargar el archivo adunto?</string>
+    <string name="download_file_offline">De estar conectado a una red para poder descargar el archivo</string>
+    <string name="tipo_noticia">Tipo de Publicación</string>
 
 </resources>
