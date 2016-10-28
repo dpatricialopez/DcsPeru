@@ -234,8 +234,7 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
             startActivity(intent12);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
-        String response="[{'id':'89','tipo':'Noticia','title':'noticia1','contenido':'Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos.', 'url':'', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 1','file_name':'file1.doc','file_url':'https://sites.google.com/site/cursoscei/cursos/excel/docsexcel/AcumuladosporMeses.xls?attredirects=0&d=1','estado':'0','fecha_lectura':'Oct 6','sincronizado':'1','vigencia':'1'}, " +
-                "{'id':'9','tipo':'Promoción','title':'noticia2','contenido':'', 'url':'http://www.w3schools.com/html/pic_mountain.jpg', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','sincronizado':'1','vigencia':'1'},{'id':'2','tipo':'Otra','title':'noticia3','contenido':'', 'url':'', 'url_image':'', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','sincronizado':'1','vigencia':'1'}]";
+        String response="[{'id':'89','tipo':'Noticia','title':'noticia1','contenido':'Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos.', 'url':'', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 1','file_name':'file1.doc','file_url':'https://sites.google.com/site/cursoscei/cursos/excel/docsexcel/AcumuladosporMeses.xls?attredirects=0&d=1','estado':'0','fecha_lectura':'Oct 6','sincronizado':'1','vigencia':'1', 'keys':'no'}, {'id':'9','tipo':'Promoción','title':'noticia2','contenido':'', 'url':'http://www.w3schools.com/html/pic_mountain.jpg', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','sincronizado':'1','vigencia':'1','keys':'nuevo'},{'id':'2','tipo':'Noticia','title':'noticia3','contenido':'', 'url':'', 'url_image':'', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','sincronizado':'1','vigencia':'1','keys':'descuento vida nuevo'}]";
 
         JSONnews(response);
     }
@@ -565,7 +564,7 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
 
     }
 
-    private void sincronizarData() {
+    public void sincronizarData() {
         if (connectionDetector.isConnected()) {
             List<RequestGuardarEditarPunto> puntoList = mydb.getPuntosSincronizar("Sincronizar");
             if (puntoList.size() > 0) {

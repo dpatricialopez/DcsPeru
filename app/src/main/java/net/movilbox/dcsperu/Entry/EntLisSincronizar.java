@@ -279,6 +279,17 @@ public class EntLisSincronizar extends EntEstandar {
     @SerializedName("fecha_lectura")
     private String fecha_lectura;
 
+    @SerializedName("keys")
+    private String keys;
+
+    public String getKeys() {
+        return keys;
+    }
+
+    public void setKeys(String keys) {
+        this.keys = keys;
+    }
+
     public int getVigencia() {
         return vigencia;
     }

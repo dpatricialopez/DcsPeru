@@ -80,7 +80,7 @@ public class ActLoginUser extends AppCompatActivity implements View.OnClickListe
         gpsServices = new GpsServices(this);
 
         mydb = new DBHelper(this);
-        //mydb.ManualConnect(1);
+        mydb.InsertConnect(1);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         connectionDetector = new ConnectionDetector(this);
@@ -423,7 +423,7 @@ public class ActLoginUser extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnIngresar:
-
+                mydb.updateConnect(1);
                 if (gpsServices.getLatitude() == 0.0) {
                     gpsServices.showSettingsAlert();
                 } else {

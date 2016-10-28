@@ -48,6 +48,17 @@ public class EntNoticia {
     @SerializedName("vigencia")
     private int vigencia;
 
+    @SerializedName("keys")
+    private String keys;
+
+    public String getKeys() {
+        return keys;
+    }
+
+    public void setKeys(String keys) {
+        this.keys = keys;
+    }
+
     public int getId() {
         return id;
     }

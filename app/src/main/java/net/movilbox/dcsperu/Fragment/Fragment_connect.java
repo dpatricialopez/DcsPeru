@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import net.movilbox.dcsperu.Activity.ActMainPeru;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.R;
 
@@ -45,13 +46,16 @@ public class Fragment_connect extends BaseVolleyFragment  {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 String type;
                 if (swConnect.isChecked()){
-                    swConnect.setText("Conectado");
-                    type="Conexión";
+                    type="Modo Online";
+                    swConnect.setText(type);
+                    mydb.updateConnect(1);
+                    ((ActMainPeru)getActivity()).sincronizarData();
 
                 }
                 else{
-                    swConnect.setText("Desconectado");
-                    type="Desconexión";
+                    type="Modo Offline";
+                    swConnect.setText(type);
+                    mydb.updateConnect(0);
 
                 }
                 mydb.insertManualConnect(type, mydb.getUserLogin().getId(), Integer.parseInt(mydb.getUserLogin().getId_distri()), getNetworkClass(getContext()));

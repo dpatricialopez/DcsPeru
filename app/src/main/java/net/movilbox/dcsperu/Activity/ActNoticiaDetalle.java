@@ -135,7 +135,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         else{
             array = new Integer[noticiasArrayList.get(indexTipo-1).size()];
             for (int i=0; i<noticiasArrayList.get(indexTipo-1).size();i++){
-                array[i]=noticiasArrayList.get(i).get(i).getId();
+                array[i]=noticiasArrayList.get(indexTipo-1).get(i).getId();
             }
         }
 
@@ -156,7 +156,6 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
                                 y2=event.getY();
                                 deltaX = x2 - x1;
                                 deltaY=y2-y1;
-                                Log.e("coord",Math.abs(deltaX)+"/"+Math.abs(deltaY));
                                 if (deltaX < 0 && Math.abs(deltaY)+10<Math.abs(deltaX))
                                   siguiente(null);
 
@@ -340,7 +339,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     public void siguiente(View view){
 
         if (array.length>1) {
-            if (Arrays.asList(array).indexOf(idNoticia)>=mydb.getNoticiaList().size()-1)
+            if (Arrays.asList(array).indexOf(idNoticia)>=array.length-1)
                 idsiguiente=array[0];
             else
                 idsiguiente=array[Arrays.asList(array).indexOf(idNoticia)+1];
@@ -366,7 +365,7 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
         if (array.length>1) {
             if (Arrays.asList(array).indexOf(idNoticia) == 0)
-                idanterior = array[mydb.getNoticiaList().size() - 1];
+                idanterior = array[array.length - 1];
             else
                 idanterior = array[Arrays.asList(array).indexOf(idNoticia) - 1];
             Scroll.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out_right));
