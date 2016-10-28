@@ -55,7 +55,7 @@ public class Fragment_connect extends BaseVolleyFragment  {
 
                 }
                 mydb.insertManualConnect(type, mydb.getUserLogin().getId(), Integer.parseInt(mydb.getUserLogin().getId_distri()), getNetworkClass(getContext()));
-                Log.e("net", getNetworkClass(getContext()));
+
             }
 
         });

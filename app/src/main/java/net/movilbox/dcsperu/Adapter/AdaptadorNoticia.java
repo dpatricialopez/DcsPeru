@@ -31,13 +31,16 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import net.movilbox.dcsperu.Activity.ActMapsPunto;
 import net.movilbox.dcsperu.Activity.ActNoticiaDetalle;
 import net.movilbox.dcsperu.Activity.ActResponAvanBusqueda;
+import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntNoticia;
 import net.movilbox.dcsperu.Entry.EntRuteroList;
 import net.movilbox.dcsperu.Entry.ListaNoticias;
 import net.movilbox.dcsperu.Entry.ResponseHome;
 import net.movilbox.dcsperu.Fragment.FeedImageView;
+import net.movilbox.dcsperu.Fragment.FragmentNoticia;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
+import net.movilbox.dcsperu.utils.ImageLoaderNew;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -47,14 +50,21 @@ public class AdaptadorNoticia extends BaseAdapter {
 
     private Activity actx;
     private List<EntNoticia> data;
+    private int select;
     private com.nostra13.universalimageloader.core.ImageLoader imageLoader1;
     private DisplayImageOptions options1;
     private DecimalFormat format;
+    private DBHelper mydb;
     private ConnectionDetector connectionDetector;
+    public ImageLoaderNew imageLoaderNew;
 
-    public AdaptadorNoticia(Activity actx, List<EntNoticia> data) {
+    public AdaptadorNoticia(Activity actx, List<EntNoticia> data, int select) {
+
         this.actx = actx;
         this.data = data;
+        this.select=select;
+        mydb = new DBHelper(actx);
+        imageLoaderNew = new ImageLoaderNew(actx.getApplicationContext());
         connectionDetector = new ConnectionDetector(actx);
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(actx).build();
         imageLoader1 = com.nostra13.universalimageloader.core.ImageLoader.getInstance();
@@ -163,13 +173,17 @@ public class AdaptadorNoticia extends BaseAdapter {
             holder.txtUrl.setVisibility(View.GONE);
         }
 
-        if (data.get(position).getImage()!=null && connectionDetector.isConnected()){
+        /*if (data.get(position).getImage()!=null && connectionDetector.isConnected()){
             loadeImagenView(holder.Image, data.get(position).getImage());
             holder.Image.setVisibility(View.VISIBLE);
         }
         else{
             holder.Image.setVisibility(View.GONE);
-        }
+        }*/
+
+        holder.Image.setVisibility(View.VISIBLE);
+        imageLoaderNew.DisplayImage(data.get(position).getImage(),holder.Image);
+
 
         if (data.get(position).getStatus()==1){
 
@@ -184,10 +198,11 @@ public class AdaptadorNoticia extends BaseAdapter {
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                     Bundle bundle = new Bundle();
                     Intent intent = new Intent(actx, ActNoticiaDetalle.class);
                     bundle.putString("idNew", String.valueOf(data.get(position).getId()));
-                    bundle.putString("indexTipo", String.valueOf(data.get(position).getId()));
+                    bundle.putString("indexTipo", String.valueOf(select));
                     intent.putExtras(bundle);
                     actx.startActivity(intent);
             }
@@ -212,7 +227,7 @@ public class AdaptadorNoticia extends BaseAdapter {
             timestamp = (TextView) view.findViewById(R.id.timestamp);
             txtStatusMsg = (TextView) view.findViewById(R.id.txtStatusMsg);
             read = (ImageView) view.findViewById(R.id.read);
-            Image = (ImageView) view.findViewById(R.id.ImageUrl);
+                       Image = (ImageView) view.findViewById(R.id.ImageUrl);
             type=(TextView) view.findViewById(R.id.type);
             button=(Button)view.findViewById(R.id.button);
 

@@ -3246,7 +3246,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public int getCantNoticias() {
 
 
-        String sql = "SELECT count(*) FROM ListaNoticias where estado=0 AND vigencia=1 GROUP BY id";
+        String sql = "SELECT count(*) FROM ListaNoticias where estado=0";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor mCount = db.rawQuery(sql, null);
         if(mCount!=null){
@@ -3260,19 +3260,17 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public int updateStatusNoticiabyId(List id) {
-
-            int filasAfectadas = 0;
+    public int updateStatusNoticiabyId(int id) {
+            int success=0;
             SQLiteDatabase db = getWritableDatabase();
             if(db!=null){
                 ContentValues values = new ContentValues();
                 values.put("estado", 1);
-                for (int i=0;i<id.size();i++) {
-                    filasAfectadas =+db.update("ListaNoticias", values, "id = ?", new String[]{String.valueOf(id.get(i))});
-                }
+
+                    success =db.update("ListaNoticias", values, "id = ?", new String[]{String.valueOf(id)});
+
             }
-            db.close();
-            return filasAfectadas;
+            return success;
         }
 
 

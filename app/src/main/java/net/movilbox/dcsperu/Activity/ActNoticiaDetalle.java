@@ -120,6 +120,25 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
         txtlabelurl.setText(R.string.Enlace);
         txtlabelfile.setText(R.string.Adjuntos);
+        List<ListaNoticias> noticiasArrayList=mydb.getNoticiaList();
+        if(indexTipo==0) {
+
+            List<Integer> arr2= new ArrayList<>();
+            for (int i=0; i<noticiasArrayList.size();i++){
+                for (int j=0; j<noticiasArrayList.get(i).size();j++){
+                    arr2.add(noticiasArrayList.get(i).get(j).getId());
+                }
+            }
+            array= new Integer[arr2.size()];
+            arr2.toArray(array);
+        }
+        else{
+            array = new Integer[noticiasArrayList.get(indexTipo-1).size()];
+            for (int i=0; i<noticiasArrayList.get(indexTipo-1).size();i++){
+                array[i]=noticiasArrayList.get(i).get(i).getId();
+            }
+        }
+
         loadnoticia(idNoticia);
 
         Scroll.setOnTouchListener(
@@ -163,26 +182,6 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        List<ListaNoticias> noticiasArrayList=mydb.getNoticiaList();
-        if(indexTipo==0) {
-            int index=0;
-            for (int i=0; i<noticiasArrayList.size();i++){
-                array = new Integer[noticiasArrayList.get(i).size()];
-                for (int j=0; j<noticiasArrayList.get(i).size();j++){
-                    index++;
-                    array[index]=noticiasArrayList.get(i).get(j).getId();}
-            }
-        }
-        else{
-        array = new Integer[noticiasArrayList.get(indexTipo-1).size()];
-            for (int i=0; i<noticiasArrayList.get(indexTipo-1).size();i++){
-                    array[i]=noticiasArrayList.get(i).get(i).getId();
-            }
-    }
-    }
 
     private void loadeImagenView(ImageView img_producto, String img) {
 
@@ -291,6 +290,9 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         loadeImagenView(Image, entNoticia.getImage());
         Scroll.fullScroll(View.FOCUS_UP);
 
+        if(mydb.getNoticia(idNoticia).getStatus()==0)
+            MarcarComoLeìdo(idNoticia);
+
     }
 
     public void downloadByDownloadManager(String url, String outputFileName) {
@@ -336,41 +338,42 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
     }
 
     public void siguiente(View view){
-        Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_out_left));
 
-        if (Arrays.asList(array).indexOf(idNoticia)>=mydb.getNoticiaList().size()-1)
-            idsiguiente=array[0];
-        else
-            idsiguiente=array[Arrays.asList(array).indexOf(idNoticia)+1];
+        if (array.length>1) {
+            if (Arrays.asList(array).indexOf(idNoticia)>=mydb.getNoticiaList().size()-1)
+                idsiguiente=array[0];
+            else
+                idsiguiente=array[Arrays.asList(array).indexOf(idNoticia)+1];
 
-       /* Bundle bundle = new Bundle();
-        Intent intent = new Intent(this, ActNoticiaDetalle.class);
-        bundle.putString("idNew", String.valueOf(idsiguiente));
-        intent.putExtras(bundle);
-        this.startActivity(intent);
+           /* Bundle bundle = new Bundle();
+            Intent intent = new Intent(this, ActNoticiaDetalle.class);
+            bundle.putString("idNew", String.valueOf(idsiguiente));
+            intent.putExtras(bundle);
+            this.startActivity(intent);
 
-        overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
-        finish();*/
-/*        if(mydb.getNoticia(idNoticia).getStatus()==0)
-            MarcarComoLeìdo();*/
-
-        idNoticia=idsiguiente;
-        loadnoticia(idsiguiente);
-        Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_in_right));
+            overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_right);
+            finish();*/
+    /*        if(mydb.getNoticia(idNoticia).getStatus()==0)
+                MarcarComoLeìdo();*/
+            Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_out_left));
+            idNoticia=idsiguiente;
+            loadnoticia(idsiguiente);
+            Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_in_right));
+        }
     }
 
     public void anterior(View view){
-        Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_out_right));
-        if (Arrays.asList(array).indexOf(idNoticia)==0)
-            idanterior=array[mydb.getNoticiaList().size()-1];
-        else
-            idanterior=array[Arrays.asList(array).indexOf(idNoticia)-1];
 
-
-
-        idNoticia=idanterior;
-        loadnoticia(idanterior);
-        Scroll.startAnimation( AnimationUtils.loadAnimation(getApplicationContext(),R.anim.slide_in_left));
+        if (array.length>1) {
+            if (Arrays.asList(array).indexOf(idNoticia) == 0)
+                idanterior = array[mydb.getNoticiaList().size() - 1];
+            else
+                idanterior = array[Arrays.asList(array).indexOf(idNoticia) - 1];
+            Scroll.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out_right));
+            idNoticia = idanterior;
+            loadnoticia(idanterior);
+            Scroll.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_left));
+        }
 
 /*        Bundle bundle = new Bundle();
         Intent intent = new Intent(this, ActNoticiaDetalle.class);
@@ -396,88 +399,10 @@ public class ActNoticiaDetalle  extends AppCompatActivity {
         return map.getMimeTypeFromExtension(ext);
     }
 
-    private void MarcarComoLeìdo() {
-
-
-        /*alertDialog.show();
-        String url = String.format("%1$s%2$s", getString(R.string.url_base), "guardar_pedido");
-        rq = Volley.newRequestQueue(this);
-
-        StringRequest jsonRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // response
-                        parseJSON(response);
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // error
-                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                            Toast.makeText(ActNoticiaDetalle.this, "Error de tiempo de espera", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof AuthFailureError) {
-                            Toast.makeText(ActNoticiaDetalle.this, "Error Servidor", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof ServerError) {
-                            Toast.makeText(ActNoticiaDetalle.this, "Server Error", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof NetworkError) {
-                            Toast.makeText(ActNoticiaDetalle.this, "Error de red", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof ParseError) {
-                            Toast.makeText(ActNoticiaDetalle.this, "Error al serializar los datos", Toast.LENGTH_LONG).show();
-                        }
-
-                        alertDialog.dismiss();
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("iduser", String.valueOf(mydb.getUserLogin().getId()));
-                params.put("iddis", mydb.getUserLogin().getId_distri());
-                params.put("idNoticia", String.valueOf(idNoticia));
-                return params;
-            }
-        };
-        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(100000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        rq.add(jsonRequest);*/
-    }
-
-    public void parseJSON(String response){
-
-
-        Gson gson = new Gson();
-
-        final ListaNoticias listaNoticia =gson.fromJson(response, ListaNoticias.class);
-
-
-        mydb.deleteObject("ListaNoticias");
-        boolean success= mydb.insertNoticias(listaNoticia);
+    private void MarcarComoLeìdo(int id) {
+        mydb.updateStatusNoticiabyId(id);
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //if(mydb.getUserLogin().getPerfil() == 1) {
-        getMenuInflater().inflate(R.menu.menu_new, menu);
-        //}
-
-        return true;
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.refresh_new) {
-           Log.d("refresh","refresh");
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
 }

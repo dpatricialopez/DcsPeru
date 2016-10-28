@@ -78,7 +78,7 @@ public class FragmentNoticia extends BaseVolleyFragment {
 
     }
 
-
+public void hola(){}
     private void cargarNoticias() {
         ListaNoticias listaNoticias= new ListaNoticias();
         noticiasArrayList=mydb.getNoticiaList();
@@ -90,7 +90,8 @@ public class FragmentNoticia extends BaseVolleyFragment {
         else{
             listaNoticias = noticiasArrayList.get(indexTipo-1);
         }
-        AdaptadorNoticia adaptadorNoticia = new AdaptadorNoticia(getActivity(), listaNoticias);
+
+        AdaptadorNoticia adaptadorNoticia = new AdaptadorNoticia(getActivity(), listaNoticias, sptag.getSelectedItemPosition());
         listView.setAdapter(adaptadorNoticia);
     }
 
