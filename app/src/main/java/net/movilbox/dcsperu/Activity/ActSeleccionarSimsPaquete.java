@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import net.movilbox.dcsperu.Adapter.AdapterRecyclerSimcardAutoVentaPaquete;
 import net.movilbox.dcsperu.DataBase.DBHelper;
+import net.movilbox.dcsperu.Entry.EntReferenciaSol;
 import net.movilbox.dcsperu.Entry.ListaPaquete;
 import net.movilbox.dcsperu.Entry.ReferenciasSims;
 import net.movilbox.dcsperu.Entry.ResponseMarcarPedido;
@@ -28,6 +29,7 @@ import net.movilbox.dcsperu.Entry.Serie;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
@@ -41,6 +43,10 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
     private ReferenciasSims idReferencia;
     private ResponseMarcarPedido mDescribable;
     private RecyclerView rvSimsPaquete;
+
+
+
+
     private GridLayoutManager gridLayoutManagerVertical;
     private AdapterRecyclerSimcardAutoVentaPaquete adapter;
     private DBHelper mydb;
@@ -55,6 +61,9 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
         setContentView(R.layout.activity_seleccionar_sims_paquete);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         connectionDetector = new ConnectionDetector(this);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         if (connectionDetector.isConnected()) {
             toolbar.setTitle("Paquete");
             toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -62,10 +71,6 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
             toolbar.setBackgroundColor(Color.RED);
             toolbar.setTitle("Paquete Offline");
         }
-        setSupportActionBar(toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,6 +95,20 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
         super.onStart();
         mydb = new DBHelper(this);
         getSimcardLocalPaquete();
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        MenuItem item2 = menu.add("Guardar");
+        item2.setIcon(R.drawable.ic_save_white_24dp); // sets icon
+        item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        item2.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                //Guardar Aceptacion de pedidos validaciones
+                return true;
+            }
+        });
     }
 
     private void getSimcardLocalPaquete() {
@@ -199,5 +218,7 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
             }
         }
     }
+
+
 }
 
