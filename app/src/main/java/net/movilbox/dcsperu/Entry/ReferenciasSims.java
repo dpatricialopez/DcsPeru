@@ -2,10 +2,13 @@ package net.movilbox.dcsperu.Entry;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * Created by germangarcia on 7/05/16.
  */
-public class ReferenciasSims {
+public class ReferenciasSims implements Serializable {
 
     private int id_auto_carrito;
 
@@ -36,8 +39,14 @@ public class ReferenciasSims {
     @SerializedName("quiebre")
     private int quiebre;
 
+    @SerializedName("listaPaquete")
+    private List<ListaPaquete> listaPaquete;
+
     @SerializedName("estado_accion")
     private int estado_accion;
+
+    @SerializedName("id_producto")
+    private int id_producto;
 
     public int cantidadPedida;
 
@@ -48,6 +57,15 @@ public class ReferenciasSims {
     public int tipo_producto;
 
     public String url_imagen;
+
+
+    public List<ListaPaquete> getListaPaquete() {
+        return listaPaquete;
+    }
+
+    public void setListaPaquete(List<ListaPaquete> listaPaquete) {
+        this.listaPaquete = listaPaquete;
+    }
 
     public double getPrecio_referencia() {
         return precio_referencia;

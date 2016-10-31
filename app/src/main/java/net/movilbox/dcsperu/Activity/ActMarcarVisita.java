@@ -506,8 +506,8 @@ public class ActMarcarVisita extends AppCompatActivity implements View.OnClickLi
 
             case R.id.btn_auto_venta:
 
-                    Bundle bundle4 = new Bundle();
-                    Intent intent4 = new Intent(this, ActTomarAutoVenta.class);
+                Bundle bundle4 = new Bundle();
+                Intent intent4 = new Intent(this, ActTomarAutoVenta.class);
 
                 bundle4.putSerializable("value", mDescribable);
                 intent4.putExtras(bundle4);

@@ -1009,6 +1009,8 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
 
             if(sincronizar.getMotivos() > 0) { mydb.deleteObject("motivos"); }
 
+            //if(sincronizar.getInventario() > 0) { mydb.deleteObject("inventario"); }
+
             new Thread(new Runnable() {
                 public void run() {
 

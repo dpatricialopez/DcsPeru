@@ -6,9 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Needed only if your app targets Android 5.0 (API level 21) or higher. -->
     <uses-feature android:name="android.hardware.location.gps" />
 
@@ -180,20 +180,16 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <activity
             android:name=".Activity.ActMapsPunto"
-            android:label="@string/title_activity_act_maps_punto"></activity>
-
-
+            android:label="@string/title_activity_act_maps_punto" />
         <activity
             android:name=".Activity.ActMapActualizar"
-            android:label="@string/title_activity_act_maps_punto"></activity>
-
+            android:label="@string/title_activity_act_maps_punto" />
         <activity
             android:name=".Activity.ActMapSuper"
             android:label="@string/title_activity_act_maps_punto" />
@@ -201,8 +197,12 @@
             android:name=".Activity.ActTomarAutoVenta"
             android:label="Autoventa"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".Activity.ActSimcardPaqueteVenta"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activity.ActSeleccionarSimsPaquete"
+            android:label="Paquetes"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Activity.ActSeleccionarSerieSims"></activity>
     </application>
 
 </manifest>

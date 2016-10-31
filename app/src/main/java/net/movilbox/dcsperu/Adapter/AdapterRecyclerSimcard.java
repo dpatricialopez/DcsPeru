@@ -62,6 +62,7 @@ public class AdapterRecyclerSimcard extends RecyclerView.Adapter<RowViewHolderSi
         }
 
         holder.txt_referemcia.setText(responseHomeList.get(position).getProducto());
+
         holder.txtStock.setText(String.format("STOCK  %s", responseHomeList.get(position).getStock()));
 
         holder.txtInven.setText(String.format("D. INV %s", (int) responseHomeList.get(position).getDias_inve()));

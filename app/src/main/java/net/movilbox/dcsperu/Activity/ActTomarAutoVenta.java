@@ -1,21 +1,31 @@
 package net.movilbox.dcsperu.Activity;
 
+
 import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import net.movilbox.dcsperu.Adapter.TabsAdapter;
+import net.movilbox.dcsperu.Entry.ReferenciasSims;
 import net.movilbox.dcsperu.Entry.ResponseMarcarPedido;
 import net.movilbox.dcsperu.Fragment.FragmentCombosAutoVenta;
 import net.movilbox.dcsperu.Fragment.FragmentSimcardAutoVenta;
 import net.movilbox.dcsperu.R;
 
-public class ActTomarAutoVenta extends AppCompatActivity {
+public class ActTomarAutoVenta extends AppCompatActivity implements FragmentSimcardAutoVenta.ListenerSimsRefe{
+
     private Bundle bundle;
     private ResponseMarcarPedido thumbs = new ResponseMarcarPedido();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,5 +60,14 @@ public class ActTomarAutoVenta extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+    }
+
+    @Override//metodo de la interfaz ListenerSimsRefe del fragmento FragmentSimcardAutoVenta
+    public void onFragmentSimsRefe(ReferenciasSims objRefSims) {
+        //a la mierda con esto creemos una actividad
+        Intent intent = new Intent(this,ActSeleccionarSimsPaquete.class);
+        intent.putExtra("ID_REFERENCIA",objRefSims);
+        intent.putExtra("value",thumbs);
+        startActivity(intent);
     }
 }

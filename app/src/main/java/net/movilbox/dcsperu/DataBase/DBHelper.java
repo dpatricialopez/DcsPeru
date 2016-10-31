@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import net.movilbox.dcsperu.Entry.CategoriasEstandar;
 import net.movilbox.dcsperu.Entry.Ciudad;
@@ -25,6 +26,7 @@ import net.movilbox.dcsperu.Entry.GrupoCombos;
 import net.movilbox.dcsperu.Entry.GrupoSims;
 import net.movilbox.dcsperu.Entry.ListaGrupos;
 import net.movilbox.dcsperu.Entry.ListaNoticias;
+import net.movilbox.dcsperu.Entry.ListaPaquete;
 import net.movilbox.dcsperu.Entry.Motivos;
 import net.movilbox.dcsperu.Entry.NoVisita;
 import net.movilbox.dcsperu.Entry.Nomenclatura;
@@ -41,6 +43,7 @@ import net.movilbox.dcsperu.Entry.ResponseEntregarPedido;
 import net.movilbox.dcsperu.Entry.ResponseHome;
 import net.movilbox.dcsperu.Entry.ResponseMarcarPedido;
 import net.movilbox.dcsperu.Entry.ResponseUser;
+import net.movilbox.dcsperu.Entry.Serie;
 import net.movilbox.dcsperu.Entry.Sincronizar;
 import net.movilbox.dcsperu.Entry.SincronizarPedidos;
 import net.movilbox.dcsperu.Entry.Subcategorias;
@@ -161,6 +164,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String sqlMotivos = "CREATE TABLE motivos (id INT, descripcion TEXT)";
 
         String sqlInventario = "CREATE TABLE inventario (id INT, id_referencia INT, serie TEXT, paquete INT, id_vendedor INT, distri INT, tipo_pro INT, tipo_tabla INT, estado_accion INT, accion TEXT, combo INT )";
+        String sqlCarritoAutoVenta = "CREATE TABLE carrito_autoventa (id_auto_carrito integer primary key AUTOINCREMENT, id_referencia INT, tipo_product INT, valor_refe REAL, valor_directo REAL, serie TEXT, id_punto INT, id_paquete INT, tipo_venta INT, id_producto INT,cantidad_soli INT)";
 
         db.execSQL(sqlNoticias);
         db.execSQL(sqlConnectManual);
@@ -204,6 +208,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(sqlIndicadores_detalle);
         db.execSQL(sqlMotivos);
         db.execSQL(sqlInventario);
+        db.execSQL(sqlCarritoAutoVenta);
 
     }
 
@@ -248,6 +253,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS grupo_combos");
         db.execSQL("DROP TABLE IF EXISTS grupo_sims");
         db.execSQL("DROP TABLE IF EXISTS inventario");
+        db.execSQL("DROP TABLE IF EXISTS carrito_autoventa");
         db.execSQL("DROP TABLE IF EXISTS Indicadores_detalle");
 
         this.onCreate(db);
@@ -1103,16 +1109,16 @@ public class DBHelper extends SQLiteOpenHelper {
         return referenciasSimses;
     }
 
-    public List<ReferenciasSims> getSimcardLocalVenta(String indicardor) {
+    public List<ReferenciasSims> getSimcardLocalVenta(String indicardor, int idpos) {
 
         List<ReferenciasSims> referenciasSimses = new ArrayList<>();
-        String sql = "SELECT inv.id_referencia AS id,rs.producto,count(inv.id_referencia) AS stock,rs.dias_inve,lp.valor_referencia AS precio_referencia,lp.valor_directo AS precio_publico,rs.quiebre\n" +
-                "FROM inventario inv \n" +
-                "INNER JOIN lista_precios lp ON lp.id_referencia = inv.id_referencia\n" +
-                "INNER JOIN referencia_simcard rs ON rs.id = inv.id_referencia\n" +
-                "WHERE inv.combo = 0 AND lp.idpos = ?\n" +
-                "GROUP BY inv.id_referencia;";
-
+        String sql = "SELECT inv.id_referencia AS id,rs.producto,count(inv.id_referencia) AS stock,rs.dias_inve,lp.valor_referencia AS precio_referencia,lp.valor_directo AS precio_publico,rs.quiebre,inv.tipo_pro,\n" +
+                    "(select sum(cantidad_soli) from carrito_autoventa where carrito_autoventa.id_referencia = inv.id_referencia) AS cantidad_soli\n" +
+                    "FROM inventario inv \n" +
+                    "INNER JOIN lista_precios lp ON lp.id_referencia = inv.id_referencia\n" +
+                    "INNER JOIN referencia_simcard rs ON rs.id = inv.id_referencia\n" +
+                    "WHERE inv.combo = 0 AND lp.idpos = ?\n" +
+                    "GROUP BY inv.id_referencia";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(sql, new String[] {indicardor});
@@ -1130,7 +1136,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 referenciasSims.setPrecio_referencia(cursor.getDouble(4));
                 referenciasSims.setPrecio_publico(cursor.getDouble(5));
                 referenciasSims.setQuiebre(cursor.getInt(6));
-                referenciasSims.setTipo_producto(1);//esto es para hacer una condicion en el adaptador del recycler AdapterRecyclerSimcardAutoVenta
+                referenciasSims.setId_punto(idpos);
+                referenciasSims.setTipo_producto(cursor.getInt(7));
+                referenciasSims.setCantidadPedida(cursor.getInt(8));
                 referenciasSimses.add(referenciasSims);
 
             } while (cursor.moveToNext());
@@ -1139,32 +1147,63 @@ public class DBHelper extends SQLiteOpenHelper {
         return referenciasSimses;
     }
 
-    public List<ReferenciasSims> getPaqueteSims(String indicardor) {
+    public ReferenciasSims getPaqueteSims(ReferenciasSims data) {
 
+        String idReferencia = String.valueOf(data.getId());
         List<ReferenciasSims> referenciasSimsPaquete = new ArrayList<>();
-        String sql = "SELECT inv.paquete, count(inv.paquete) AS cantidad FROM inventario inv WHERE id_referencia = ? GROUP BY inv.paquete;";
-
+        List<ListaPaquete> listaPaquete = new ArrayList<>();
+        String sql = "SELECT inv.paquete, count(inv.paquete) AS cantidad,SUM(CASE WHEN ca.cantidad_soli IS NULL THEN 0 ELSE ca.cantidad_soli END) AS cantidad_soli\n" +
+                "FROM inventario inv \n" +
+                "LEFT JOIN carrito_autoventa ca ON (ca.serie = inv.serie or (ca.id_paquete = inv.paquete and ca.id_paquete > 0))\n" +
+                "WHERE inv.id_referencia = ? GROUP BY inv.paquete;";
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(sql, new String[] {indicardor});
-        ReferenciasSims paqueteSims;
+        Cursor cursor = db.rawQuery(sql, new String[] {idReferencia});
+        ListaPaquete paquete;
 
         if (cursor.moveToFirst()) {
             do {
-
-                paqueteSims = new ReferenciasSims();
-
-                paqueteSims.setId(cursor.getInt(0));
-                paqueteSims.setStock(cursor.getInt(1));
-                paqueteSims.setTipo_producto(2);//esto es para hacer una condicion en el adaptador del recycler AdapterRecyclerSimcardAutoVenta
-
-                referenciasSimsPaquete.add(paqueteSims);
+                //data.getListaPaquete().setIdPaquete(cursor.getInt(0));
+                paquete = new ListaPaquete();
+                paquete.setIdPaquete(cursor.getInt(0));
+                paquete.setCantidadPaquete(cursor.getInt(1));
+                paquete.setCantidadSoli(cursor.getInt(2));
+                listaPaquete.add(paquete);
 
             } while (cursor.moveToNext());
-
+            data.setListaPaquete(listaPaquete);
         }
-        return referenciasSimsPaquete;
+        return data;
     }
+
+    public ListaPaquete getSerieSims(ListaPaquete data,int idReferencia) {
+
+        String idPaquete = String.valueOf(data.getIdPaquete());
+        List<Serie> listaSerie = new ArrayList<>();
+        String sql = "SELECT inv.serie, inv.id ,CASE WHEN ca.serie IS NULL THEN 0 ELSE 1 END AS chekeado\n" +
+                "FROM inventario inv \n" +
+                "LEFT JOIN carrito_autoventa ca ON ca.serie = inv.serie\n" +
+                "WHERE inv.id_referencia = ? AND paquete = ? AND tipo_pro = 1";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, new String[] {String.valueOf(idReferencia),idPaquete});
+        Serie serie;
+
+        if (cursor.moveToFirst()) {
+            do {
+                //data.getListaPaquete().setIdPaquete(cursor.getInt(0));
+                serie = new Serie();
+                serie.setSerie(cursor.getString(0));
+                serie.setId_producto(cursor.getInt(1));
+                serie.setCheck(cursor.getInt(2));
+                listaSerie.add(serie);
+
+            } while (cursor.moveToNext());
+            data.setListaSerie(listaSerie);
+        }
+        return data;
+    }
+
 
     public List<ReferenciasCombos> getProductosCombos(String indicardor) {
 
@@ -3077,6 +3116,135 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return resultado = "inserto";
     }
+
+    public int insertCarritoPaquete(ReferenciasSims data,int position,int tipo_venta) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        int serie;
+        int cantidadRefe = 0;
+
+        serie = data.getListaPaquete().get(position).getIdPaquete();
+
+        cantidadRefe = contarReferenciasPaquete(data.getId(),serie);//serie es el numero paquete
+
+
+        try {
+            values.put("id_referencia", data.getId());
+            values.put("tipo_product", data.getTipo_producto());
+            values.put("valor_refe", data.getPrecio_referencia());
+            values.put("valor_directo", data.getPrecio_publico());
+            values.put("id_punto", data.getId_punto());
+            values.put("serie", "0");
+            values.put("id_paquete", data.getListaPaquete().get(position).getIdPaquete());
+            values.put("tipo_venta", tipo_venta);
+            values.put("id_producto", 0);
+            values.put("cantidad_soli", cantidadRefe);
+            db.insert("carrito_autoventa", null, values);
+
+        } catch (SQLiteConstraintException e) {
+            Log.d("data", "failure to insert word,", e);
+            //no inserto
+            return 1;
+        } finally {
+            db.close();
+        }
+
+
+        return 2;//Inserto correctamente
+    }
+
+    public int insertCarritoUnidad(ReferenciasSims data,int position,int tipo_venta) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        List<Serie> listaSerie;
+        int count = 0;
+        boolean indicador = true;
+
+        listaSerie = data.getListaPaquete().get(position).getListaSerie();
+
+        for (int i=0;i<listaSerie.size();i++){
+
+            String serie = data.getListaPaquete().get(position).getListaSerie().get(i).getSerie();
+
+            Cursor cursor;
+            indicador = true;
+            String[] args = new String[] {serie};
+            String sql = "SELECT * FROM carrito_autoventa WHERE serie = ?";
+
+
+            cursor = db.rawQuery(sql, args);
+            if (cursor.moveToFirst()) {
+                indicador = false;
+            }
+
+            if(indicador){
+                try {
+
+                    if(data.getListaPaquete().get(position).getListaSerie().get(i).getCheck() == 1){
+
+                        values.put("id_referencia", data.getId());
+                        values.put("tipo_product", data.getTipo_producto());
+                        values.put("valor_refe", data.getPrecio_referencia());
+                        values.put("valor_directo", data.getPrecio_publico());
+                        values.put("id_punto", data.getId_punto());
+                        values.put("serie", data.getListaPaquete().get(position).getListaSerie().get(i).getSerie());
+                        values.put("id_paquete", data.getListaPaquete().get(position).getIdPaquete());
+                        values.put("tipo_venta", tipo_venta);
+                        values.put("cantidad_soli", 1);
+                        db.insert("carrito_autoventa", null, values);
+                        count = count + 1;
+                    }
+                } catch (SQLiteConstraintException e) {
+                    Log.d("Serie", "No inserto el serial:"+data.getListaPaquete().get(position).getListaSerie().get(i).getSerie(), e);
+                    return 1;
+                }
+            }
+        }
+        if(count > 0){
+            return 2;//Inserto correctamente
+        }else{
+            return 3;//No mandaron nuevos elementos
+        }
+
+    }
+
+    public int contarReferenciasPaquete(int id_referencia, int serie){
+
+        Cursor cursor;
+        int cantidad = 0;
+        String sql = "SELECT count(id_referencia) AS cantidad_soli " +
+                "FROM inventario " +
+                "WHERE id_referencia = ? AND paquete = ?";
+
+        String[] args = new String[] {String.valueOf(id_referencia),String.valueOf(serie)};
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        cursor = db.rawQuery(sql, args);
+
+        if (cursor.moveToFirst()) {
+            cantidad = cursor.getInt(0);
+        }
+        return cantidad;
+    }
+
+    /*public boolean validarCarritoUnidad(String serie) {
+
+        Cursor cursor;
+        boolean indicador = true;
+        String[] args = new String[] {serie};
+        String sql = "SELECT * FROM carrito_autoventa WHERE serie = ?";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        cursor = db.rawQuery(sql, args);
+        if (cursor.moveToFirst()) {
+            indicador = false;
+        }
+        return indicador;
+
+    }*/
 
     public boolean validarProducto(int id_producto, int id_pos) {
 

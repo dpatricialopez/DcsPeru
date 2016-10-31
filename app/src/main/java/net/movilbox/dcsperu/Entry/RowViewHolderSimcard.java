@@ -2,6 +2,7 @@ package net.movilbox.dcsperu.Entry;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 import net.movilbox.dcsperu.R;
 
 
-public class RowViewHolderSimcard extends RecyclerView.ViewHolder {
+public class RowViewHolderSimcard extends RecyclerView.ViewHolder  {
 
     public TextView txt_referemcia;
     public TextView txtStock;
@@ -19,6 +20,7 @@ public class RowViewHolderSimcard extends RecyclerView.ViewHolder {
     public TextView txtInven;
     public TextView txtprecio;
     public ImageView imgQuiebre;
+    public ImageView img_producto;
 
     public RowViewHolderSimcard(View itemView, Context context) {
         super(itemView);
@@ -30,6 +32,7 @@ public class RowViewHolderSimcard extends RecyclerView.ViewHolder {
         this.txtInven = (TextView) itemView.findViewById(R.id.txtInven);
         this.btnCatalogoSim = (Button) itemView.findViewById(R.id.btnCatalogoSim);
         this.imgQuiebre = (ImageView) itemView.findViewById(R.id.imgQuiebre);
+        this.img_producto = (ImageView) itemView.findViewById(R.id.img_producto);
 
     }
 
