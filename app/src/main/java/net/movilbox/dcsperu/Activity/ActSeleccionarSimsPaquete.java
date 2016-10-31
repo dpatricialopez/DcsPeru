@@ -34,6 +34,8 @@ import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 
+import static net.movilbox.dcsperu.Entry.EntLoginR.setIndicador_refres;
+
 /**
  * Created by jhonjimenez on 25/10/16.
  */
@@ -43,10 +45,6 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
     private ReferenciasSims idReferencia;
     private ResponseMarcarPedido mDescribable;
     private RecyclerView rvSimsPaquete;
-
-
-
-
     private GridLayoutManager gridLayoutManagerVertical;
     private AdapterRecyclerSimcardAutoVentaPaquete adapter;
     private DBHelper mydb;
@@ -71,9 +69,13 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
             toolbar.setBackgroundColor(Color.RED);
             toolbar.setTitle("Paquete Offline");
         }
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                setIndicador_refres(1);
                 finish();
             }
         });
@@ -88,6 +90,8 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
         RecyclerView.LayoutManager lManager = new LinearLayoutManager(this);
         rvSimsPaquete.setLayoutManager(lManager);
         gridLayoutManagerVertical = new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false);
+
+
     }
 
     @Override
@@ -97,18 +101,28 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
         getSimcardLocalPaquete();
     }
 
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        MenuItem item2 = menu.add("Guardar");
-        item2.setIcon(R.drawable.ic_save_white_24dp); // sets icon
-        item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        item2.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                //Guardar Aceptacion de pedidos validaciones
-                return true;
-            }
-        });
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        //if(mydb.getUserLogin().getPerfil() == 1) {
+        getMenuInflater().inflate(R.menu.menu_carrito, menu);
+        //}
+
+        return true;
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.carrito) {
+            Log.e("carrito","carrito");
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void getSimcardLocalPaquete() {

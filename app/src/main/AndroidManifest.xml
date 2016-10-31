@@ -205,7 +205,9 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".Activity.ActSeleccionarSerieSims"></activity>
+        <activity android:name=".Activity.ActSeleccionarSerieSims"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
