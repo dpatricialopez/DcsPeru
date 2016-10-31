@@ -1,16 +1,22 @@
 package net.movilbox.dcsperu.Activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import net.movilbox.dcsperu.Adapter.AdapterRecyclerSimcardAutoVentaPaquete;
@@ -20,6 +26,7 @@ import net.movilbox.dcsperu.Entry.ReferenciasSims;
 import net.movilbox.dcsperu.Entry.ResponseMarcarPedido;
 import net.movilbox.dcsperu.Entry.Serie;
 import net.movilbox.dcsperu.R;
+import net.movilbox.dcsperu.Services.ConnectionDetector;
 
 import java.util.List;
 
@@ -38,6 +45,7 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
     private AdapterRecyclerSimcardAutoVentaPaquete adapter;
     private DBHelper mydb;
     private int posicion;
+    private ConnectionDetector connectionDetector;
     private ReferenciasSims simsPaquete;
     private static final int ID_SELECCIONAR = 1;
 
@@ -45,6 +53,25 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seleccionar_sims_paquete);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        connectionDetector = new ConnectionDetector(this);
+        if (connectionDetector.isConnected()) {
+            toolbar.setTitle("Paquete");
+            toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        } else {
+            toolbar.setBackgroundColor(Color.RED);
+            toolbar.setTitle("Paquete Offline");
+        }
+        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         Intent intent = this.getIntent();
         idReferencia = (ReferenciasSims) intent.getSerializableExtra("ID_REFERENCIA");

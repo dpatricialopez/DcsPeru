@@ -46,6 +46,7 @@ import net.movilbox.dcsperu.Entry.ExpandableListAdapterSol;
 import net.movilbox.dcsperu.Entry.LisSolicitarProduct;
 import net.movilbox.dcsperu.Entry.ListEntReferenciaSol;
 import net.movilbox.dcsperu.R;
+import net.movilbox.dcsperu.Services.ConnectionDetector;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class FragmentSolProducto extends BaseVolleyFragment {
     private HashMap<String, List<EntReferenciaSol>> expandableListDetail;
     private EditText editSol;
     public TextView txtCupo;
+
     public ProgressDialog progressDialog;
     private DecimalFormat format;
 
