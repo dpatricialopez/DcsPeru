@@ -53,9 +53,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/swConnect"
-                            android:checked="true"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:text="Conectado" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
 
                     </RelativeLayout>

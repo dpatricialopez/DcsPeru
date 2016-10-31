@@ -102,22 +102,23 @@ public class FragmentNoticia extends BaseVolleyFragment {
         int id = sv.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
         TextView textView = (TextView) sv.findViewById(id);
         sv.setQueryHint("Buscar...");
-
-        // implementing the listener
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                //doSearch(s);
-                return s.length() < 4;
+
+                s = s.toLowerCase();
+                if (s.length()>3){
+                filteredNews = mydb.getNoticiaListQuery(s);
+                listas(filteredNews);}
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 newText = newText.toLowerCase();
+                if (newText.length()>3){
                 filteredNews = mydb.getNoticiaListQuery(newText);
-                listas(filteredNews);
-
+                listas(filteredNews);}
                 return true;
             }
         });
