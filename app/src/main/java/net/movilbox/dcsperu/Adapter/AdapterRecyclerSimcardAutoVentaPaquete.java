@@ -1,8 +1,8 @@
 package net.movilbox.dcsperu.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -86,7 +86,7 @@ public class AdapterRecyclerSimcardAutoVentaPaquete extends RecyclerView.Adapter
 
         }
 
-        public void bindPersona (ListaPaquete refeSims) {
+        public void bindPersona (final ListaPaquete refeSims) {
 
             imgQuiebre.setVisibility(View.GONE);
             if(refeSims.getIdPaquete() == 0){
@@ -104,25 +104,44 @@ public class AdapterRecyclerSimcardAutoVentaPaquete extends RecyclerView.Adapter
                 @Override
                 public void onClick(View v) {
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                    LayoutInflater inflater = ((Activity)ctx).getLayoutInflater();
+
+                    View view = inflater.inflate(R.layout.dialog_autoventa, null);
+
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                    builder.setView(view);
                     builder.setCancelable(false);
-                    builder.setTitle("Alerta");
-                    builder.setMessage("Que accion desea ejecutar?");
-                    builder.setNeutralButton("Cancelar",new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
+
+                    Button btnCancelar = (Button) view.findViewById(R.id.btnCancelar);
+                    Button btnAgregar = (Button) view.findViewById(R.id.btnAgregar);
+                    Button btnSeleccionar = (Button) view.findViewById(R.id.btnSelecionar);
+
+                    if(refeSims.getIdPaquete() == 0){
+                        btnAgregar.setVisibility(View.GONE);
+                    }
+
+                    final AlertDialog alertDialog = builder.create();
+
+                    btnCancelar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            alertDialog.dismiss();
                         }
-                    }).setNegativeButton("Agregar", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                    });
+                    btnAgregar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
                             listener.setIdPaquete(getAdapterPosition());
                         }
-                    }).setPositiveButton("Seleccionar", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                    });
+                    btnSeleccionar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
                             listener.setSerie(getAdapterPosition());
                         }
                     });
 
-                    builder.show();
+                    alertDialog.show();
                 }
             });
 

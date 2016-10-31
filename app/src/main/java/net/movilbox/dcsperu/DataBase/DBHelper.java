@@ -1152,9 +1152,9 @@ public class DBHelper extends SQLiteOpenHelper {
         String idReferencia = String.valueOf(data.getId());
         List<ReferenciasSims> referenciasSimsPaquete = new ArrayList<>();
         List<ListaPaquete> listaPaquete = new ArrayList<>();
-        String sql = "SELECT inv.paquete, count(inv.paquete) AS cantidad,SUM(CASE WHEN ca.cantidad_soli IS NULL THEN 0 ELSE ca.cantidad_soli END) AS cantidad_soli\n" +
+        String sql = "SELECT inv.paquete, count(inv.paquete) AS cantidad,(select sum(cantidad_soli) from carrito_autoventa where carrito_autoventa.id_paquete = inv.paquete AND carrito_autoventa.id_referencia = inv.id_referencia) AS cantidad_soli\n" +
                 "FROM inventario inv \n" +
-                "LEFT JOIN carrito_autoventa ca ON (ca.serie = inv.serie or (ca.id_paquete = inv.paquete and ca.id_paquete > 0))\n" +
+                "INNER JOIN referencia_simcard rs ON rs.id = inv.id_referencia\n" +
                 "WHERE inv.id_referencia = ? GROUP BY inv.paquete;";
 
         SQLiteDatabase db = this.getWritableDatabase();

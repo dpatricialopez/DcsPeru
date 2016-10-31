@@ -127,7 +127,7 @@ public class FragmentSimcardAutoVenta extends Fragment implements AdapterRecycle
         mListener = null;
     }
 
-    @Override
+    /*@Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         MenuItem item2 = menu.add("Carrito");
@@ -137,17 +137,17 @@ public class FragmentSimcardAutoVenta extends Fragment implements AdapterRecycle
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-                /*Bundle bundle = new Bundle();
+                Bundle bundle = new Bundle();
                 Intent intent = new Intent(getActivity(), ActCarritoPedido.class);
                 bundle.putInt("id_punto", mPosition);
                 bundle.putInt("id_usuario", mydb.getUserLogin().getId());
                 intent.putExtras(bundle);
-                startActivity(intent);*/
+                startActivity(intent);
 
                 return true;
             }
 
-        });
+        });*/
 
         /*// Implementing ActionBar Search inside a fragment
         MenuItem item = menu.add("Search");
@@ -178,9 +178,9 @@ public class FragmentSimcardAutoVenta extends Fragment implements AdapterRecycle
             }
         });
 
-        item.setActionView(sv);*/
+        item.setActionView(sv);
 
-    }
+    }*/
 
     @Override
     public void setIdReferencia(ReferenciasSims objRefsims) {

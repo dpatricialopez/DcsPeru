@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="24dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:orientation="vertical">
+        <TextView
+            android:text="SELECCIONE UNA ACCION"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"/>
+        <TextView
+            android:text="AGREGAR: Selecciona todo el paqute.\nSELECCIONAR: Seleccionar por numero de serie."
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="24dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layoutDirection="rtl"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnSelecionar"
+            android:text="Seleccionar"
+            android:layout_marginRight="8dp"
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+        <Button
+            android:id="@+id/btnAgregar"
+            android:text="Agregar"
+            android:layout_marginRight="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:textColor="@color/colorAccent"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+        <Button
+            android:id="@+id/btnCancelar"
+            android:text="Cancelar"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:textColor="@color/colorAccent"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+    </LinearLayout>
+
+</LinearLayout>

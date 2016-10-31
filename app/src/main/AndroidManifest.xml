@@ -197,11 +197,13 @@
             android:name=".Activity.ActTomarAutoVenta"
             android:label="Autoventa"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
         <activity
             android:name=".Activity.ActSeleccionarSimsPaquete"
             android:label="Paquetes"
             android:screenOrientation="portrait" />
+
         <activity android:name=".Activity.ActSeleccionarSerieSims"></activity>
     </application>
 

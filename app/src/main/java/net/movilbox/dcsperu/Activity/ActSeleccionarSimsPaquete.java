@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import net.movilbox.dcsperu.Adapter.AdapterRecyclerSimcardAutoVentaPaquete;
@@ -43,7 +44,7 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_simcard_ped);
+        setContentView(R.layout.activity_seleccionar_sims_paquete);
 
         Intent intent = this.getIntent();
         idReferencia = (ReferenciasSims) intent.getSerializableExtra("ID_REFERENCIA");
