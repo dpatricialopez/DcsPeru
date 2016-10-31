@@ -31,6 +31,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
 import net.movilbox.dcsperu.BuildConfig;
+import net.movilbox.dcsperu.DataBase.ConnectManagment;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntLoginR;
 import net.movilbox.dcsperu.Entry.ResponseUser;
@@ -51,6 +52,7 @@ import static net.movilbox.dcsperu.Entry.Coordenadas.setLongitud;
 import static net.movilbox.dcsperu.Entry.EntLoginR.setIndicador_refres;
 
 
+
 public class ActLoginUser extends AppCompatActivity implements View.OnClickListener {
 
     private TextView editUsuario;
@@ -67,6 +69,7 @@ public class ActLoginUser extends AppCompatActivity implements View.OnClickListe
     private String mensaje = "";
     private Handler handler = new Handler();
     public ProgressDialog progressDialog;
+    public ConnectManagment spref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +84,8 @@ public class ActLoginUser extends AppCompatActivity implements View.OnClickListe
 
         mydb = new DBHelper(this);
         mydb.InsertConnect(1);
+        spref= new ConnectManagment(this);
+        spref.CreateConnect(true);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         connectionDetector = new ConnectionDetector(this);
@@ -419,11 +424,16 @@ public class ActLoginUser extends AppCompatActivity implements View.OnClickListe
 
     }
 
+
+
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnIngresar:
-                mydb.updateConnect(1);
+  //              mydb.updateConnect(1);
+                spref.CreateConnect(true);
+
                 if (gpsServices.getLatitude() == 0.0) {
                     gpsServices.showSettingsAlert();
                 } else {

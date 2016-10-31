@@ -69,7 +69,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "MydbDealerPeru.db";
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, 22);
+        super(context, DATABASE_NAME, null, 23);
     }
 
     @Override

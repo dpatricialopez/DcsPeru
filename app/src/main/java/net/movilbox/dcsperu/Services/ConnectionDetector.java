@@ -6,16 +6,20 @@ package net.movilbox.dcsperu.Services;
 import android.content.Context;
 import android.net.ConnectivityManager;
 
+import net.movilbox.dcsperu.DataBase.ConnectManagment;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 
 public class ConnectionDetector {
 
     private Context _context;
     private DBHelper mydb;
+    public ConnectManagment spref;
 
     public ConnectionDetector(Context context){
         this._context = context;
         mydb = new DBHelper(context);
+        spref= new ConnectManagment(context);
+
     }
 
     public boolean isConnected() {
@@ -26,7 +30,7 @@ public class ConnectionDetector {
         if ( (check.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.CONNECTED ||
                 check.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.CONNECTING ||
                 check.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTING ||
-                check.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTED) && mydb.getConnect()==1) {
+                check.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTED) &&  spref.getModoConnect()) {
             //Toast.makeText(_context, " Connected ", Toast.LENGTH_LONG).show();
             return true;
         }else if (check.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.DISCONNECTED || check.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.DISCONNECTED  ) {

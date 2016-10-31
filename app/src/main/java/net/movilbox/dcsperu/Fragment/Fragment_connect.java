@@ -16,6 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import net.movilbox.dcsperu.Activity.ActMainPeru;
+import net.movilbox.dcsperu.DataBase.ConnectManagment;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.R;
 
@@ -24,6 +25,7 @@ public class Fragment_connect extends BaseVolleyFragment  {
     private Switch swConnect;
     private int estado;
     private DBHelper mydb;
+    public ConnectManagment spref;
 
     public Fragment_connect() {
         // Required empty public constructor
@@ -36,9 +38,18 @@ public class Fragment_connect extends BaseVolleyFragment  {
         View view = inflater.inflate(R.layout.fragment_connect, container, false);
 
         mydb = new DBHelper(getActivity());
+        spref= new ConnectManagment(getActivity());
+
 
         swConnect = (Switch) view.findViewById(R.id.swConnect);
+        String type;
+        swConnect.setChecked(spref.getModoConnect());
+        if (spref.getModoConnect())
+             type="Modo Online";
+        else
+            type="Modo Offline";
 
+        swConnect.setText(type);
 
         swConnect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -47,17 +58,17 @@ public class Fragment_connect extends BaseVolleyFragment  {
                 String type;
                 if (swConnect.isChecked()){
                     type="Modo Online";
-                    swConnect.setText(type);
-                    mydb.updateConnect(1);
+  //                 mydb.updateConnect(1);
+                    spref.CreateConnect(true);
                     ((ActMainPeru)getActivity()).sincronizarData();
 
                 }
                 else{
                     type="Modo Offline";
-                    swConnect.setText(type);
-                    mydb.updateConnect(0);
-
+ //                   mydb.updateConnect(0);
+                    spref.CreateConnect(false);
                 }
+                swConnect.setText(type);
                 mydb.insertManualConnect(type, mydb.getUserLogin().getId(), Integer.parseInt(mydb.getUserLogin().getId_distri()), getNetworkClass(getContext()));
 
             }
