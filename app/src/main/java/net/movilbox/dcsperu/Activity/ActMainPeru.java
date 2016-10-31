@@ -353,6 +353,8 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                 accion = "Guardar";
                 fragmentClass = FragmentHomeSuperPrin.class;
 
+            } else if (id == R.id.nav_venta_cliente) {
+                ventaCliente();
             } else if (id == R.id.nav_marcar_visita) {
 
                 toolbar.setTitle("Marcar Visita " + title_toolbar);
@@ -1104,6 +1106,13 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
         bundle.putString("accion", accion);
         bundle.putInt("idpos", editaPunto);
         intent.putExtras(bundle);
+        startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    private void ventaCliente() {
+        Intent intent = new Intent(this, ActTomarAutoVenta.class);
+        intent.putExtra("Tipo","VentaCliente");
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }

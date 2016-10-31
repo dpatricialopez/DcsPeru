@@ -255,7 +255,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS inventario");
         db.execSQL("DROP TABLE IF EXISTS carrito_autoventa");
         db.execSQL("DROP TABLE IF EXISTS Indicadores_detalle");
-
+        db.execSQL("DROP TABLE IF EXISTS indicadoresdas_detalle");
         this.onCreate(db);
 
     }
