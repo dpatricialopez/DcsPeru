@@ -45,9 +45,6 @@ public class EntNoticia {
     @SerializedName("sincronizado")
     private int sincronizado;
 
-    @SerializedName("vigencia")
-    private int vigencia;
-
     @SerializedName("keys")
     private String keys;
 
@@ -155,13 +152,6 @@ public class EntNoticia {
         this.sincronizado = sincronizado;
     }
 
-    public int getVigencia() {
-        return vigencia;
-    }
-
-    public void setVigencia(int vigencia) {
-        this.vigencia = vigencia;
-    }
 }
 
 

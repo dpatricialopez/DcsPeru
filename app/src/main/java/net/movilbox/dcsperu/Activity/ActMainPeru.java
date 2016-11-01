@@ -40,6 +40,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import net.movilbox.dcsperu.Adapter.Base64;
 import net.movilbox.dcsperu.BuildConfig;
@@ -81,6 +84,9 @@ import net.movilbox.dcsperu.Services.ConnectionDetector;
 import net.movilbox.dcsperu.Services.MonitoringService;
 import net.movilbox.dcsperu.Services.SetTracingServiceWeb;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -111,6 +117,7 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
     public ProgressDialog progressDialog;
     private int progressStatus = 0;
     private String mensaje = "";
+    ListaNoticias sincronizarNoticiasList;
 
 
 
@@ -234,10 +241,9 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
             startActivity(intent12);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
-        String response="[{'id':'89','tipo':'0','title':'noticia1','contenido':'Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos.', 'url':'', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 1','file_name':'file1.doc','file_url':'https://sites.google.com/site/cursoscei/cursos/excel/docsexcel/AcumuladosporMeses.xls?attredirects=0&d=1','estado':'0','fecha_lectura':'Oct 6','sincronizado':'1','vigencia':'1', 'keys':'no'}, {'id':'9','tipo':'1','title':'noticia2','contenido':'', 'url':'http://www.w3schools.com/html/pic_mountain.jpg', 'url_image':'http://www.w3schools.com/html/pic_mountain.jpg', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','sincronizado':'1','vigencia':'1','keys':'nuevo'},{'id':'2','tipo':'Noticia','title':'noticia3','contenido':'', 'url':'', 'url_image':'', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','sincronizado':'1','vigencia':'1','keys':'descuento vida nuevo'}]";
-        String tipos="[{'id':'0','tipo':'Noticia'}, {'id':'1','tipo':'Promociòn'}]";
+        String response="[{'id':'89','tipo':'0','title':'noticia1','contenido':'Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos.', 'url':'', 'url_image':'pic_mountain.jpg', 'fecha':'Oct 1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 6', 'keys':'no'}, {'id':'9','tipo':'1','title':'noticia2','contenido':'', 'url':'http://www.w3schools.com/html/pic_mountain.jpg', 'url_image':'pic_mountain.jpg', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','keys':'nuevo'},{'id':'2','tipo':'Noticia','title':'noticia3','contenido':'', 'url':'', 'url_image':'', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','keys':'descuento vida nuevo'}]";
 
-        JSONnews(response);
+        JSONParsernews(response);
     }
 
     @Override
@@ -257,7 +263,20 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
         }
     }
 
-    public void JSONnews(String response){
+    public void JSONnews(String response, ListaNoticias lista){
+
+        try {
+            JSONObject result = new JSONObject(response);
+            if(result.getInt("success")==1){
+                mydb.Noticias_sincronizadas(lista);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void JSONParsernews(String response){
+
         Gson gson = new Gson();
         ListaNoticias listaNoticia =gson.fromJson(response, ListaNoticias.class);
         ArrayList<Integer> eliminar=new ArrayList<>();
@@ -266,14 +285,14 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
 
         for (int i = 0; i < listaNoticia.size(); i++) {
             if (mydb.getNoticia(listaNoticia.get(i).getId())!=null){ //existe
-                if (listaNoticia.get(i).getVigencia() == 0) {
+              /*  if (listaNoticia.get(i).getVigencia() == 0) {
                     eliminar.add(listaNoticia.get(i).getId());
                 }
                 else {//Actualizar
                     actualizar.add(listaNoticia.get(i).getId());
-                }
-            }
-            else{ //Nueva
+                }*/
+                //}
+                // else{ //Nueva
                 insertar.add(listaNoticia.get(i));
             }
         }
@@ -584,7 +603,7 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                         setSincroinizarNoVisita();
                     }
                     else {
-                        ListaNoticias noticiaList = mydb.sincronizarNoticia();
+                        ListaNoticias noticiaList = mydb.sincronizarEstadoNoticia();
                         if (noticiaList.size() > 0) {
                             setSincroinizarNoticia();
                         }
@@ -832,7 +851,7 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
             }
         }
         //Llamar noticias
-        ListaNoticias noticiaList = mydb.sincronizarNoticia();
+        ListaNoticias noticiaList = mydb.sincronizarEstadoNoticia();
         if (noticiaList.size() > 0) {
             setSincroinizarNoticia();
         }
@@ -1119,14 +1138,15 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
     }
 
     private void setSincroinizarNoticia() {
-
+        sincronizarNoticiasList = mydb.sincronizarEstadoNoticia();
+        final ListaNoticias lista=sincronizarNoticiasList;
         String url = String.format("%1$s%2$s", getString(R.string.url_base), "actualizar_noticia");
         rq = Volley.newRequestQueue(this);
         StringRequest jsonRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String response) {
-                        parseJSONNew(response);
+                        JSONnews(response,lista);
                     }
                 },
                 new Response.ErrorListener() {
@@ -1140,13 +1160,12 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
 
-                List<SincronizarPedidos> sincronizarPedidosList = mydb.sincronizarPedido();
-                String parJSON = new Gson().toJson(sincronizarPedidosList, listSincronizarPedidos.class);
+
+                String parJSON = new Gson().toJson(sincronizarNoticiasList, ListaNoticias.class);
                 params.put("datos", parJSON);
-                params.put("bd", mydb.getUserLogin().getBd());
                 params.put("iddis", mydb.getUserLogin().getId_distri());
                 params.put("iduser", String.valueOf(mydb.getUserLogin().getId()));
-
+                params.put("db", mydb.getUserLogin().getBd());
                 return params;
 
             }
@@ -1154,34 +1173,6 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
 
         jsonRequest.setRetryPolicy(new DefaultRetryPolicy(100000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         rq.add(jsonRequest);
-
-    }
-
-    private void parseJSONNew(String response) {
-
-        Gson gson = new Gson();
-        if (!response.equals("[]")) {
-
-            final ListUpdateservice sincronizar = gson.fromJson(response, ListUpdateservice.class);
-
-            for (int i = 0; i < sincronizar.size(); i++) {
-                if (sincronizar.get(i).getEstado().equals("-1")) {
-                    Toast.makeText(this, sincronizar.get(i).getMsg(), Toast.LENGTH_LONG).show();
-                    mydb.deleteObject("cabeza_pedido");
-                    mydb.deleteObject("detalle_pedido");
-                } else if (sincronizar.get(i).getEstado().equals("0")) {
-                    if (mydb.deleteObject("cabeza_pedido"))
-                        mydb.deleteObject("detalle_pedido");
-                    Toast.makeText(this, sincronizar.get(i).getMsg(), Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-
-        //Llamar no visitas...
-        List<NoVisita> noVisitaList = mydb.sincronizarNoVisita();
-        if (noVisitaList.size() > 0) {
-            setSincroinizarNoVisita();
-        }
 
     }
 

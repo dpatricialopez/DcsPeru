@@ -7,16 +7,22 @@
 
 
     <!--URL BASE DESARROLLO -->
+    <string name="url_files">http://192.168.2.24:91/operadorbt/modulos/admin_promociones_noticias/archivos/files/</string>
+    <string name="url_images">http://192.168.2.24:91/operadorbt/modulos/admin_promociones_noticias/archivos/imgs/</string>
     <string name="url_base">http://192.168.2.24:91/app/servicios/services.php?solicitud=</string>
     <string name="url_base_correo">http://192.168.2.24:91/distribuidorbt/modulos/login/controlador.php</string>
 
     <!--&lt;!&ndash;URL BASE PRUEBAS-->
-    <!--    <string name="url_base">http://prueba.movilbox.net:88/movistar_peru/app_1107/servicios/services.php?solicitud=</string>
+    <!--       <string name="url_files">http://prueba.movilbox.net:88/movistar_peru/app_1107/operador/modulos/admin_promociones_noticias/archivos/files/</string>
+    <string name="url_images">http://prueba.movilbox.net:88/movistar_peru/app_1107/operador/modulos/admin_promociones_noticias/archivos/imgs/</string>
+    <string name="url_base">http://prueba.movilbox.net:88/movistar_peru/app_1107/servicios/services.php?solicitud=</string>
     <string name="url_base_correo">http://prueba.movilbox.net:88/movistar_peru/distribuidor/modulos/login/controlador.php</string>-->
 
     <!-- URL BASE PRODUCCION
-     <string name="url_base">https://peru.movilbox.net/app/servicios/services.php?solicitud=</string>
-     <string name="url_base_correo">https://peru.movilbox.net/distribuidor/modulos/login/controlador.php</string>-->
+    <string name="url_files">https://peru.movilbox.net/app/operadorbt/modulos/admin_promociones_noticias/archivos/files/</string>
+    <string name="url_images">https://peru.movilbox.net/app/operadorbt/modulos/admin_promociones_noticias/archivos/imgs/</string>
+    <string name="url_base">https://peru.movilbox.net/app/servicios/services.php?solicitud=</string>
+    <string name="url_base_correo">https://peru.movilbox.net/distribuidor/modulos/login/controlador.php</string>-->
 
 
     <!-- TODO: Remove or change this placeholder text -->

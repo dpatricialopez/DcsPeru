@@ -267,8 +267,6 @@ public class EntLisSincronizar extends EntEstandar {
     @SerializedName("file_name")
     private String file_name;
 
-    @SerializedName("file_url")
-    private String file_url;
 
     @SerializedName("estado")
     private int estado;
@@ -290,21 +288,6 @@ public class EntLisSincronizar extends EntEstandar {
         this.keys = keys;
     }
 
-    public int getVigencia() {
-        return vigencia;
-    }
-
-    public void setVigencia(int vigencia) {
-        this.vigencia = vigencia;
-    }
-
-    public int getSincronizado() {
-        return sincronizado;
-    }
-
-    public void setSincronizado(int sincronizado) {
-        this.sincronizado = sincronizado;
-    }
 
     public String getFecha_lectura() {
         return fecha_lectura;
@@ -328,14 +311,6 @@ public class EntLisSincronizar extends EntEstandar {
 
     public void setEstado(int estado) {
         this.estado = estado;
-    }
-
-    public String getFile_url() {
-        return file_url;
-    }
-
-    public void setFile_url(String file_url) {
-        this.file_url = file_url;
     }
 
     public String getFile_name() {
@@ -393,14 +368,6 @@ public class EntLisSincronizar extends EntEstandar {
     public void setId_noticia(int id_noticia) {
         this.id_noticia = id_noticia;
     }
-
-    @SerializedName("sincronizado")
-
-    private int sincronizado;
-
-    @SerializedName("vigencia")
-    private int vigencia;
-
 
     private List<EntEstandar> entEstandarList;
 

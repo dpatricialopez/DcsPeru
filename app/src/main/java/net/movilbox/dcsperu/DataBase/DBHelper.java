@@ -56,11 +56,14 @@ import net.movilbox.dcsperu.Entry.TipoVia;
 import net.movilbox.dcsperu.Entry.TipoVivienda;
 import net.movilbox.dcsperu.Entry.Tracing;
 import net.movilbox.dcsperu.Entry.Zona;
+import net.movilbox.dcsperu.R;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,7 +72,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "MydbDealerPeru.db";
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, 23);
+        super(context, DATABASE_NAME, null, 24);
     }
 
     @Override
@@ -77,7 +80,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String sqlConnectManual = "CREATE TABLE ConnectManual (id integer primary key AUTOINCREMENT, status int )";
 
-        String sqlNoticias="CREATE TABLE ListaNoticias (id INT, tipo TEXT, title TEXT, contenido TEXT, url TEXT, url_image TEXT, fecha TEXT,  fileName TEXT, fileUrl TEXT, estado int, fecha_lectura TEXT, sincronizado int, vigencia int, keys TEXT)";
+        String sqlNoticias="CREATE TABLE ListaNoticias (id INT, tipo TEXT, title TEXT, contenido TEXT, url TEXT, url_image TEXT, fecha TEXT,  fileName TEXT, fileUrl TEXT, estado int, fecha_lectura TEXT, sincronizado int, keys TEXT)";
 
         String sqlManualConnect="CREATE TABLE ManualConnect (id_auto integer primary key AUTOINCREMENT, id_user INT, id_distri INT,type TEXT, date TEXT, network_type TEXT )";
 
@@ -898,39 +901,9 @@ public class DBHelper extends SQLiteOpenHelper {
         return noVisitaList;
     }
 
-    public ListaNoticias sincronizarNoticia() {
-
-        ListaNoticias listaNoticias = new ListaNoticias();
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        String sql = "SELECT * FROM ListaNoticias WHERE sincronizado=0 ";
-        Cursor cursor = db.rawQuery(sql, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                EntNoticia entNoticia = new EntNoticia();
-                entNoticia.setId(cursor.getInt(0));
-                entNoticia.setTipo(cursor.getString(1));
-                entNoticia.setTitle(cursor.getString(2));
-                entNoticia.setContain(cursor.getString(3));
-                entNoticia.setUrl(cursor.getString(4));
-                entNoticia.setImage(cursor.getString(5));
-                entNoticia.setDate(cursor.getString(6));
-                entNoticia.setStatus(cursor.getInt(9));
-                entNoticia.setFile_name(cursor.getString(7));
-                entNoticia.setFile_url(cursor.getString(8));
-                entNoticia.setFecha_lectura(cursor.getString(9));
-                entNoticia.setSincronizado(cursor.getInt(10));
-                entNoticia.setVigencia(cursor.getInt(11));
-                entNoticia.setKeys(cursor.getString(12));
 
 
-                listaNoticias.add(entNoticia);
 
-            } while (cursor.moveToNext());
-        }
-        return listaNoticias;
-    }
 
 
     public boolean insertNoVisita(NoVisita data) {
@@ -1663,40 +1636,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean insertNoticias(ListaNoticias data) {
 
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        try {
-            for (int i = 0; i < data.size(); i++) {
-                values.put("id", data.get(i).getId());
-                values.put("title", data.get(i).getTitle());
-                values.put("contenido", data.get(i).getContain());
-                values.put("url", data.get(i).getUrl());
-                values.put("url_image", data.get(i).getImage());
-                values.put("fecha", data.get(i).getDate());
-                values.put("fileName", data.get(i).getFile_name());
-                values.put("fileUrl", data.get(i).getFile_url());
-                values.put("estado", data.get(i).getStatus());
-                values.put("fecha_lectura", data.get(i).getFecha_lectura());
-                values.put("sincronizado", data.get(i).getSincronizado());
-                values.put("tipo", data.get(i).getTipo());
-                values.put("vigencia", data.get(i).getVigencia());
-                values.put("keys", data.get(i).getKeys());
-
-                db.insert("ListaNoticias", null, values);
-            }
-
-
-        } catch (SQLiteConstraintException e) {
-            Log.d("data", "failure to insert word,", e);
-            return false;
-        } finally {
-            db.close();
-        }
-        return true;
-    }
 
     public boolean insertListMotivos(EntLisSincronizar data) {
 
@@ -1751,54 +1691,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean insertListaNoticias(EntLisSincronizar data) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        ///Mapeo los valores previamente
-        values.put("id", data.getId_noticia());
-        values.put("title", data.getTitle());
-        values.put("contenido", data.getContenido());
-        values.put("url", data.getUrl());
-        values.put("url_image", data.getImg());
-        values.put("fecha", data.getDate());
-        values.put("fileName", data.getFile_name());
-        values.put("fileUrl", data.getFile_url());
-        values.put("estado", data.getEstado());
-        values.put("fecha_lectura", data.getFecha_lectura());
-        values.put("sincronizado", 1);
-        values.put("tipo", data.getTipo());
-        values.put("vigencia", data.getVigencia());
-        values.put("keys", data.getKeys());
-        db.insert("ListaNoticias", null, values);
 
-
-        try {
-            switch (data.getEstado_accion()) {
-                case 1:
-                    db.insert("ListaNoticias", null, values);
-                    break;
-                case 0:
-                    if(db!=null){
-                        db.delete("ListaNoticias", "id = ?", new String[]{String.valueOf(data.getId_noticia())});
-                    }
-                    break;
-                case 2:
-                    if(db!=null){
-                        db.delete("ListaNoticias", "id = ?", new String[]{String.valueOf(data.getId_noticia())});
-                        db.insert("ListaNoticias", null, values);
-                    }
-                    break;
-                default: //Por defecto se inserta
-                    db.insert("ListaNoticias", null, values);
-            }
-        } catch (SQLiteConstraintException e) {
-            Log.d("data", "failure to insert word,", e);
-            return false;
-        }
-
-        return true;
-
-    }
 
     public List<EntLisSincronizar> listReferenciasesReport(int indicador) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -3374,185 +3267,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
-    public ArrayList getTiposNoticia() {
-
-        ArrayList tipoNoticias = new ArrayList<String>();
-
-        String sql = "SELECT tipo FROM ListaNoticias WHERE 1 GROUP BY tipo ORDER BY tipo ASC";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(sql, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-
-                tipoNoticias.add(cursor.getString(0));
-
-            } while (cursor.moveToNext());
-
-        }
-        return tipoNoticias;
-
-    }
-
-    public List<ListaNoticias> getNoticiaList() {
-
-        List<ListaNoticias>  NoticiaArrayList = new ArrayList<>();
-
-        ArrayList<String>  tipoNoticias = getTiposNoticia();
-
-        for (int i=0; i<tipoNoticias.size(); i++) {
-            ListaNoticias listaNoticias= new ListaNoticias();
-            String[] args = new String[] {String.valueOf(1), String.valueOf(tipoNoticias.get(i))};
-
-            SQLiteDatabase db = this.getWritableDatabase();
-            String sql = "SELECT * FROM ListaNoticias WHERE vigencia=? AND tipo=? GROUP BY id ORDER BY estado ASC";
-            Cursor cursor = db.rawQuery(sql, args);
-
-            if (cursor.moveToFirst()) {
-                do {
-                    EntNoticia entNoticia = new EntNoticia();
-                    entNoticia.setId(cursor.getInt(0));
-                    entNoticia.setTipo(cursor.getString(1));
-                    entNoticia.setTitle(cursor.getString(2));
-                    entNoticia.setContain(cursor.getString(3));
-                    entNoticia.setUrl(cursor.getString(4));
-                    entNoticia.setImage(cursor.getString(5));
-                    entNoticia.setDate(cursor.getString(6));
-                    entNoticia.setStatus(cursor.getInt(9));
-                    entNoticia.setFile_name(cursor.getString(7));
-                    entNoticia.setFile_url(cursor.getString(8));
-                    entNoticia.setFecha_lectura(cursor.getString(9));
-                    entNoticia.setSincronizado(cursor.getInt(10));
-                    entNoticia.setVigencia(cursor.getInt(11));
-                    entNoticia.setKeys(cursor.getString(12));
-
-
-                    listaNoticias.add(entNoticia);
-
-                } while (cursor.moveToNext());
-            }
-            NoticiaArrayList.add(listaNoticias);
-        }
-        return NoticiaArrayList;
-
-    }
-
-    public List<ListaNoticias> getNoticiaListQuery(String query) {
-
-        List<ListaNoticias>  NoticiaArrayList = new ArrayList<>();
-
-        ArrayList<String>  tipoNoticias = getTiposNoticia();
-
-        for (int i=0; i<tipoNoticias.size(); i++) {
-            ListaNoticias listaNoticias= new ListaNoticias();
-            String[] args = new String[] {String.valueOf(1), String.valueOf(tipoNoticias.get(i)),  "%"+query +"%" };
-
-            SQLiteDatabase db = this.getWritableDatabase();
-            String sql = "SELECT * FROM ListaNoticias WHERE vigencia=? AND tipo=? AND keys LIKE ? GROUP BY id ORDER BY estado ASC";
-            Cursor cursor = db.rawQuery(sql, args);
-
-            if (cursor.moveToFirst()) {
-                do {
-                    EntNoticia entNoticia = new EntNoticia();
-                    entNoticia.setId(cursor.getInt(0));
-                    entNoticia.setTipo(cursor.getString(1));
-                    entNoticia.setTitle(cursor.getString(2));
-                    entNoticia.setContain(cursor.getString(3));
-                    entNoticia.setUrl(cursor.getString(4));
-                    entNoticia.setImage(cursor.getString(5));
-                    entNoticia.setDate(cursor.getString(6));
-                    entNoticia.setStatus(cursor.getInt(9));
-                    entNoticia.setFile_name(cursor.getString(7));
-                    entNoticia.setFile_url(cursor.getString(8));
-                    entNoticia.setFecha_lectura(cursor.getString(9));
-                    entNoticia.setSincronizado(cursor.getInt(10));
-                    entNoticia.setVigencia(cursor.getInt(11));
-                    entNoticia.setKeys(cursor.getString(12));
-
-
-                    listaNoticias.add(entNoticia);
-
-                } while (cursor.moveToNext());
-            }
-            NoticiaArrayList.add(listaNoticias);
-        }
-        return NoticiaArrayList;
-
-    }
-
-    public EntNoticia getNoticia(int id) {
-
-        String sql = "SELECT * FROM ListaNoticias  WHERE id="+id;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(sql, null);
-        EntNoticia entNoticia = new EntNoticia();
-
-        if (cursor.moveToFirst()) {
-            entNoticia.setId(cursor.getInt(0));
-            entNoticia.setTipo(cursor.getString(1));
-            entNoticia.setTitle(cursor.getString(2));
-            entNoticia.setContain(cursor.getString(3));
-            entNoticia.setUrl(cursor.getString(4));
-            entNoticia.setImage(cursor.getString(5));
-            entNoticia.setDate(cursor.getString(6));
-            entNoticia.setStatus(cursor.getInt(9));
-            entNoticia.setFile_name(cursor.getString(7));
-            entNoticia.setFile_url(cursor.getString(8));
-            entNoticia.setFecha_lectura(cursor.getString(9));
-            entNoticia.setSincronizado(cursor.getInt(10));
-            entNoticia.setVigencia(cursor.getInt(11));
-            entNoticia.setKeys(cursor.getString(12));
-            return entNoticia;
-        }
-
-        return  null;
-
-    }
-
-    public int getCantNoticias() {
-
-
-        String sql = "SELECT count(*) FROM ListaNoticias where estado=0";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor mCount = db.rawQuery(sql, null);
-        if(mCount!=null){
-            mCount.moveToFirst();
-            int count= mCount.getInt(0);
-            mCount.close();
-            return count;
-        }
-        else
-            return 0;
-
-    }
-
-    public int updateStatusNoticiabyId(int id) {
-            int success=0;
-            SQLiteDatabase db = getWritableDatabase();
-            if(db!=null){
-                ContentValues values = new ContentValues();
-                values.put("estado", 1);
-
-                    success =db.update("ListaNoticias", values, "id = ?", new String[]{String.valueOf(id)});
-
-            }
-            return success;
-        }
-
-
-    public  int deleteNoticiabyId(List id) {
-        int filasEliminada = 0;
-        SQLiteDatabase db = getWritableDatabase();
-        if(db!=null){
-            for (int i=0;i<id.size();i++) {
-                filasEliminada =+db.delete("ListaNoticias",  "id = ?", new String[]{String.valueOf(id.get(i))});
-            }
-        }
-        db.close();
-        return filasEliminada;
-
-    }
-
     public List<Tracing> getTracingService () {
 
         List<Tracing> tracingArrayList = new ArrayList<>();
@@ -3708,6 +3422,339 @@ public class DBHelper extends SQLiteOpenHelper {
         return indicador;
 
     }
+
+    // obtener un array de string cpon los diferentes tipos de noticia
+    public ArrayList getTiposNoticia() {
+
+        ArrayList tipoNoticias = new ArrayList<String>();
+
+        String sql = "SELECT tipo FROM ListaNoticias WHERE 1 GROUP BY tipo ORDER BY tipo ASC";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                tipoNoticias.add(cursor.getString(0));
+
+            } while (cursor.moveToNext());
+
+        }
+        return tipoNoticias;
+
+    }
+
+    // obtener toas las noticias almacenadas vigentes
+    public List<ListaNoticias> getNoticiaList() {
+
+        List<ListaNoticias>  NoticiaArrayList = new ArrayList<>();
+
+        ArrayList<String>  tipoNoticias = getTiposNoticia();
+
+        for (int i=0; i<tipoNoticias.size(); i++) {
+            ListaNoticias listaNoticias= new ListaNoticias();
+            String[] args = new String[] {String.valueOf(tipoNoticias.get(i))};
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            String sql = "SELECT * FROM ListaNoticias WHERE tipo=? GROUP BY id ORDER BY estado ASC";
+            Cursor cursor = db.rawQuery(sql, args);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    EntNoticia entNoticia = new EntNoticia();
+                    entNoticia.setId(cursor.getInt(0));
+                    entNoticia.setTipo(cursor.getString(1));
+                    entNoticia.setTitle(cursor.getString(2));
+                    entNoticia.setContain(cursor.getString(3));
+                    entNoticia.setUrl(cursor.getString(4));
+                    entNoticia.setImage(cursor.getString(5));
+                    entNoticia.setDate(cursor.getString(6));
+                    entNoticia.setFile_name(cursor.getString(7));
+                    entNoticia.setFile_url(cursor.getString(8));
+                    entNoticia.setStatus(cursor.getInt(9));
+                    entNoticia.setFecha_lectura(cursor.getString(10));
+                    entNoticia.setSincronizado(cursor.getInt(11));;
+                    entNoticia.setKeys(cursor.getString(12));
+
+
+                    listaNoticias.add(entNoticia);
+
+                } while (cursor.moveToNext());
+            }
+            NoticiaArrayList.add(listaNoticias);
+        }
+        return NoticiaArrayList;
+
+    }
+
+    // obtener todas las noticias almacenadas considerndo la palabra clave ingresada en el SearchView
+    public List<ListaNoticias> getNoticiaListQuery(String query) {
+
+        List<ListaNoticias>  NoticiaArrayList = new ArrayList<>();
+
+        ArrayList<String>  tipoNoticias = getTiposNoticia();
+
+        for (int i=0; i<tipoNoticias.size(); i++) {
+            ListaNoticias listaNoticias= new ListaNoticias();
+            String[] args = new String[] { String.valueOf(tipoNoticias.get(i)),  "%"+query +"%" };
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            String sql = "SELECT * FROM ListaNoticias WHERE tipo=? AND keys LIKE ? GROUP BY id ORDER BY estado ASC";
+            Cursor cursor = db.rawQuery(sql, args);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    EntNoticia entNoticia = new EntNoticia();
+                    entNoticia.setId(cursor.getInt(0));
+                    entNoticia.setTipo(cursor.getString(1));
+                    entNoticia.setTitle(cursor.getString(2));
+                    entNoticia.setContain(cursor.getString(3));
+                    entNoticia.setUrl(cursor.getString(4));
+                    entNoticia.setImage(cursor.getString(5));
+                    entNoticia.setDate(cursor.getString(6));
+                    entNoticia.setFile_name(cursor.getString(7));
+                    entNoticia.setFile_url(cursor.getString(8));
+                    entNoticia.setStatus(cursor.getInt(9));
+                    entNoticia.setFecha_lectura(cursor.getString(10));
+                    entNoticia.setSincronizado(cursor.getInt(11));
+                    entNoticia.setKeys(cursor.getString(12));
+
+
+                    listaNoticias.add(entNoticia);
+
+                } while (cursor.moveToNext());
+            }
+            NoticiaArrayList.add(listaNoticias);
+        }
+        return NoticiaArrayList;
+
+    }
+
+    //Obtiene una ùnica noticia segùn el id para mostrarla en detalle
+    public EntNoticia getNoticia(int id) {
+        String sql = "SELECT * FROM ListaNoticias  WHERE id="+id;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+        EntNoticia entNoticia = new EntNoticia();
+
+        if (cursor.moveToFirst()) {
+            entNoticia.setId(cursor.getInt(0));
+            entNoticia.setTipo(cursor.getString(1));
+            entNoticia.setTitle(cursor.getString(2));
+            entNoticia.setContain(cursor.getString(3));
+            entNoticia.setUrl(cursor.getString(4));
+            entNoticia.setImage(cursor.getString(5));
+            entNoticia.setDate(cursor.getString(6));
+            entNoticia.setFile_name(cursor.getString(7));
+            entNoticia.setFile_url(cursor.getString(8));
+            entNoticia.setStatus(cursor.getInt(9));
+            entNoticia.setFecha_lectura(cursor.getString(10));
+            entNoticia.setSincronizado(cursor.getInt(11));
+            entNoticia.setKeys(cursor.getString(12));
+            return entNoticia;
+        }
+
+        return  null;
+
+    }
+
+    // obtiene el npumero total de noticias sin leer para mostrarlas en el navigation drawer
+    public int getCantNoticias() {
+
+
+        String sql = "SELECT count(*) FROM ListaNoticias where estado=0";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor mCount = db.rawQuery(sql, null);
+        if(mCount!=null){
+            mCount.moveToFirst();
+            int count= mCount.getInt(0);
+            mCount.close();
+            return count;
+        }
+        else
+            return 0;
+
+    }
+
+    // actualiza el estado de una noticia cuando es leìda
+    public int updateStatusNoticiabyId(int id) {
+        int success=0;
+        SQLiteDatabase db = getWritableDatabase();
+        if(db!=null){
+            ContentValues values = new ContentValues();
+            values.put("estado", 1);
+            values.put("fecha_lectura",getDatePhoneFecha());
+            values.put("sincronizado",1);
+
+            success =db.update("ListaNoticias", values, "id = ?", new String[]{String.valueOf(id)});
+
+        }
+        return success;
+    }
+
+    // extrae las noticas pendiente por sincronizar con el servidor, solo cargar el id y la fecha, los demàs parametros son nulos
+    public ListaNoticias sincronizarEstadoNoticia() {
+        String sql = "SELECT id, fecha_lectura FROM ListaNoticias  WHERE sincronizado=1";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+        EntNoticia array = new EntNoticia();
+        ListaNoticias result = new ListaNoticias();
+
+        if (cursor.moveToFirst()) {
+            do {
+                array.setId(cursor.getInt(0));
+                array.setFecha_lectura(cursor.getString(1));
+                result.add(array);
+            } while (cursor.moveToNext());
+
+        }
+        return result;
+    }
+
+    // extrae las noticas pendiente por sincronizar con el servidor, carga todos los datos
+    public ListaNoticias sincronizarNoticia() {
+
+        ListaNoticias listaNoticias = new ListaNoticias();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String sql = "SELECT * FROM ListaNoticias WHERE sincronizado=1 ";
+        Cursor cursor = db.rawQuery(sql, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EntNoticia entNoticia = new EntNoticia();
+                entNoticia.setId(cursor.getInt(0));
+                entNoticia.setTipo(cursor.getString(1));
+                entNoticia.setTitle(cursor.getString(2));
+                entNoticia.setContain(cursor.getString(3));
+                entNoticia.setUrl(cursor.getString(4));
+                entNoticia.setImage(cursor.getString(5));
+                entNoticia.setDate(cursor.getString(6));
+                entNoticia.setFile_name(cursor.getString(7));
+                entNoticia.setFile_url(cursor.getString(8));
+                entNoticia.setStatus(cursor.getInt(9));
+                entNoticia.setFecha_lectura(cursor.getString(10));
+                entNoticia.setSincronizado(cursor.getInt(11));
+                entNoticia.setKeys(cursor.getString(12));
+
+
+                listaNoticias.add(entNoticia);
+
+            } while (cursor.moveToNext());
+        }
+        return listaNoticias;
+    }
+
+    //cambio el estado sincronizado cuando el servicio responde success
+    public void Noticias_sincronizadas(ListaNoticias lista) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("sincronizado",0);
+        if(db!=null){
+            for (int i=0;i<lista.size();i++) {
+                db.update("ListaNoticias", values, "id = ?", new String[]{String.valueOf(lista.get(i).getId())});
+            }
+        }
+
+        db.close();
+    }
+//elimina la noticia que ya no estàn vigentes
+    public  int deleteNoticiabyId(List id) {
+        int filasEliminada = 0;
+        SQLiteDatabase db = getWritableDatabase();
+        if(db!=null){
+            for (int i=0;i<id.size();i++) {
+                filasEliminada =+db.delete("ListaNoticias",  "id = ?", new String[]{String.valueOf(id.get(i))});
+            }
+        }
+        db.close();
+        return filasEliminada;
+
+    }
+
+    //inserta noticias desde el servicio independiente
+    public boolean insertNoticias(ListaNoticias data) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        try {
+            for (int i = 0; i < data.size(); i++) {
+                values.put("id", data.get(i).getId());
+                values.put("tipo", data.get(i).getTipo());
+                values.put("title", data.get(i).getTitle());
+                values.put("contenido", data.get(i).getContain());
+                values.put("url", data.get(i).getUrl());
+                values.put("url_image", data.get(i).getImage());
+                values.put("fecha", data.get(i).getDate());
+                values.put("fileName", R.string.url_images+data.get(i).getFile_name());
+                values.put("fileUrl", R.string.url_files+data.get(i).getFile_name());
+                values.put("estado", data.get(i).getStatus());
+                values.put("fecha_lectura", data.get(i).getFecha_lectura());
+                values.put("sincronizado", 0);
+                values.put("keys", data.get(i).getKeys());
+
+                db.insert("ListaNoticias", null, values);
+            }
+
+
+        } catch (SQLiteConstraintException e) {
+            Log.d("data", "failure to insert word,", e);
+            return false;
+        } finally {
+            db.close();
+        }
+        return true;
+    }
+
+    // inserta noticia desde de el servicio de sincronizaciòn offline
+    public boolean insertListaNoticias(EntLisSincronizar data) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        ///Mapeo los valores previamente
+        values.put("id", data.getId_noticia());
+        values.put("title", data.getTitle());
+        values.put("contenido", data.getContenido());
+        values.put("url", data.getUrl());
+        values.put("url_image", data.getImg());
+        values.put("fecha", data.getDate());
+        values.put("fileName", R.string.url_images+data.getFile_name());
+        values.put("fileUrl", R.string.url_files+data.getFile_name());
+        values.put("estado", data.getEstado());
+        values.put("fecha_lectura", data.getFecha_lectura());
+        values.put("sincronizado", 0);
+        values.put("tipo", data.getTipo());
+        values.put("keys", data.getKeys());
+
+        try {
+            switch (data.getEstado_accion()) {
+                case 1:
+                    db.insert("ListaNoticias", null, values);
+                    break;
+                case 0:
+                    if(db!=null){
+                        db.delete("ListaNoticias", "id = ?", new String[]{String.valueOf(data.getId_noticia())});
+                    }
+                    break;
+                case 2:
+                    if(db!=null){
+                        db.delete("ListaNoticias", "id = ?", new String[]{String.valueOf(data.getId_noticia())});
+                        db.insert("ListaNoticias", null, values);
+                    }
+                    break;
+                default: //Por defecto se inserta
+                    db.insert("ListaNoticias", null, values);
+            }
+        } catch (SQLiteConstraintException e) {
+            Log.d("data", "failure to insert word,", e);
+            return false;
+        }
+
+        return true;
+
+    }
+
+
 
 }
 
