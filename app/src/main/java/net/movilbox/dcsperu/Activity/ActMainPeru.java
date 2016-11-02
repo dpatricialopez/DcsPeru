@@ -49,6 +49,7 @@ import net.movilbox.dcsperu.BuildConfig;
 import net.movilbox.dcsperu.DataBase.DBHelper;
 import net.movilbox.dcsperu.Entry.EntNoticia;
 import net.movilbox.dcsperu.Entry.EntSincronizar;
+import net.movilbox.dcsperu.Entry.EntSincronizarRepartidor;
 import net.movilbox.dcsperu.Entry.ListPuntosSincronizar;
 import net.movilbox.dcsperu.Entry.ListSincronizarRepartidor;
 import net.movilbox.dcsperu.Entry.ListUpdateservice;
@@ -79,6 +80,7 @@ import net.movilbox.dcsperu.Fragment.FragmentReportePedidosRepartidor;
 import net.movilbox.dcsperu.Fragment.FragmentRuteroVendedor;
 import net.movilbox.dcsperu.Fragment.FragmentSolProducto;
 import net.movilbox.dcsperu.Fragment.FragmenteAproPdv;
+import net.movilbox.dcsperu.Fragment.fragmentprueba;
 import net.movilbox.dcsperu.R;
 import net.movilbox.dcsperu.Services.ConnectionDetector;
 import net.movilbox.dcsperu.Services.MonitoringService;
@@ -98,6 +100,7 @@ import dmax.dialog.SpotsDialog;
 
 import static net.movilbox.dcsperu.Entry.EntLoginR.getIndicador_refres;
 import static net.movilbox.dcsperu.Entry.EntLoginR.setIndicador_refres;
+import static net.movilbox.dcsperu.R.layout.fragment_sol_producto;
 
 public class ActMainPeru extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -241,9 +244,9 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
             startActivity(intent12);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
-        String response="[{'id':'89','tipo':'0','title':'noticia1','contenido':'Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos.', 'url':'', 'url_image':'pic_mountain.jpg', 'fecha':'Oct 1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 6', 'keys':'no'}, {'id':'9','tipo':'1','title':'noticia2','contenido':'', 'url':'http://www.w3schools.com/html/pic_mountain.jpg', 'url_image':'pic_mountain.jpg', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','keys':'nuevo'},{'id':'2','tipo':'Noticia','title':'noticia3','contenido':'', 'url':'', 'url_image':'', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','keys':'descuento vida nuevo'}]";
+        String response="[{'id':'89','tipo':'0','title':'noticia1','contenido':'Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos.', 'url':'', 'url_image':'pic_mountain.jpg', 'fecha':'Oct 1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 6', 'palabras_claves':'no'}, {'id':'9','tipo':'1','title':'noticia2','contenido':'', 'url':'http://www.w3schools.com/html/pic_mountain.jpg', 'url_image':'pic_mountain.jpg', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','palabras_claves':'nuevo'},{'id':'2','tipo':'Noticia','title':'noticia3','contenido':'', 'url':'', 'url_image':'', 'fecha':'Oct 2','status':'1','file_name':'file1.doc','file_url':'','estado':'0','fecha_lectura':'Oct 9','palabras_claves':'descuento vida nuevo'}]";
 
-        JSONParsernews(response);
+        //JSONParsernews(response);
     }
 
     @Override
@@ -316,6 +319,19 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Logs para verificar que los servicios si estèn corriendo
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        TextView view = (TextView) navigationView.getMenu().findItem( R.id.nav_noticias ).getActionView().findViewById( R.id.counter_txt );
+
+        //se setea el la notificacion; se debe poner una condicion para mostrar o no
+
+        if(mydb.getCantNoticias()==0){
+            view.setVisibility(View.GONE);
+        }
+        else{
+            view.setText(String.valueOf(mydb.getCantNoticias()));
+            view.setVisibility(View.VISIBLE);
+        }
+
         Log.e("serviciotracing",String.valueOf(isMyServiceRunning(SetTracingServiceWeb.class)));
         Log.e("serviciomonitoring",String.valueOf(isMyServiceRunning(MonitoringService.class)));
 
@@ -925,13 +941,14 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
 
                 responseGlobal = ZipUtils.unzipString(new String(gzipBuff));
 
-                ListSincronizarRepartidor sincronizar = gson.fromJson(responseGlobal, ListSincronizarRepartidor.class);
+                EntSincronizarRepartidor sincronizar = gson.fromJson(responseGlobal, EntSincronizarRepartidor.class);
 
                 mydb.deleteObject("pedido_entrega");
                 mydb.deleteObject("pedido_repartidor");
                 mydb.deleteObject("pedidos_grupo");
                 mydb.deleteObject("deta_pedido");
-                mydb.insertEntregaPedidos(sincronizar);
+                mydb.insertEntregaPedidos(sincronizar.getListSincronizarRepartidor());
+                mydb.insertNoticiasRepartidor(sincronizar.getEntNoticia_repartidorList());
 
                 runOnUiThread(new Runnable() {
                     public void run() {
@@ -1074,6 +1091,7 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                             case 9:
                                 mensaje = "Sincronizando noticias y promociones";
                                 mydb.insertListaNoticias(sincronizar.getEntLisSincronizars().get(progressStatus));
+
                                 break;
                         }
 

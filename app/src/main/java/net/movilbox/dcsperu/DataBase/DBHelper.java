@@ -19,6 +19,7 @@ import net.movilbox.dcsperu.Entry.EntIndicadores;
 import net.movilbox.dcsperu.Entry.EntLisSincronizar;
 import net.movilbox.dcsperu.Entry.EntLoginR;
 import net.movilbox.dcsperu.Entry.EntNoticia;
+import net.movilbox.dcsperu.Entry.EntNoticia_Repartidor;
 import net.movilbox.dcsperu.Entry.EntRuteroList;
 import net.movilbox.dcsperu.Entry.GrupoCombos;
 import net.movilbox.dcsperu.Entry.GrupoSims;
@@ -3729,6 +3730,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             switch (data.getEstado_accion()) {
                 case 1:
+                    if (getNoticia(data.getId())==null)
                     db.insert("ListaNoticias", null, values);
                     break;
                 case 0:
@@ -3742,8 +3744,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         db.insert("ListaNoticias", null, values);
                     }
                     break;
-                default: //Por defecto se inserta
-                    db.insert("ListaNoticias", null, values);
+                default:
+
             }
         } catch (SQLiteConstraintException e) {
             Log.d("data", "failure to insert word,", e);
@@ -3753,7 +3755,54 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
 
     }
+    //insertar noticia para el repartidor
+    public boolean insertNoticiasRepartidor(List<EntNoticia_Repartidor> data) {
 
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        try {
+            for (int i = 0; i < data.size(); i++) {
+                switch (Integer.parseInt(data.get(i).getEstado_accion())) {
+                    case 1:
+                        if (getNoticia(data.get(i).getId())==null){
+                            values.put("id", data.get(i).getId());
+                            values.put("tipo", data.get(i).getTipo());
+                            values.put("title", data.get(i).getTitle());
+                            values.put("contenido", data.get(i).getContain());
+                            values.put("url", data.get(i).getUrl());
+                            values.put("url_image", data.get(i).getImage());
+                            values.put("fecha", data.get(i).getDate());
+                            values.put("fileName", R.string.url_images+data.get(i).getFile_name());
+                            values.put("fileUrl", R.string.url_files+data.get(i).getFile_name());
+                            values.put("estado", data.get(i).getStatus());
+                            values.put("fecha_lectura", data.get(i).getFecha_lectura());
+                            values.put("sincronizado", 0);
+                            values.put("keys", data.get(i).getKeys());
+
+                            db.insert("ListaNoticias", null, values);}
+                        break;
+                    case 0:
+                        if(db!=null){
+                            db.delete("ListaNoticias", "id = ?", new String[]{String.valueOf(data.get(i).getId())});
+                        }
+                        break;
+
+
+                }
+
+
+            }
+
+
+        } catch (SQLiteConstraintException e) {
+            Log.d("data", "failure to insert word,", e);
+            return false;
+        } finally {
+            db.close();
+        }
+        return true;
+    }
 
 
 }
