@@ -73,7 +73,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "MydbDealerPeru.db";
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, 24);
+        super(context, DATABASE_NAME, null, 25);
     }
 
     @Override
@@ -168,7 +168,12 @@ public class DBHelper extends SQLiteOpenHelper {
         String sqlMotivos = "CREATE TABLE motivos (id INT, descripcion TEXT)";
 
         String sqlInventario = "CREATE TABLE inventario (id INT, id_referencia INT, serie TEXT, paquete INT, id_vendedor INT, distri INT, tipo_pro INT, tipo_tabla INT, estado_accion INT, accion TEXT, combo INT )";
+
         String sqlCarritoAutoVenta = "CREATE TABLE carrito_autoventa (id_auto_carrito integer primary key AUTOINCREMENT, id_referencia INT, tipo_product INT, valor_refe REAL, valor_directo REAL, serie TEXT, id_punto INT, id_paquete INT, tipo_venta INT, id_producto INT,cantidad_soli INT)";
+
+        String sqlCabezaAutoventa = "CREATE TABLE cabeza_autoventa_offline ( id INTEGER PRIMARY KEY AUTOINCREMENT,iduser INTEGER,iddistri INTEGER,db TEXT, idpos INTEGER,latitud REAL,longitud REAL,fecha TEXT,hora INTEGER,comprobante INTEGER );";
+
+        String sqlDetalleAutoventa = "CREATE TABLE detalle_autoventa_offline (id INTEGER PRIMARY KEY AUTOINCREMENT,id_cabeza INTEGER,id_producto INTEGER,id_referencia INTEGER, valor_referencia REAL,serie TEXT,id_paquete INTEGER, tipo_venta INTEGER,tipo_producto INTEGER);";
 
         db.execSQL(sqlNoticias);
         db.execSQL(sqlConnectManual);
@@ -213,6 +218,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(sqlMotivos);
         db.execSQL(sqlInventario);
         db.execSQL(sqlCarritoAutoVenta);
+        db.execSQL(sqlCabezaAutoventa);
+        db.execSQL(sqlDetalleAutoventa);
 
     }
 
@@ -260,6 +267,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS carrito_autoventa");
         db.execSQL("DROP TABLE IF EXISTS Indicadores_detalle");
         db.execSQL("DROP TABLE IF EXISTS indicadoresdas_detalle");
+        db.execSQL("DROP TABLE IF EXISTS cabeza_autoventa_offline");
+        db.execSQL("DROP TABLE IF EXISTS detalle_autoventa_offline");
         this.onCreate(db);
 
     }
@@ -770,6 +779,54 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean insertAutoventaOffLine(List<ReferenciasSims> data, int iduser, String iddistri, String bd, int idpos, double latitud, double longitud, int comprobante) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        ContentValues values2 = new ContentValues();
+
+        try {
+
+            values.put("iduser", iduser);
+            values.put("iddistri", iddistri);
+            values.put("db", bd);
+            values.put("idpos", idpos);
+            values.put("latitud", latitud);
+            values.put("longitud", longitud);
+            values.put("fecha", getDatePhoneFecha());
+            values.put("hora", getDatePhoneHora());
+            values.put("comprobante", comprobante);
+
+            long id_auto  = db.insert("cabeza_autoventa_offline", null, values);
+
+            //int id_auto = ultimoRegistro("cabeza_pedido");
+
+            for (int i = 0; i < data.size(); i++) {
+
+                values2.put("id_cabeza", id_auto);
+                values2.put("id_producto", data.get(i).getId_producto());
+                values2.put("id_referencia", data.get(i).getId());
+                values2.put("valor_referencia", data.get(i).getPrecio_referencia());
+                values2.put("serie", data.get(i).getSerie());
+                values2.put("id_paquete", data.get(i).getId_paquete());
+                values2.put("tipo_venta", data.get(i).getTipo_venta());
+                values2.put("tipo_producto", data.get(i).getTipo_producto());
+
+                db.insert("detalle_autoventa_offline", null, values2);
+            }
+
+            updateTipoVisita(idpos, 1);
+
+        } catch (SQLiteConstraintException e) {
+            Log.d("data", "failure to insert word,", e);
+            return false;
+        } finally {
+            db.close();
+        }
+
+        return true;
+    }
+
     public boolean updateTipoVisita(int idpos, int valor){
 
         ContentValues valores = new ContentValues();
@@ -861,6 +918,64 @@ public class DBHelper extends SQLiteOpenHelper {
 
                         referenciasSims.setCantidadPedida(cursor_detall.getInt(2));
                         referenciasSims.setTipo_producto(cursor_detall.getInt(3));
+
+                        referenciasSimsList.add(referenciasSims);
+                    } while (cursor_detall.moveToNext());
+
+                    sincronizarPedidos.setReferenciasSimsList(referenciasSimsList);
+                }
+
+                sincronizarPedidosArrayList.add(sincronizarPedidos);
+
+            } while (cursor.moveToNext());
+
+        }
+        return sincronizarPedidosArrayList;
+    }
+
+    public List<SincronizarPedidos> sincronizarAutoventa() {
+
+        List<SincronizarPedidos> sincronizarPedidosArrayList = new ArrayList<>();
+
+        String sql = "SELECT id,iduser,iddistri,db,idpos,latitud,longitud,fecha,hora,comprobante FROM cabeza_autoventa_offline;";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+        SincronizarPedidos sincronizarPedidos;
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                sincronizarPedidos = new SincronizarPedidos();
+
+                sincronizarPedidos.setAutoincrement(cursor.getInt(0));
+                sincronizarPedidos.setIduser(cursor.getInt(1));
+                sincronizarPedidos.setIddistri(cursor.getString(2));
+                sincronizarPedidos.setBd(cursor.getString(3));
+                sincronizarPedidos.setIdpos(cursor.getInt(4));
+                sincronizarPedidos.setLatitud(cursor.getDouble(5));
+                sincronizarPedidos.setLongitud(cursor.getDouble(6));
+                sincronizarPedidos.setFecha_visita(cursor.getString(7));
+                sincronizarPedidos.setHora_visita(cursor.getString(8));
+                sincronizarPedidos.setComprobante(cursor.getInt(9));
+
+                String sql_detalle = "SELECT id_cabeza,id_producto,id_referencia,valor_referencia,serie,id_paquete,tipo_venta,tipo_producto FROM detalle_autoventa_offline WHERE id_cabeza = ?;";
+
+                Cursor cursor_detall = db.rawQuery(sql_detalle, new String[] {String.valueOf(cursor.getInt(0))});
+                List<ReferenciasSims> referenciasSimsList = new ArrayList<>();
+                ReferenciasSims referenciasSims;
+
+                if (cursor_detall.moveToFirst()) {
+                    do {
+                        referenciasSims = new ReferenciasSims();
+                        referenciasSims.setId_auto_carrito(cursor_detall.getInt(0));
+                        referenciasSims.setId_producto(cursor_detall.getInt(1));
+                        referenciasSims.setId(cursor_detall.getInt(2));
+                        referenciasSims.setPrecio_referencia(cursor_detall.getDouble(3));
+                        referenciasSims.setSerie(cursor_detall.getString(4));
+                        referenciasSims.setId_paquete(cursor_detall.getInt(5));
+                        referenciasSims.setTipo_venta(cursor_detall.getInt(6));
+                        referenciasSims.setTipo_producto(cursor_detall.getInt(7));
 
                         referenciasSimsList.add(referenciasSims);
                     } while (cursor_detall.moveToNext());
@@ -1168,7 +1283,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 //data.getListaPaquete().setIdPaquete(cursor.getInt(0));
                 serie = new Serie();
                 serie.setSerie(cursor.getString(0));
-                serie.setId_producto(cursor.getInt(1));
+                serie.setId_pro(cursor.getInt(1));
                 serie.setCheck(cursor.getInt(2));
                 listaSerie.add(serie);
 
@@ -1229,6 +1344,75 @@ public class DBHelper extends SQLiteOpenHelper {
                         referencia.setDias_inve(cursor_detalle.getDouble(4));
                         referencia.setPed_sugerido(cursor_detalle.getString(5));
 
+                        referencia.setPrecio_referencia(cursor_detalle.getDouble(8));
+                        referencia.setPrecio_publico(cursor_detalle.getDouble(9));
+
+                        referenciaList.add(referencia);
+
+                    } while (cursor_detalle.moveToNext());
+                }
+
+                referenciasCombos.setReferenciaLis(referenciaList);
+
+                referenciasComboses.add(referenciasCombos);
+
+            } while (cursor.moveToNext());
+
+        }
+
+        return referenciasComboses;
+
+    }
+
+    public List<ReferenciasCombos> getCombosLocalVenta(String indicardor) {
+
+        List<ReferenciasCombos> referenciasComboses = new ArrayList<>();
+
+        String sql = "SELECT refe.id, refe.descripcion, refe.precioventa, refe.speech, refe.pantalla, refe.cam_frontal, refe.cam_tras, refe.flash, refe.banda, refe.memoria, \n" +
+                "refe.expandible, refe.bateria, refe.bluetooth, refe.tactil, refe.tec_fisico, refe.carrito_compras, refe.correo, refe.enrutador, refe.radio, refe.wifi, refe.gps, \n" +
+                "refe.so, refe.web, 0 quiebre, lprecio.valor_referencia, lprecio.valor_directo, refe.img,count(inv.id_referencia) AS stock \n" +
+                "FROM inventario inv  \n" +
+                "INNER JOIN lista_precios lprecio ON lprecio.id_referencia = inv.id_referencia\n" +
+                "INNER JOIN detalle_combo dc ON inv.id_referencia = dc.id\n" +
+                "INNER JOIN referencia_combo refe ON refe.id = dc.id_padre\n" +
+                "WHERE inv.combo = 1 AND lprecio.idpos = ? AND lprecio.tipo_pro = 2 GROUP BY refe.id";
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, new String[] {indicardor});
+        ReferenciasCombos referenciasCombos;
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                referenciasCombos = new ReferenciasCombos();
+
+                referenciasCombos.setId(cursor.getInt(0));
+                referenciasCombos.setDescripcion(cursor.getString(1));
+                referenciasCombos.setPrecio_referencia(cursor.getDouble(24));
+                referenciasCombos.setPrecio_publico(cursor.getDouble(25));
+                referenciasCombos.setImg(cursor.getString(26));
+                referenciasCombos.setStock(cursor.getInt(27));
+                String sqlDestall = "SELECT deta.id, deta.pn, count(distinct inv.id) stock, deta.producto, deta.dias_inve, deta.ped_sugerido, deta.descripcion, 0 stock_seguridad, lprecio.valor_referencia, lprecio.valor_directo, deta.img, 0 quiebre\n" +
+                        "FROM inventario inv\n" +
+                        "INNER JOIN detalle_combo deta ON inv.id_referencia = deta.id\n" +
+                        "INNER JOIN lista_precios lprecio ON lprecio.id_referencia = deta.id \n" +
+                        "WHERE deta.id_padre = ? AND lprecio.tipo_pro = 2 GROUP BY deta.id";
+
+                Cursor cursor_detalle = db.rawQuery(sqlDestall, new String[] {String.valueOf(cursor.getInt(0))});
+                List<Referencia> referenciaList = new ArrayList<>();
+                Referencia referencia;
+
+                if (cursor_detalle.moveToFirst()) {
+
+                    do {
+                        referencia = new Referencia();
+                        referencia.setId(cursor_detalle.getInt(0));
+                        referencia.setPn(cursor_detalle.getString(1));
+                        referencia.setStock(cursor_detalle.getInt(2));
+                        referencia.setProducto(cursor_detalle.getString(3));
+                        referencia.setDias_inve(cursor_detalle.getDouble(4));
+                        referencia.setPed_sugerido(cursor_detalle.getString(5));
                         referencia.setPrecio_referencia(cursor_detalle.getDouble(8));
                         referencia.setPrecio_publico(cursor_detalle.getDouble(9));
 
@@ -3055,12 +3239,12 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Serie> listaSerie;
         int count = 0;
         boolean indicador = true;
-
         listaSerie = data.getListaPaquete().get(position).getListaSerie();
 
         for (int i=0;i<listaSerie.size();i++){
 
             String serie = data.getListaPaquete().get(position).getListaSerie().get(i).getSerie();
+            int id_pro = data.getListaPaquete().get(position).getListaSerie().get(i).getId_pro();
 
             Cursor cursor;
             indicador = true;
@@ -3086,6 +3270,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         values.put("serie", data.getListaPaquete().get(position).getListaSerie().get(i).getSerie());
                         values.put("id_paquete", data.getListaPaquete().get(position).getIdPaquete());
                         values.put("tipo_venta", tipo_venta);
+                        values.put("id_producto", id_pro);
                         values.put("cantidad_soli", 1);
                         db.insert("carrito_autoventa", null, values);
                         count = count + 1;
@@ -3169,9 +3354,27 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public boolean deleteCarritoProductoAutoventa(int id, int id_pos) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        int a = db.delete("carrito_autoventa", "id_auto_carrito = ? AND id_punto = ? ", new String[]{String.valueOf(id), String.valueOf(id_pos)});
+
+        db.close();
+        return a > 0;
+
+    }
+
     public boolean deleteAll(int id_pos, int id_usuario) {
         SQLiteDatabase db = this.getWritableDatabase();
         int a = db.delete("carrito_pedido", "id_punto = ? AND id_usuario = ?", new String[]{String.valueOf(id_pos), String.valueOf(id_usuario)});
+
+        db.close();
+        return a > 0;
+    }
+
+    public boolean deleteAllCarritoAutoventa(int id_pos) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int a = db.delete("carrito_autoventa", "id_punto = ? ", new String[]{String.valueOf(id_pos)});
 
         db.close();
         return a > 0;
@@ -3327,6 +3530,45 @@ public class DBHelper extends SQLiteOpenHelper {
                 referenciasSims.setUrl_imagen(cursor.getString(13));
                 referenciasSims.setPrecio_referencia(cursor.getDouble(14));
                 referenciasSims.setPrecio_publico(cursor.getDouble(15));
+
+                referenciasSimsList.add(referenciasSims);
+
+            } while (cursor.moveToNext());
+        }
+
+        return referenciasSimsList;
+
+    }
+
+    public List<ReferenciasSims> getCarritoAutoventa(int id_pos) {
+
+        List<ReferenciasSims> referenciasSimsList = new ArrayList<>();
+
+        String sql = "SELECT ca.id_auto_carrito,rs.id,rs.pn,ca.cantidad_soli,rs.producto,ca.id_punto,ca.tipo_product,\n" +
+                "ca.valor_refe,ca.serie,ca.id_producto,ca.tipo_venta,ca.id_paquete\n" +
+                "FROM carrito_autoventa ca\n" +
+                "INNER JOIN referencia_simcard rs ON rs.id = ca.id_referencia\n" +
+                "WHERE ca.id_punto = "+ id_pos;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+
+        ReferenciasSims referenciasSims;
+
+        if (cursor.moveToFirst()) {
+            do {
+                referenciasSims = new ReferenciasSims();
+                referenciasSims.setId_auto_carrito(cursor.getInt(0));
+                referenciasSims.setId(cursor.getInt(1));
+                referenciasSims.setPn(cursor.getString(2));
+                referenciasSims.setCantidadPedida(cursor.getInt(3));
+                referenciasSims.setProducto(cursor.getString(4));
+                referenciasSims.setId_punto(cursor.getInt(5));
+                referenciasSims.setTipo_producto(cursor.getInt(6));
+                referenciasSims.setPrecio_referencia(cursor.getDouble(7));
+                referenciasSims.setSerie(cursor.getString(8));
+                referenciasSims.setId_producto(cursor.getInt(9));
+                referenciasSims.setTipo_venta(cursor.getInt(10));
+                referenciasSims.setId_paquete(cursor.getInt(11));
 
                 referenciasSimsList.add(referenciasSims);
 

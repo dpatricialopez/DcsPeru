@@ -207,7 +207,13 @@
 
         <activity android:name=".Activity.ActSeleccionarSerieSims"
             android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".Activity.ActCarritoAutoVenta"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

@@ -57,11 +57,13 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seleccionar_sims_paquete);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         connectionDetector = new ConnectionDetector(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
         if (connectionDetector.isConnected()) {
             toolbar.setTitle("Paquete");
             toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -69,13 +71,10 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
             toolbar.setBackgroundColor(Color.RED);
             toolbar.setTitle("Paquete Offline");
         }
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setIndicador_refres(1);
                 finish();
             }
         });
@@ -118,7 +117,12 @@ public class ActSeleccionarSimsPaquete extends AppCompatActivity implements Adap
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.carrito) {
-            Log.e("carrito","carrito");
+            Bundle bundle = new Bundle();
+            Intent intent = new Intent(ActSeleccionarSimsPaquete.this, ActCarritoAutoVenta.class);
+            bundle.putInt("id_punto", mDescribable.getId_pos());
+            intent.putExtra("value",mDescribable);
+            intent.putExtras(bundle);
+            startActivity(intent);
             return true;
         }
 

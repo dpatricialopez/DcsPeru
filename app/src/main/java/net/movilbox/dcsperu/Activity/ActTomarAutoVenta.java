@@ -11,21 +11,25 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import net.movilbox.dcsperu.Adapter.AdapterRecyclerSimcard;
 import net.movilbox.dcsperu.Adapter.TabsAdapter;
+import net.movilbox.dcsperu.Entry.ReferenciasCombos;
 import net.movilbox.dcsperu.Entry.ReferenciasSims;
 import net.movilbox.dcsperu.Entry.ResponseMarcarPedido;
 import net.movilbox.dcsperu.Fragment.FragmentCombosAutoVenta;
 import net.movilbox.dcsperu.Fragment.FragmentSimcardAutoVenta;
 import net.movilbox.dcsperu.R;
 
-public class ActTomarAutoVenta extends AppCompatActivity implements FragmentSimcardAutoVenta.ListenerSimsRefe{
+public class ActTomarAutoVenta extends AppCompatActivity implements FragmentSimcardAutoVenta.ListenerSimsRefe,FragmentCombosAutoVenta.ListenerComboRefeGlobal{
 
     private Bundle bundle;
     private ResponseMarcarPedido thumbs = new ResponseMarcarPedido();
@@ -87,6 +91,47 @@ public class ActTomarAutoVenta extends AppCompatActivity implements FragmentSimc
 
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuItem item2 = menu.add("Carrito");
+        item2.setIcon(R.drawable.ic_shopping_cart_white_24dp); // sets icon
+        item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        item2.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                Bundle bundle = new Bundle();
+                Intent intent = new Intent(ActTomarAutoVenta.this, ActCarritoAutoVenta.class);
+                bundle.putInt("id_punto", thumbs.getId_pos());
+                intent.putExtra("value",thumbs);
+                intent.putExtras(bundle);
+                startActivity(intent);
+
+                return true;
+            }
+
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onFragmentComboRefeGlobal(ReferenciasCombos referenciaGlobalSele) {
+
+        if (referenciaGlobalSele != null) {
+
+            Bundle bundle = new Bundle();
+            Intent intent = new Intent(ActTomarAutoVenta.this, ActDetalleProducto.class);
+            bundle.putSerializable("value", referenciaGlobalSele);
+            intent.putExtras(bundle);
+            startActivity(intent);
+
+        } else {
+            Toast.makeText(ActTomarAutoVenta.this, "Esta opción solo es permitida si tiene internet", Toast.LENGTH_LONG).show();
         }
     }
 }

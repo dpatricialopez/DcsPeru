@@ -277,6 +277,12 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
             e.printStackTrace();
         }
 
+        //Llamar noticias
+        List<SincronizarPedidos> sincronizarAutoventa = mydb.sincronizarAutoventa();
+        if (sincronizarAutoventa.size() > 0) {
+            setAutoventaSincroinzar();
+        }
+
     }
     public void JSONParsernews(String response){
 
@@ -622,6 +628,11 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
                         ListaNoticias noticiaList = mydb.sincronizarEstadoNoticia();
                         if (noticiaList.size() > 0) {
                             setSincroinizarNoticia();
+                        }else{
+                            List<SincronizarPedidos> sincronizarAutoventa = mydb.sincronizarAutoventa();
+                            if(sincronizarAutoventa.size() > 0){
+                                setAutoventaSincroinzar();
+                            }
                         }
                     }
                 }
@@ -872,6 +883,69 @@ public class ActMainPeru extends AppCompatActivity implements NavigationView.OnN
             setSincroinizarNoticia();
         }
     }
+
+    private void setAutoventaSincroinzar() {
+
+        String url = String.format("%1$s%2$s", getString(R.string.url_base), "guardar_autoventa_offline");
+        rq = Volley.newRequestQueue(this);
+        StringRequest jsonRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(final String response) {
+                        parseJSONAutoventa(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+
+                List<SincronizarPedidos> sincronizarPedidosList = mydb.sincronizarAutoventa();
+
+                String parJSON = new Gson().toJson(sincronizarPedidosList, listSincronizarPedidos.class);
+
+                params.put("datos", parJSON);
+                params.put("bd", mydb.getUserLogin().getBd());
+                params.put("iddis", mydb.getUserLogin().getId_distri());
+                params.put("iduser", String.valueOf(mydb.getUserLogin().getId()));
+
+                return params;
+
+            }
+        };
+
+        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(100000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        rq.add(jsonRequest);
+
+    }
+
+    private void parseJSONAutoventa(String response) {
+
+        Gson gson = new Gson();
+        if (!response.equals("[]")) {
+
+           /* final ListUpdateservice sincronizar = gson.fromJson(response, ListUpdateservice.class);
+
+            for (int i = 0; i < sincronizar.size(); i++) {
+                if (sincronizar.get(i).getEstado().equals("-1")) {
+                    Toast.makeText(this, sincronizar.get(i).getMsg(), Toast.LENGTH_LONG).show();
+                    mydb.deleteObject("cabeza_autoventa_offline");
+                    mydb.deleteObject("detalle_autoventa_offline");
+                } else if (sincronizar.get(i).getEstado().equals("0")) {
+                    if (mydb.deleteObject("cabeza_autoventa_offline"))
+                        mydb.deleteObject("detalle_autoventa_offline");
+                    Toast.makeText(this, sincronizar.get(i).getMsg(), Toast.LENGTH_LONG).show();
+                }
+            }*/
+        }
+    }
+
 
     private void offLineDataRepartidor() {
 

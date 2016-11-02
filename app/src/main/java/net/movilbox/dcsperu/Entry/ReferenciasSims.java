@@ -58,6 +58,43 @@ public class ReferenciasSims implements Serializable {
 
     public String url_imagen;
 
+    public String serie;
+
+    public int tipo_venta;
+
+    public int id_paquete;
+
+    public int getId_paquete() {
+        return id_paquete;
+    }
+
+    public void setId_paquete(int id_paquete) {
+        this.id_paquete = id_paquete;
+    }
+
+    public int getTipo_venta() {
+        return tipo_venta;
+    }
+
+    public void setTipo_venta(int tipo_venta) {
+        this.tipo_venta = tipo_venta;
+    }
+
+    public int getId_producto() {
+        return id_producto;
+    }
+
+    public void setId_producto(int id_producto) {
+        this.id_producto = id_producto;
+    }
+
+    public String getSerie() {
+        return serie;
+    }
+
+    public void setSerie(String serie) {
+        this.serie = serie;
+    }
 
     public List<ListaPaquete> getListaPaquete() {
         return listaPaquete;

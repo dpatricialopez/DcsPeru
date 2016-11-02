@@ -132,12 +132,14 @@ public class AdapterRecyclerSimcardAutoVentaPaquete extends RecyclerView.Adapter
                         @Override
                         public void onClick(View view) {
                             listener.setIdPaquete(getAdapterPosition());
+                            alertDialog.dismiss();
                         }
                     });
                     btnSeleccionar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             listener.setSerie(getAdapterPosition());
+                            alertDialog.dismiss();
                         }
                     });
 

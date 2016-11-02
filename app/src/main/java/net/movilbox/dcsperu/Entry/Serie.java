@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class Serie implements Serializable{
 
     private String serie;
-    private int id_producto;
+    private int id_pro;
     private int check;
 
     public int getCheck() {
@@ -28,11 +28,11 @@ public class Serie implements Serializable{
         this.serie = serie;
     }
 
-    public int getId_producto() {
-        return id_producto;
+    public int getId_pro() {
+        return id_pro;
     }
 
-    public void setId_producto(int id_producto) {
-        this.id_producto = id_producto;
+    public void setId_pro(int id_pro) {
+        this.id_pro = id_pro;
     }
 }

@@ -97,6 +97,17 @@ public class ReferenciasCombos implements Serializable {
     @SerializedName("estado_accion")
     private int estado_accion;
 
+    @SerializedName("stock")
+    private int stock;
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
     public int getEstado_accion() {
         return estado_accion;
     }

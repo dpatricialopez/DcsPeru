@@ -39,6 +39,9 @@ public class SincronizarPedidos {
     @SerializedName("comprobante")
     private int comprobante;
 
+    @SerializedName("list_detalle")
+    private List<ReferenciasSims> referenciasSimsList;
+
     public int getComprobante() {
         return comprobante;
     }
@@ -62,9 +65,6 @@ public class SincronizarPedidos {
     public void setHora_visita(String hora_visita) {
         this.hora_visita = hora_visita;
     }
-
-    @SerializedName("list_detalle")
-    private List<ReferenciasSims> referenciasSimsList;
 
     public int getAutoincrement() {
         return autoincrement;

@@ -13,7 +13,7 @@
     <string name="url_base_correo">http://192.168.2.24:91/distribuidorbt/modulos/login/controlador.php</string>
 
     <!--&lt;!&ndash;URL BASE PRUEBAS-->
-    <!--       <string name="url_files">http://prueba.movilbox.net:88/movistar_peru/app_1107/operador/modulos/admin_promociones_noticias/archivos/files/</string>
+    <!--<string name="url_files">http://prueba.movilbox.net:88/movistar_peru/app_1107/operador/modulos/admin_promociones_noticias/archivos/files/</string>
     <string name="url_images">http://prueba.movilbox.net:88/movistar_peru/app_1107/operador/modulos/admin_promociones_noticias/archivos/imgs/</string>
     <string name="url_base">http://prueba.movilbox.net:88/movistar_peru/app_1107/servicios/services.php?solicitud=</string>
     <string name="url_base_correo">http://prueba.movilbox.net:88/movistar_peru/distribuidor/modulos/login/controlador.php</string>-->
